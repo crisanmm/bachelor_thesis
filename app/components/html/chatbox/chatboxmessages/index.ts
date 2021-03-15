@@ -1,1 +1,1 @@
-export { ChatBoxMessageList } from './ChatBoxMessageList';
+export { default } from './ChatBoxMessageList';

@@ -1,1 +1,1 @@
-export { ChatBoxPersonList } from './ChatBoxPersonList';
+export { default } from './ChatBoxPersonList';

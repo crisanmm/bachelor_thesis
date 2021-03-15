@@ -4,13 +4,11 @@ import {
   StyledChatBoxInputButton,
 } from './ChatBoxInput.style';
 
-const ChatBoxInput = () => {
-  return (
-    <StyledChatBoxInputWrapper>
-      <StyledChatBoxInput />
-      <StyledChatBoxInputButton>{'SEND'}</StyledChatBoxInputButton>
-    </StyledChatBoxInputWrapper>
-  );
-};
+const ChatBoxInput = () => (
+  <StyledChatBoxInputWrapper>
+    <StyledChatBoxInput />
+    <StyledChatBoxInputButton>SEND</StyledChatBoxInputButton>
+  </StyledChatBoxInputWrapper>
+);
 
-export { ChatBoxInput };
+export default ChatBoxInput;

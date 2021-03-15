@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useFrame, useThree } from "react-three-fiber";
+import { useEffect, useState } from 'react';
+import { useFrame, useThree } from 'react-three-fiber';
 
 const OrbitControls = () => {
   const {
@@ -8,14 +8,14 @@ const OrbitControls = () => {
   } = useThree();
 
   const [controls, setControls]: any = useState({});
-  if (Object.keys(controls).length != 0) {
+  if (Object.keys(controls).length !== 0) {
     controls.enableDamping = true;
   }
 
   useEffect(() => {
-    if (Object.keys(controls).length == 0) {
+    if (Object.keys(controls).length === 0) {
       (async () => {
-        const module = await import("three/examples/jsm/controls/OrbitControls");
+        const module = await import('three/examples/jsm/controls/OrbitControls');
         setControls(new module.OrbitControls(camera, canvasElement));
       })();
     }

@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const StyledChatBox = styled.div`
   border: 1px solid red;
@@ -6,4 +6,4 @@ const StyledChatBox = styled.div`
   margin: 5px;
 `;
 
-export { StyledChatBox };
+export default StyledChatBox;

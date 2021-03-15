@@ -1,1 +1,1 @@
-export { default as OrbitControls } from "./orbitcontrols";
+export { default as OrbitControls } from './orbitcontrols';

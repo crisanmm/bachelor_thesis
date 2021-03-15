@@ -3,14 +3,12 @@ import { StyledChatBoxList, StyledChatBoxListItem } from './ChatBoxPersonList.st
 interface ChatBoxPersonListProps {
   personNameList: Array<string>;
 }
-const ChatBoxPersonList = ({ personNameList }: ChatBoxPersonListProps) => {
-  return (
-    <StyledChatBoxList>
-      {personNameList.map((personName, index) => (
-        <StyledChatBoxListItem key={index}>{personName}</StyledChatBoxListItem>
-      ))}
-    </StyledChatBoxList>
-  );
-};
+const ChatBoxPersonList = ({ personNameList }: ChatBoxPersonListProps) => (
+  <StyledChatBoxList>
+    {personNameList.map((personName, index) => (
+      <StyledChatBoxListItem key={index}>{personName}</StyledChatBoxListItem>
+    ))}
+  </StyledChatBoxList>
+);
 
-export { ChatBoxPersonList };
+export default ChatBoxPersonList;

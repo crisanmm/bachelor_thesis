@@ -1,1 +1,1 @@
-export { ChatBoxInput } from './ChatBoxInput';
+export { default } from './ChatBoxInput';
