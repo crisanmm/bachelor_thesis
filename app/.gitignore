@@ -1,2 +1,8 @@
 # Exported Nextjs application
 out/
+
+.next/
+
+.vscode/
+
+node_modules/
