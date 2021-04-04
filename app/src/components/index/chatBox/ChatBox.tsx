@@ -1,7 +1,7 @@
 import StyledChatBox from './ChatBox.style';
-import ChatBoxPersonList from './chatboxpersonlist';
-import ChatBoxMessageList from './chatboxmessages';
-import ChatBoxInput from './chatboxinput/ChatBoxInput';
+import ChatBoxPersonList from './chatBoxPersonList';
+import ChatBoxMessageList from './chatBoxMessages';
+import ChatBoxInput from './chatBoxInput/ChatBoxInput';
 
 interface ChatBoxProps {
   personNameList: Array<string>;
