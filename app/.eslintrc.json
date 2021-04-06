@@ -14,30 +14,29 @@
   },
   "plugins": ["react", "@typescript-eslint", "eslint-plugin-tsdoc"],
   "rules": {
-    "react/jsx-filename-extension": ["warning", { "extensions": [".tsx"] }],
-    "react/jsx-indent": ["warning", 2],
+    "react/jsx-filename-extension": ["warn", { "extensions": [".tsx"] }],
+    "react/jsx-indent": ["warn", 2],
     "react/jsx-props-no-spreading": "off",
-    "react/jsx-curly-brace-presence": ["warning", "never"],
+    "react/jsx-curly-brace-presence": ["warn", "never"],
+    "react/jsx-wrap-multilines": "off",
     "react/no-array-index-key": "off",
     "react/prop-types": "off",
-    "react/destructuring-assignment": ["warning", "always"],
-    "indent": ["warning", 2],
+    "react/destructuring-assignment": ["warn", "always"],
+    "indent": ["warn", 2, { "SwitchCase": 1 }],
     "no-use-before-define": "off",
     "react/react-in-jsx-scope": "off",
     "import/no-unresolved": "off",
     "import/extensions": "off",
     "implicit-arrow-linebreak": "off",
-    "comma-dangle": [
-      "warning",
-      {
-        "arrays": "always-multiline",
-        "objects": "always-multiline",
-        "imports": "never",
-        "exports": "never",
-        "functions": "always-multiline"
-      }
-    ],
-    "import/exports-last": "warning",
-    "quote-props": ["warning", "consistent"]
+    "comma-dangle": ["warn", "always-multiline"],
+    "import/exports-last": "warn",
+    "quote-props": ["warn", "consistent"],
+    "arrow-body-style": "warn",
+    "object-curly-newline": "off",
+    "no-unused-vars": "warn",
+    "no-new": "warn",
+    "max-len": ["warn", { "code": 100 }],
+    "default-case": "off",
+    "prefer-promise-reject-errors": "off"
   }
 }
