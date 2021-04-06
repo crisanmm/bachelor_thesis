@@ -1,6 +1,6 @@
-import * as Cognito from 'amazon-cognito-identity-js';
+import { CognitoUserPool } from 'amazon-cognito-identity-js';
 
-const UserPool = new Cognito.CognitoUserPool({
+const UserPool = new CognitoUserPool({
   UserPoolId: 'eu-central-1_bzl57SX04',
   ClientId: 'sdpfrpukifetupagvhgh6vh5d',
 });
