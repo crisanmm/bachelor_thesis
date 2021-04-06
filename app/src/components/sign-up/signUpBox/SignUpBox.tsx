@@ -1,18 +1,19 @@
-import * as Cognito from 'amazon-cognito-identity-js';
 import * as Yup from 'yup';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
 import { Button } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
 import { useRouter } from 'next/router';
-import { UserPool } from '@shared';
 import {
   FormikField,
   StyledFormWrapper,
   StyledFormHeading,
   StyledFormDescription,
   StyledForm,
+  StyledAlert,
 } from '@components/shared';
-import React from 'react';
+import React, { useContext, useState } from 'react';
+import { Account } from '@contexts';
+import { AlertTitle } from '@material-ui/lab';
 
 /**
  * Used for giving initial values to {@link https://formik.org/ | formik}.
@@ -41,44 +42,49 @@ const validationSchema = Yup.object().shape({
     .required('Password confirm is required.'),
 });
 
+const alerts = {
+  success: {
+    severity: 'success',
+    title: 'Success.',
+    message: 'Email confirmation sent.',
+  },
+  error: {
+    severity: 'error',
+    title: 'Error.',
+    message: '',
+  },
+  warning: {
+    severity: 'warning',
+    title: 'Warning.',
+    message: '',
+  },
+};
+
 const SignUpBox = () => {
   const router = useRouter();
-  console.log(router);
-  router.push('/sign-in');
+  const [alert, setAlert] = useState<any>();
+  const { signUp } = useContext(Account.Context);
 
-  const handleSubmit = async (
-    { email, firstName, lastName, password }: typeof initialValues,
+  const onSubmit = async (
+    values: typeof initialValues,
     actions: FormikHelpers<typeof initialValues>,
-  ) =>
-    new Promise((resolve, reject) => {
-      const firstNameAttribute: Cognito.CognitoUserAttribute = {
-        Name: 'given_name',
-        Value: firstName,
-      };
-
-      const lastNameAttribute: Cognito.CognitoUserAttribute = {
-        Name: 'family_name',
-        Value: lastName,
-      };
-
-      UserPool.signUp(
-        email,
-        password,
-        [firstNameAttribute, lastNameAttribute],
-        [] as Cognito.CognitoUserAttribute[],
-        (err, data) => {
-          if (err) {
-            console.log('error');
-            console.log(err);
-            reject(err);
-          } else {
-            console.log('data');
-            console.log(data);
-            resolve(data);
-          }
-        },
-      );
-    });
+  ) => {
+    try {
+      const signUpResult = await signUp(values);
+      console.log('resolved');
+      setAlert({ ...alerts.success });
+      console.log(signUpResult);
+      router.push('/sign-in');
+    } catch (e) {
+      console.log('rejected');
+      switch (e.code) {
+        case 'UsernameExistsException':
+          break;
+      }
+      setAlert({ ...alerts.error, message: e.message });
+      console.log(e);
+    }
+  };
 
   return (
     <StyledFormWrapper>
@@ -87,28 +93,37 @@ const SignUpBox = () => {
         By creating an account you will be able to join conference booths, making your profile
         publicly visible to the other attenders.
       </StyledFormDescription>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
+      <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
         {(props): { props: FormikProps<typeof initialValues> } => (
-          <StyledForm>
-            <FormikField type="email" name="email" label="Email" required />
-            <FormikField type="text" name="firstName" label="First name" required />
-            <FormikField type="text" name="lastName" label="Last name" required />
-            <FormikField type="password" name="password" label="Password" required />
-            <FormikField type="password" name="passwordConfirm" label="Password Confirm" required />
-            <Button
-              endIcon={<ArrowForward />}
-              variant="contained"
-              color="primary"
-              type="submit"
-              disabled={props.isSubmitting}
-            >
-              Sign up
-            </Button>
-          </StyledForm>
+          <>
+            <StyledForm>
+              <FormikField type="email" name="email" label="Email" required />
+              <FormikField type="text" name="firstName" label="First name" required />
+              <FormikField type="text" name="lastName" label="Last name" required />
+              <FormikField type="password" name="password" label="Password" required />
+              <FormikField
+                type="password"
+                name="passwordConfirm"
+                label="Password Confirm"
+                required
+              />
+              <Button
+                endIcon={<ArrowForward />}
+                variant="contained"
+                color="primary"
+                type="submit"
+                disabled={props.isSubmitting}
+              >
+                Sign up
+              </Button>
+            </StyledForm>
+            {alert ? (
+              <StyledAlert severity={alert.severity}>
+                <AlertTitle>{alert.title}</AlertTitle>
+                {alert.message}
+              </StyledAlert>
+            ) : null}
+          </>
         )}
       </Formik>
     </StyledFormWrapper>

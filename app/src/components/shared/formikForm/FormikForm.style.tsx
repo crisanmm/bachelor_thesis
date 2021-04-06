@@ -9,6 +9,7 @@ const StyledFormWrapper = styled(({ theme, ...props }: { theme: DefaultTheme }) 
   </Container>
 ))`
   ${({ theme }) => `
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -48,7 +49,7 @@ const StyledAlert = styled((props: AlertProps & { theme: DefaultTheme }) => (
   </Container>
 ))`
   margin: 0 auto;
-  margin-top: ${({ theme }) => theme.spacing(2)}px;
+  margin-top: ${({ theme }) => theme.spacing(1)}px;
 `;
 
 export { StyledFormWrapper, StyledFormHeading, StyledFormDescription, StyledForm, StyledAlert };

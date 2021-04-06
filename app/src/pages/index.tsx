@@ -1,24 +1,26 @@
-/* eslint-disable */
-// @ts-nocheck
+//// /* eslint-disable */
+//// @ts-nocheck
 
 import Head from 'next/head';
 import Link from 'next/link';
-import React, { FormEvent, Suspense, useEffect, useState } from 'react';
+import React, { FormEvent, Suspense, useEffect, useState, useContext } from 'react';
 import { Canvas, useThree, useFrame, useResource, useLoader, extend } from 'react-three-fiber';
 import * as THREE from 'three';
 import { Object3D, Raycaster, TextureLoader } from 'three';
 
-import { SplitPane, ChatBox, SignUpBox, SignInBox } from '../components/html';
-import { OrbitControls } from '../components/three';
+// import { SplitPane, ChatBox, SignUpBox, SignInBox } from '../components/html';
+import { OrbitControls, SplitPane, ChatBox } from '@components/index';
+import { Account } from '@contexts';
 
 const Index2 = () => {
-  return (
-    <>
-      <SignUpBox />
-      <hr />
-      <SignInBox />
-    </>
-  );
+  const { getSession } = useContext(Account.Context);
+
+  useEffect(() => {
+    (async () => {
+      console.log(await getSession());
+    })();
+  }, []);
+  return <span>index page</span>;
 };
 
 const Index = () => (
@@ -113,7 +115,7 @@ const MyRaycaster = () => {
     const intersectedObjects = raycaster.current?.intersectObjects(
       scene.children,
       false,
-      undefined
+      undefined,
     );
     for (const intersectedObject of intersectedObjects) {
       (intersectedObject.object as any)?.material.color.set(0xffff00);

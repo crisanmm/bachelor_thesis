@@ -8,9 +8,8 @@ const SignUp = () => (
     </ContainerCentered>
     <SignUpBox />
     <ContainerCentered>
-      Already have an account?
+      Already have an account?{' '}
       <StyledLink href="/sign-in" color="primary">
-        {' '}
         Sign in.
       </StyledLink>
     </ContainerCentered>

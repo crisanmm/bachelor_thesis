@@ -1,10 +1,9 @@
-import * as AWSCognito from 'amazon-cognito-identity-js';
 import * as Yup from 'yup';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
 import { Button } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
-import { UserPool } from '@shared';
+import { useRouter } from 'next/router';
 import {
   FormikField,
   StyledFormWrapper,
@@ -12,7 +11,9 @@ import {
   StyledFormDescription,
   StyledForm,
   StyledAlert,
+  StyledLink,
 } from '@components/shared';
+import { Account } from '@contexts';
 import { AlertTitle } from '@material-ui/lab';
 
 /**
@@ -32,72 +33,61 @@ const validationSchema = Yup.object().shape({
 });
 
 const alerts = {
+  success: {
+    severity: 'success',
+    title: 'Success.',
+    message: 'Logged in successfully.',
+  },
   error: {
     severity: 'error',
-    title: 'Error',
+    title: 'Error.',
     message: '',
   },
   warning: {
     severity: 'warning',
-    title: 'Warning',
+    title: 'Warning.',
     message: '',
   },
 };
 
 const SignInBox = () => {
+  const router = useRouter();
   const [alert, setAlert] = useState<any>();
+  const { signIn } = useContext(Account.Context);
 
-  const handleSubmit = async (
-    { email, password }: typeof initialValues,
+  const onSubmit = async (
+    values: typeof initialValues,
     actions: FormikHelpers<typeof initialValues>,
-  ) =>
-    new Promise((resolve, reject) => {
-      const user = new AWSCognito.CognitoUser({
-        Username: email,
-        Pool: UserPool,
-      });
-
-      const authenticationDetails = new AWSCognito.AuthenticationDetails({
-        Username: email,
-        Password: password,
-      });
-
-      user.authenticateUser(authenticationDetails, {
-        onSuccess: (session) => {
-          console.log('onSuccess');
-          console.log(session);
-          resolve(session);
-        },
-        onFailure: (err) => {
-          console.log('onFailure');
-          console.log(err);
-          setAlert({ ...alerts.error, message: err.message });
-          reject(err);
-        },
-        newPasswordRequired: (userAttributes, requiredAttributes) => {
-          console.log('newPasswordRequired');
-          console.log(userAttributes);
-          console.log(requiredAttributes);
-          setAlert({ ...alerts.warning });
-          resolve({ userAttributes, requiredAttributes });
-        },
-      });
-    });
+  ) => {
+    try {
+      const signInResult = await signIn(values);
+      console.log('resolved');
+      setAlert({ ...alerts.success });
+      console.log(signInResult);
+      router.push('/');
+    } catch (e) {
+      console.log('rejected');
+      switch (e.code) {
+        case 'UserNotConfirmedException':
+          e.title = 'Error';
+          e.message = 'Could not sign in. Please confirm your account.';
+          break;
+      }
+      setAlert({ ...alerts.error, message: e.message });
+      console.log(e);
+    }
+  };
 
   // TODO: handle errors
-  // - UserNotConfirmedException
-  // - NotAuthorizedException DONE
+  // - UserNotConfirmedException DONE
+  // - NotAuthorizedException
   return (
     <StyledFormWrapper>
       <StyledFormHeading>Sign in</StyledFormHeading>
       <StyledFormDescription>
         After you sign in you can join conference booths and message other people.
       </StyledFormDescription>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
+      <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
         {(props: FormikProps<typeof initialValues>) => (
           <>
             <StyledForm>
@@ -113,9 +103,12 @@ const SignInBox = () => {
                 Sign in
               </Button>
             </StyledForm>
+            <StyledLink href="/forgot-password" color="textSecondary">
+              Forgot password?
+            </StyledLink>
             {alert ? (
               <StyledAlert severity={alert.severity}>
-                {/* <AlertTitle>{alert.title}</AlertTitle> */}
+                <AlertTitle>{alert.title}</AlertTitle>
                 {alert.message}
               </StyledAlert>
             ) : null}

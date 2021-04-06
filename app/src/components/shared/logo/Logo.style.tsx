@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import Link from 'next/link';
 
 interface LogoProps {
   /*
@@ -11,6 +12,7 @@ interface LogoProps {
 const Box = styled.div<LogoProps>`
   ${({ theme, _size }) => `
   position: relative;
+  cursor: pointer;
   height: ${_size}px;
   width: ${_size}px;
   border-width: 4px;
@@ -36,9 +38,11 @@ const Text = styled.span<LogoProps>`
 `;
 
 const StyledLogo = ({ size = 60 }) => (
-  <Box _size={size}>
-    <Text _size={size}>think-in</Text>
-  </Box>
+  <Link href="/">
+    <Box _size={size}>
+      <Text _size={size}>think-in</Text>
+    </Box>
+  </Link>
 );
 
 export default StyledLogo;

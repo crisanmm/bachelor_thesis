@@ -12,6 +12,7 @@ import {
 import { lightTheme, darkTheme } from '@utils/theme';
 import palette from '@utils/theme/palette';
 import { FormControlLabel, NoSsr, Switch, Paper, CssBaseline } from '@material-ui/core';
+import { Account } from '@contexts';
 
 const GlobalStyle = createGlobalStyle`
     @font-face {
@@ -51,23 +52,25 @@ function MyApp({ Component, pageProps }: AppProps) {
       <StylesProvider injectFirst>
         <MaterialUIThemeProvider theme={muiTheme}>
           <StyledComponentsThemeProvider theme={muiTheme}>
-            <NoSsr>
-              <CssBaseline />
-              <StyledPaper square>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      color="primary"
-                      checked={isDarkTheme}
-                      onChange={() => setIsDarkTheme(!isDarkTheme)}
-                    />
-                  }
-                  label="dark mode"
-                  style={{ position: 'fixed', bottom: '0px', right: '0px', zIndex: 99 }}
-                />
-                <Component {...pageProps} />
-              </StyledPaper>
-            </NoSsr>
+            <Account.Provider>
+              <NoSsr>
+                <CssBaseline />
+                <StyledPaper square>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        color="primary"
+                        checked={isDarkTheme}
+                        onChange={() => setIsDarkTheme(!isDarkTheme)}
+                      />
+                    }
+                    label="dark mode"
+                    style={{ position: 'fixed', bottom: '0px', right: '0px', zIndex: 99 }}
+                  />
+                  <Component {...pageProps} />
+                </StyledPaper>
+              </NoSsr>
+            </Account.Provider>
           </StyledComponentsThemeProvider>
         </MaterialUIThemeProvider>
       </StylesProvider>
