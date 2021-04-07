@@ -1,11 +1,5 @@
-export { default as FormikField } from './formikField';
 export { default as StyledLogo } from './logo';
-export {
-  StyledFormWrapper,
-  StyledFormHeading,
-  StyledFormDescription,
-  StyledForm,
-  StyledAlert,
-} from './formikForm';
-export { default as StyledLink } from './link';
-export { default as ContainerCentered } from './containerCentered';
+export { default as StyledLink } from './styledLink';
+export { default as StyledAlert } from './styledAlert';
+export { default as StyledContainer } from './styledContainer';
+export { default as FormikForm } from './formikForm';

@@ -1,6 +1,5 @@
 import styled, { DefaultTheme } from 'styled-components';
 import { Paper, Container } from '@material-ui/core';
-import { Alert, AlertProps } from '@material-ui/lab';
 import { Form } from 'formik';
 
 const StyledFormWrapper = styled(({ theme, ...props }: { theme: DefaultTheme }) => (
@@ -37,19 +36,22 @@ const StyledForm = styled(Form)`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding: ${({ theme }) => theme.spacing(1)}px;
+  width: 100%;
 
-  & > * {
-    margin: ${({ theme }) => theme.spacing(1)}px 0px;
+  ${({ theme }) => theme.breakpoints.up(375)} {
+    width: 280px;
+  }
+
+  & > .MuiTextField-root {
+    margin-top: ${({ theme }) => theme.spacing(1)}px;
+    width: 100%;
+  }
+
+  & > .MuiButton-root[type='submit'] {
+    margin-top: ${({ theme }) => theme.spacing(3)}px;
+    margin-bottom: ${({ theme }) => theme.spacing(1)}px;
   }
 `;
 
-const StyledAlert = styled((props: AlertProps & { theme: DefaultTheme }) => (
-  <Container maxWidth="sm">
-    <Alert {...props} />
-  </Container>
-))`
-  margin: 0 auto;
-  margin-top: ${({ theme }) => theme.spacing(1)}px;
-`;
-
-export { StyledFormWrapper, StyledFormHeading, StyledFormDescription, StyledForm, StyledAlert };
+export { StyledFormWrapper, StyledFormHeading, StyledFormDescription, StyledForm };

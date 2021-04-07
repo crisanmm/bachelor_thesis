@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useField, ErrorMessage } from 'formik';
 import { IconButton, InputAdornment, TextField } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
-import { StyledTextField } from './FormikField.styled';
 
 interface FormikFieldProps {
   name: string;
@@ -13,7 +12,7 @@ interface FormikFieldProps {
 
 const FormikField: React.FC<FormikFieldProps> = ({ name, type, label, required }) => {
   const [field, meta] = useField(name);
-  const [_type, setType] = useState(type);
+  const [_type, setType] = useState<string>(type);
   const isPassword = type === 'password';
   const hasError = meta.touched && meta.error ? true : false;
 
@@ -32,7 +31,7 @@ const FormikField: React.FC<FormikFieldProps> = ({ name, type, label, required }
   };
 
   return (
-    <StyledTextField
+    <TextField
       variant="outlined"
       error={hasError}
       helperText={<ErrorMessage name={name} />}

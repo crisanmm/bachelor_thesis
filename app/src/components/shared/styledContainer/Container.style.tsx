@@ -1,7 +1,7 @@
 import { Container, ContainerProps } from '@material-ui/core';
 import styled, { DefaultTheme } from 'styled-components';
 
-const ContainerCentered = styled((props: ContainerProps) => <Container {...props} />)`
+const StyledContainer = styled((props: ContainerProps) => <Container {...props} />)`
   padding: ${({ theme }: { theme: DefaultTheme }) => theme.spacing(2)}px 0px;
   text-align: center;
   & > * {
@@ -9,4 +9,4 @@ const ContainerCentered = styled((props: ContainerProps) => <Container {...props
   }
 `;
 
-export default ContainerCentered;
+export default StyledContainer;

@@ -4,10 +4,8 @@ import { Formik, FormikProps } from 'formik';
 import { Button } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
 import { useRouter } from 'next/router';
-import { FormikField, StyledForm, StyledAlert } from '@components/shared';
+import { FormikForm, StyledAlert } from '@components/shared';
 import { Account } from '@contexts';
-import { AlertTitle } from '@material-ui/lab';
-import StyledButton from './ResetPasswordForm.style';
 
 /**
  * Used for giving initial values to {@link https://formik.org/ | formik}.
@@ -35,43 +33,30 @@ const resetPasswordValidationSchema = Yup.object().shape({
     .required('Password confirm is required.'),
 });
 
-const alerts = {
-  success: {
-    severity: 'success',
-    title: 'Success.',
-    message: 'Logged in successfully.',
-  },
-  error: {
-    severity: 'error',
-    title: 'Error.',
-    message: '',
-  },
-  warning: {
-    severity: 'warning',
-    title: 'Warning.',
-    message: '',
-  },
-};
-
 interface ResetPasswordFormProps {
-  setEmail: (email: string) => void /* eslint-disable-line */;
   email: string;
 }
 
-const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ email, setEmail }) => {
+const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ email }) => {
   const router = useRouter();
-  const [alert, setAlert] = useState<any>();
+  const [Alert, setAlert] = useState<React.ComponentType>(() => () => <></>);
   const { forgotPasswordReset } = useContext(Account.Context);
 
   const resetPasswordOnSubmit = async ({ code, password }: typeof resetPasswordInitialValues) => {
     try {
       await forgotPasswordReset(email, code, password);
-      console.log('success');
-      setAlert({ ...alerts.success, message: 'Successfully changed password.' });
+      setAlert(() => () => (
+        <StyledAlert severity="success" title="Success">
+          Successfully changed password.
+        </StyledAlert>
+      ));
       setTimeout(() => router.push('/'), 3000);
     } catch (e) {
-      console.log(e);
-      setAlert({ ...alerts.error, message: e.message });
+      setAlert(() => () => (
+        <StyledAlert severity="error" title="Error">
+          {e.message}
+        </StyledAlert>
+      ));
     }
   };
 
@@ -83,11 +68,10 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ email, setEmail }
     >
       {(props: FormikProps<typeof resetPasswordInitialValues>) => (
         <>
-          <StyledForm>
-            <StyledButton onClick={() => setEmail(undefined)}>BACK</StyledButton>
-            <FormikField type="text" name="code" label="Verification code" required />
-            <FormikField type="password" name="password" label="New Password" required />
-            <FormikField
+          <FormikForm.StyledForm>
+            <FormikForm.FormikField type="text" name="code" label="Verification code" required />
+            <FormikForm.FormikField type="password" name="password" label="New Password" required />
+            <FormikForm.FormikField
               type="password"
               name="passwordConfirm"
               label="New Password Confirm"
@@ -102,13 +86,8 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ email, setEmail }
             >
               Reset password
             </Button>
-          </StyledForm>
-          {alert ? (
-            <StyledAlert severity={alert.severity}>
-              <AlertTitle>{alert.title}</AlertTitle>
-              {alert.message}
-            </StyledAlert>
-          ) : null}
+          </FormikForm.StyledForm>
+          <Alert />
         </>
       )}
     </Formik>

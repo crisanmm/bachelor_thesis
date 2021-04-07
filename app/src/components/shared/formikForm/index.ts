@@ -1,7 +1,15 @@
-export {
+import {
   StyledFormWrapper,
   StyledFormHeading,
   StyledFormDescription,
   StyledForm,
-  StyledAlert,
 } from './FormikForm.style';
+import FormikField from './FormikField';
+
+export default {
+  StyledFormWrapper,
+  StyledFormHeading,
+  StyledFormDescription,
+  StyledForm,
+  FormikField,
+};

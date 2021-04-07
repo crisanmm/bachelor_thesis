@@ -1,25 +1,21 @@
 import React, { useState } from 'react';
-import { StyledFormWrapper, StyledFormHeading, StyledFormDescription } from '@components/shared';
+import { FormikForm } from '@components/shared';
 import SendCodeForm from './SendCodeForm';
 import ResetPasswordForm from './ResetPasswordForm';
 
 const ForgotPasswordBox = () => {
-  const [email, setEmail] = useState<string>('a');
+  const [email, setEmail] = useState<string>();
 
   return (
-    <StyledFormWrapper>
-      <StyledFormHeading>Reset password</StyledFormHeading>
-      <StyledFormDescription>
+    <FormikForm.StyledFormWrapper>
+      <FormikForm.StyledFormHeading>Reset password</FormikForm.StyledFormHeading>
+      <FormikForm.StyledFormDescription>
         {email
           ? 'Check your email for a verification code.'
           : "Don't stress out, you will reset your password easily 😊"}
-      </StyledFormDescription>
-      {email ? (
-        <ResetPasswordForm setEmail={setEmail} email={email} />
-      ) : (
-        <SendCodeForm setEmail={setEmail} />
-      )}
-    </StyledFormWrapper>
+      </FormikForm.StyledFormDescription>
+      {email ? <ResetPasswordForm email={email} /> : <SendCodeForm setEmail={setEmail} />}
+    </FormikForm.StyledFormWrapper>
   );
 };
 

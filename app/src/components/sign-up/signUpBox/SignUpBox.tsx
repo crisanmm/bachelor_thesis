@@ -1,19 +1,11 @@
 import * as Yup from 'yup';
+import React, { useContext, useState } from 'react';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
 import { Button } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
 import { useRouter } from 'next/router';
-import {
-  FormikField,
-  StyledFormWrapper,
-  StyledFormHeading,
-  StyledFormDescription,
-  StyledForm,
-  StyledAlert,
-} from '@components/shared';
-import React, { useContext, useState } from 'react';
+import { FormikForm, StyledAlert } from '@components/shared';
 import { Account } from '@contexts';
-import { AlertTitle } from '@material-ui/lab';
 
 /**
  * Used for giving initial values to {@link https://formik.org/ | formik}.
@@ -27,7 +19,8 @@ const initialValues = {
 };
 
 /**
- * {@link https://www.npmjs.com/package/yup | yup} validation schema passed to {@link https://formik.org/ | formik}.
+ * {@link https://www.npmjs.com/package/yup | yup} validation schema
+ * passed to {@link https://formik.org/ | formik}.
  */
 const validationSchema = Yup.object().shape({
   firstName: Yup.string().required('Your first name is required.'),
@@ -42,27 +35,9 @@ const validationSchema = Yup.object().shape({
     .required('Password confirm is required.'),
 });
 
-const alerts = {
-  success: {
-    severity: 'success',
-    title: 'Success.',
-    message: 'Email confirmation sent.',
-  },
-  error: {
-    severity: 'error',
-    title: 'Error.',
-    message: '',
-  },
-  warning: {
-    severity: 'warning',
-    title: 'Warning.',
-    message: '',
-  },
-};
-
 const SignUpBox = () => {
   const router = useRouter();
-  const [alert, setAlert] = useState<any>();
+  const [Alert, setAlert] = useState<React.ComponentType>(() => () => <></>);
   const { signUp } = useContext(Account.Context);
 
   const onSubmit = async (
@@ -70,38 +45,43 @@ const SignUpBox = () => {
     actions: FormikHelpers<typeof initialValues>,
   ) => {
     try {
-      const signUpResult = await signUp(values);
-      console.log('resolved');
-      setAlert({ ...alerts.success });
-      console.log(signUpResult);
-      router.push('/sign-in');
+      await signUp(values);
+      setAlert(() => () => (
+        <StyledAlert severity="success" title="Success">
+          Successfully created an account.
+        </StyledAlert>
+      ));
+      setTimeout(() => router.push('/sign-in'), 2000);
     } catch (e) {
-      console.log('rejected');
+      console.log(e);
       switch (e.code) {
         case 'UsernameExistsException':
+          setAlert(() => () => (
+            <StyledAlert severity="error" title="Error">
+              {e.message}
+            </StyledAlert>
+          ));
           break;
       }
-      setAlert({ ...alerts.error, message: e.message });
-      console.log(e);
     }
   };
 
   return (
-    <StyledFormWrapper>
-      <StyledFormHeading>Sign up</StyledFormHeading>
-      <StyledFormDescription>
+    <FormikForm.StyledFormWrapper>
+      <FormikForm.StyledFormHeading>Sign up</FormikForm.StyledFormHeading>
+      <FormikForm.StyledFormDescription>
         By creating an account you will be able to join conference booths, making your profile
         publicly visible to the other attenders.
-      </StyledFormDescription>
+      </FormikForm.StyledFormDescription>
       <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
         {(props): { props: FormikProps<typeof initialValues> } => (
           <>
-            <StyledForm>
-              <FormikField type="email" name="email" label="Email" required />
-              <FormikField type="text" name="firstName" label="First name" required />
-              <FormikField type="text" name="lastName" label="Last name" required />
-              <FormikField type="password" name="password" label="Password" required />
-              <FormikField
+            <FormikForm.StyledForm>
+              <FormikForm.FormikField type="email" name="email" label="Email" required />
+              <FormikForm.FormikField type="text" name="firstName" label="First name" required />
+              <FormikForm.FormikField type="text" name="lastName" label="Last name" required />
+              <FormikForm.FormikField type="password" name="password" label="Password" required />
+              <FormikForm.FormikField
                 type="password"
                 name="passwordConfirm"
                 label="Password Confirm"
@@ -116,17 +96,12 @@ const SignUpBox = () => {
               >
                 Sign up
               </Button>
-            </StyledForm>
-            {alert ? (
-              <StyledAlert severity={alert.severity}>
-                <AlertTitle>{alert.title}</AlertTitle>
-                {alert.message}
-              </StyledAlert>
-            ) : null}
+            </FormikForm.StyledForm>
+            <Alert />
           </>
         )}
       </Formik>
-    </StyledFormWrapper>
+    </FormikForm.StyledFormWrapper>
   );
 };
 
