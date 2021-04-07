@@ -1,8 +1,6 @@
-import { createContext } from 'react';
+import React, { createContext, ReactNodeArray } from 'react';
 import * as Cognito from 'amazon-cognito-identity-js';
 import { UserPool } from '@shared';
-
-const Context = createContext(undefined);
 
 const getUser = (email: string) =>
   new Cognito.CognitoUser({
@@ -74,25 +72,22 @@ const getSession = async () =>
   });
 
 const forgotPasswordSendCode = async (email) =>
-  new Promise((resolve, reject) => {
+  new Promise<Cognito.CodeDeliveryDetails>((resolve, reject) => {
     getUser(email).forgotPassword({
-      onSuccess(data) {
+      onSuccess(data: Cognito.CodeDeliveryDetails) {
         resolve(data);
       },
       onFailure(err) {
         reject(err);
       },
-      inputVerificationCode(data) {
-        resolve(data);
-      },
     });
   });
 
 const forgotPasswordReset = async (email, code, newPassword) =>
-  new Promise((resolve, reject) => {
+  new Promise<void>((resolve, reject) => {
     getUser(email).confirmPassword(code, newPassword, {
       onSuccess() {
-        resolve(true);
+        resolve();
       },
       onFailure(err) {
         reject(err);
@@ -101,6 +96,8 @@ const forgotPasswordReset = async (email, code, newPassword) =>
   });
 
 const value = { signUp, signIn, signOut, getSession, forgotPasswordSendCode, forgotPasswordReset };
+
+const Context = createContext(value);
 
 const Provider = ({ children }) => {
   return <Context.Provider value={value}>{children}</Context.Provider>;
