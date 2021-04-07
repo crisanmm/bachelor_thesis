@@ -1,18 +1,18 @@
 import { ForgotPasswordBox } from '@components/forgot-password';
-import { StyledLogo, StyledLink, ContainerCentered } from '@components/shared';
+import { StyledLogo, StyledLink, StyledContainer } from '@components/shared';
 
 const SignIn = () => (
   <>
-    <ContainerCentered>
+    <StyledContainer>
       <StyledLogo size={100} />
-    </ContainerCentered>
+    </StyledContainer>
     <ForgotPasswordBox />
-    <ContainerCentered>
+    <StyledContainer>
       Don&apos;t have an account?{' '}
       <StyledLink href="/sign-up" color="primary">
         Sign up.
       </StyledLink>
-    </ContainerCentered>
+    </StyledContainer>
   </>
 );
 

@@ -1,18 +1,18 @@
 import { SignUpBox } from '@components/sign-up';
-import { StyledLogo, StyledLink, ContainerCentered } from '@components/shared';
+import { StyledLogo, StyledLink, StyledContainer } from '@components/shared';
 
 const SignUp = () => (
   <>
-    <ContainerCentered>
+    <StyledContainer>
       <StyledLogo size={100} />
-    </ContainerCentered>
+    </StyledContainer>
     <SignUpBox />
-    <ContainerCentered>
+    <StyledContainer>
       Already have an account?{' '}
       <StyledLink href="/sign-in" color="primary">
         Sign in.
       </StyledLink>
-    </ContainerCentered>
+    </StyledContainer>
   </>
 );
 
