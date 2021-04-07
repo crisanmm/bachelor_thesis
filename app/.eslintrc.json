@@ -37,6 +37,7 @@
     "no-new": "warn",
     "max-len": ["warn", { "code": 100 }],
     "default-case": "off",
-    "prefer-promise-reject-errors": "off"
+    "prefer-promise-reject-errors": "off",
+    "no-unneeded-ternary": "off"
   }
 }
