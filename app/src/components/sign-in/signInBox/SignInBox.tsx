@@ -30,11 +30,11 @@ const SignInBox = () => {
   const { signIn } = useContext(Account.Context);
 
   const onSubmit = async (
-    values: typeof initialValues,
+    { email, password }: typeof initialValues,
     actions: FormikHelpers<typeof initialValues>,
   ) => {
     try {
-      await signIn(values);
+      await signIn(email, password);
       setAlert(() => () => (
         <StyledAlert severity="success" title="Success">
           Successfully signed in.

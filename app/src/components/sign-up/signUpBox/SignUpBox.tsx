@@ -41,11 +41,11 @@ const SignUpBox = () => {
   const { signUp } = useContext(Account.Context);
 
   const onSubmit = async (
-    values: typeof initialValues,
+    { email, firstName, lastName, password }: typeof initialValues,
     actions: FormikHelpers<typeof initialValues>,
   ) => {
     try {
-      await signUp(values);
+      await signUp(email, firstName, lastName, password);
       setAlert(() => () => (
         <StyledAlert severity="success" title="Success">
           Successfully created an account.

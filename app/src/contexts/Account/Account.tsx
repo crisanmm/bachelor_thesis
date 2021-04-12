@@ -1,21 +1,36 @@
-import React, { createContext, ReactNodeArray } from 'react';
-import * as Cognito from 'amazon-cognito-identity-js';
+import React, { createContext } from 'react';
 import { UserPool } from '@shared';
+import {
+  CognitoUserSession,
+  ISignUpResult,
+  CognitoUser,
+  CognitoUserAttribute,
+  AuthenticationDetails,
+  CodeDeliveryDetails,
+} from 'amazon-cognito-identity-js';
 
-const getUser = (email: string) =>
-  new Cognito.CognitoUser({
+interface GetUser {
+  (email: string): CognitoUser;
+}
+
+const getUser: GetUser = (email) =>
+  new CognitoUser({
     Username: email.toLowerCase(),
     Pool: UserPool,
   });
 
-const signUp = async ({ email, firstName, lastName, password }) =>
-  new Promise<Cognito.ISignUpResult>((resolve, reject) => {
-    const firstNameAttribute: Cognito.CognitoUserAttribute = {
+interface SignUp {
+  (email: string, firstName: string, lastName: string, password: string): Promise<ISignUpResult>;
+}
+
+const signUp: SignUp = async (email, firstName, lastName, password) =>
+  new Promise((resolve, reject) => {
+    const firstNameAttribute: CognitoUserAttribute = {
       Name: 'given_name',
       Value: firstName,
     };
 
-    const lastNameAttribute: Cognito.CognitoUserAttribute = {
+    const lastNameAttribute: CognitoUserAttribute = {
       Name: 'family_name',
       Value: lastName,
     };
@@ -24,19 +39,23 @@ const signUp = async ({ email, firstName, lastName, password }) =>
       email,
       password,
       [firstNameAttribute, lastNameAttribute],
-      [] as Cognito.CognitoUserAttribute[],
-      (err, data) => {
+      [] as CognitoUserAttribute[],
+      (err: Error | undefined, data: ISignUpResult | undefined) => {
         if (err) reject(err);
-        resolve(data);
+        resolve(data as ISignUpResult);
       },
     );
   });
 
-const signIn = async ({ email, password }) =>
-  new Promise<Cognito.CognitoUserSession>((resolve, reject) => {
+interface SignIn {
+  (email: string, password: string): Promise<CognitoUserSession>;
+}
+
+const signIn: SignIn = async (email, password) =>
+  new Promise((resolve, reject) => {
     const user = getUser(email);
 
-    const authenticationDetails = new Cognito.AuthenticationDetails({
+    const authenticationDetails = new AuthenticationDetails({
       Username: email,
       Password: password,
     });
@@ -54,27 +73,43 @@ const signIn = async ({ email, password }) =>
     });
   });
 
-const signOut = () => {
+interface SignOut {
+  (): boolean;
+}
+
+const signOut: SignOut = () => {
   const user = UserPool.getCurrentUser();
-  user.signOut();
+  if (user) {
+    user.signOut();
+    return true;
+  }
+  return false;
 };
 
-const getSession = async () =>
-  new Promise<Cognito.CognitoUserSession>((resolve, reject) => {
+interface GetSession {
+  (): Promise<CognitoUserSession>;
+}
+
+const getSession: GetSession = async () =>
+  new Promise((resolve, reject) => {
     const user = UserPool.getCurrentUser();
-    if (user !== null) {
-      user.getSession((err, data) => {
+    if (user) {
+      user.getSession((err: Error | null, data: CognitoUserSession | null) => {
         if (err) reject(err);
-        resolve(data);
+        resolve(data as CognitoUserSession);
       });
     }
     reject({ code: 'xNotSignedInException', message: 'You are not signed in.' });
   });
 
-const forgotPasswordSendCode = async (email) =>
-  new Promise<Cognito.CodeDeliveryDetails>((resolve, reject) => {
+interface ForgotPasswordSendCode {
+  (email: string): Promise<CodeDeliveryDetails>;
+}
+
+const forgotPasswordSendCode: ForgotPasswordSendCode = async (email) =>
+  new Promise((resolve, reject) => {
     getUser(email).forgotPassword({
-      onSuccess(data: Cognito.CodeDeliveryDetails) {
+      onSuccess(data: CodeDeliveryDetails) {
         resolve(data);
       },
       onFailure(err) {
@@ -82,8 +117,10 @@ const forgotPasswordSendCode = async (email) =>
       },
     });
   });
-
-const forgotPasswordReset = async (email, code, newPassword) =>
+interface ForgotPasswordReset {
+  (email: string, code: string, newPassword: string): void;
+}
+const forgotPasswordReset: ForgotPasswordReset = async (email, code, newPassword) =>
   new Promise<void>((resolve, reject) => {
     getUser(email).confirmPassword(code, newPassword, {
       onSuccess() {
@@ -99,7 +136,7 @@ const value = { signUp, signIn, signOut, getSession, forgotPasswordSendCode, for
 
 const Context = createContext(value);
 
-const Provider = ({ children }) => {
+const Provider = ({ children }: { children: React.ReactNode }) => {
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
