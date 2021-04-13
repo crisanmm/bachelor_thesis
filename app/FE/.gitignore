@@ -7,7 +7,6 @@ out/
 
 node_modules/
 
-
 # Ambient module extensions, not to be confused with 
 # https://www.npmjs.com/package/typings
 !typings/
