@@ -27,6 +27,7 @@
     "react/react-in-jsx-scope": "off",
     "import/no-unresolved": "off",
     "import/extensions": "off",
+    "import/prefer-default-export": "off",
     "implicit-arrow-linebreak": "off",
     "comma-dangle": ["warn", "always-multiline"],
     "import/exports-last": "warn",
