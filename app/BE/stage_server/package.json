@@ -1,0 +1,34 @@
+{
+  "name": "stage_server",
+  "version": "1.0.0",
+  "description": "Serves stage oriented information",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crisanmm/bachelor_thesis.git"
+  },
+  "author": "Crisan Mihai",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/crisanmm/bachelor_thesis/issues"
+  },
+  "homepage": "https://github.com/crisanmm/bachelor_thesis#readme",
+  "dependencies": {
+    "@types/jsonwebtoken": "^8.5.1",
+    "@types/jwk-to-pem": "^2.0.0",
+    "@types/node": "^14.14.37",
+    "@types/socket.io": "^2.1.13",
+    "chalk": "^4.1.0",
+    "dotenv": "^8.2.0",
+    "jsonwebtoken": "^8.5.1",
+    "jwk-to-pem": "^2.0.5",
+    "socket.io": "^4.0.1"
+  },
+  "devDependencies": {
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4"
+  }
+}
