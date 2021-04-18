@@ -7,7 +7,7 @@ import styled, {
 import React, { useState } from 'react';
 import {
   createMuiTheme,
-  ThemeProvider as MaterialUIThemeProvider,
+  MuiThemeProvider,
   StylesProvider,
 } from '@material-ui/core/styles';
 import { theme } from '@utils';
@@ -43,11 +43,12 @@ const StyledPaper = styled(Paper)`
   position: fixed;
   height: 100vh;
   width: 100vw;
+  background-color: ${({ theme }) => theme.palette.background.default};
 `;
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
-  console.log(router);
+  console.log('🚀  -> file: _app.tsx  -> line 50  -> router', router);
   const isDev = router.route.startsWith('/dev');
 
   const [isDarkTheme, setIsDarkTheme] = useState(false);
@@ -58,7 +59,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <NoSsr>
       <CssBaseline />
       <StylesProvider injectFirst>
-        <MaterialUIThemeProvider theme={muiTheme}>
+        <MuiThemeProvider theme={muiTheme}>
           <StyledComponentsThemeProvider theme={muiTheme}>
             <Account.Provider>
               <StyledPaper square>
@@ -80,7 +81,7 @@ function MyApp({ Component, pageProps }: AppProps) {
               </StyledPaper>
             </Account.Provider>
           </StyledComponentsThemeProvider>
-        </MaterialUIThemeProvider>
+        </MuiThemeProvider>
       </StylesProvider>
     </NoSsr>
   );
