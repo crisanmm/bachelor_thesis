@@ -50,7 +50,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ email }) => {
           Successfully changed password.
         </StyledAlert>
       ));
-      setTimeout(() => router.push('/'), 3000);
+      setTimeout(() => router.push('/sign-in'), 3000);
     } catch (e) {
       setAlert(() => () => (
         <StyledAlert severity="error" title="Error">
