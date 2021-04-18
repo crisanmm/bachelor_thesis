@@ -1,5 +1,4 @@
 import React, { createContext } from 'react';
-import { UserPool } from '@shared';
 import {
   CognitoUserSession,
   ISignUpResult,
@@ -7,7 +6,13 @@ import {
   CognitoUserAttribute,
   AuthenticationDetails,
   CodeDeliveryDetails,
+  CognitoUserPool,
 } from 'amazon-cognito-identity-js';
+
+const UserPool = new CognitoUserPool({
+  UserPoolId: 'eu-central-1_bzl57SX04',
+  ClientId: 'sdpfrpukifetupagvhgh6vh5d',
+});
 
 interface GetUser {
   (email: string): CognitoUser;
@@ -136,8 +141,8 @@ const value = { signUp, signIn, signOut, getSession, forgotPasswordSendCode, for
 
 const Context = createContext(value);
 
-const Provider = ({ children }: { children: React.ReactNode }) => {
-  return <Context.Provider value={value}>{children}</Context.Provider>;
-};
+const Provider: React.FunctionComponent = ({ children }) => (
+  <Context.Provider value={value}>{children}</Context.Provider>
+);
 
-export { Context, Provider };
+export default { Context, Provider };

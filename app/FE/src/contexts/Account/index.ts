@@ -1,1 +1,1 @@
-export { Context, Provider } from './Account';
+export { default } from './Account';
