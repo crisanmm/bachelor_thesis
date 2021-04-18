@@ -4,7 +4,7 @@
   "description": "Serves stage oriented information",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node index.ts"
+    "start": "ts-node-dev src/index.ts"
   },
   "repository": {
     "type": "git",
@@ -17,10 +17,6 @@
   },
   "homepage": "https://github.com/crisanmm/bachelor_thesis#readme",
   "dependencies": {
-    "@types/jsonwebtoken": "^8.5.1",
-    "@types/jwk-to-pem": "^2.0.0",
-    "@types/node": "^14.14.37",
-    "@types/socket.io": "^2.1.13",
     "chalk": "^4.1.0",
     "dotenv": "^8.2.0",
     "jsonwebtoken": "^8.5.1",
@@ -28,7 +24,18 @@
     "socket.io": "^4.0.1"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^8.5.1",
+    "@types/jwk-to-pem": "^2.0.0",
+    "@types/node": "^14.14.39",
+    "@types/socket.io": "^2.1.13",
+    "@typescript-eslint/eslint-plugin": "^4.17.0",
+    "@typescript-eslint/parser": "^4.17.0",
+    "eslint": "^7.22.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-tsdoc": "^0.2.11",
     "ts-node": "^9.1.1",
+    "ts-node-dev": "^1.1.6",
     "typescript": "^4.2.4"
   }
 }
