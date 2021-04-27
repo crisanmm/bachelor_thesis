@@ -1,6 +1,6 @@
+/// <reference path="types/socketio.d.ts" />
 import type { Server as HttpServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
-import { ExtendedSocket } from './types/socketio';
 import validateJWT from './utils/validateJWT';
 
 const socketIOOptions = {
@@ -11,10 +11,6 @@ const socketIOOptions = {
   },
   maxHttpBufferSize: 1e6,
 };
-
-interface CreateSocketIOServer {
-  (httpServer: HttpServer): SocketIOServer;
-}
 
 type Position = [number, number, number];
 
@@ -30,25 +26,30 @@ interface AttenderType {
   id: string;
 }
 
+interface CreateSocketIOServer {
+  (httpServer: HttpServer): SocketIOServer;
+}
+
 const createSocketIOServer: CreateSocketIOServer = (httpServer) => {
   const io = new SocketIOServer(httpServer, socketIOOptions);
 
-  io.use(async (socket: ExtendedSocket, next) => {
+  io.use(async (socket, next) => {
     try {
       const idToken = await validateJWT(socket.handshake.auth.idToken as string);
       socket.idToken = idToken;
       next();
     } catch (e) {
+      console.log(e);
       next(new Error('Not authenticated.'));
     }
   });
 
-  io.use((socket: ExtendedSocket, next) => {
-    socket.join('dev room');
+  io.use((socket, next) => {
+    socket.join('dev-room');
     next();
   });
 
-  io.on('connection', async (socket: ExtendedSocket) => {
+  io.on('connection', async (socket) => {
     socket.onAny((eventName) => {
       //   console.log(
       //     '🚀  -> file: index.ts  -> line 41  -> eventName',
@@ -60,6 +61,7 @@ const createSocketIOServer: CreateSocketIOServer = (httpServer) => {
 
     socket.on('disconnect', (reason: string) => {
       console.log(`client disconnected, reason: ${reason}`);
+      if (socket.attender) socket.in('dev-room').emit('attender-leave', socket.attender);
     });
 
     socket.on('attender-join', async (attender: AttenderType) => {
@@ -69,27 +71,25 @@ const createSocketIOServer: CreateSocketIOServer = (httpServer) => {
       /**
        * Inform other attenders in this room that a new attender has joined.
        */
-      socket.in('dev room').emit('attender-join', attender);
+      socket.in('dev-room').emit('attender-join', attender);
 
       /**
        * Inform the new attender of all the other attenders in this room.
        */
-      Array.from((await socket.in('dev room').allSockets()).values())
+      Array.from((await socket.in('dev-room').allSockets()).values())
         .filter((socketId) => socketId !== socket.id)
-        .forEach((socketId) => {
-          const otherSocket = io.of('/').sockets.get(socketId) as ExtendedSocket;
-          socket.emit('attender-join', otherSocket.attender);
-        });
+        .map((socketId) => io.of('/').sockets.get(socketId)!)
+        .forEach((otherSocket) => socket.emit('attender-join', otherSocket.attender));
     });
 
     socket.on('attender-leave', (attender: AttenderType) => {
-      socket.in('dev room').emit('attender-leave', attender);
+      socket.in('dev-room').emit('attender-leave', attender);
       socket.disconnect();
     });
 
     socket.on('attender-position-change', (attenderPositionChange: AttenderPositionChange) => {
       socket.attender!.position = attenderPositionChange.position;
-      socket.in('dev room').emit('attender-position-change', attenderPositionChange);
+      socket.in('dev-room').emit('attender-position-change', attenderPositionChange);
     });
   });
 

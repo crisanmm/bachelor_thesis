@@ -1,9 +1,8 @@
 import * as Yup from 'yup';
 import React, { useState, useContext } from 'react';
-import { Formik, FormikHelpers, FormikProps } from 'formik';
+import { Formik, FormikProps } from 'formik';
 import { Button } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
-import { useRouter } from 'next/router';
 import { FormikForm, StyledAlert, StyledLink } from '@components/shared';
 import { Account } from '@contexts';
 
@@ -25,14 +24,10 @@ const validationSchema = Yup.object().shape({
 });
 
 const SignInBox = () => {
-  const router = useRouter();
   const [Alert, setAlert] = useState<React.ComponentType>(() => () => <></>);
   const { signIn } = useContext(Account.Context);
 
-  const onSubmit = async (
-    { email, password }: typeof initialValues,
-    actions: FormikHelpers<typeof initialValues>,
-  ) => {
+  const onSubmit = async ({ email, password }: typeof initialValues) => {
     try {
       await signIn(email, password);
       setAlert(() => () => (
@@ -40,12 +35,14 @@ const SignInBox = () => {
           Successfully signed in.
         </StyledAlert>
       ));
-      setTimeout(() => router.push('/'), 2000);
+      setTimeout(() => {
+        window.location.pathname = '/';
+      }, 2000);
     } catch (e) {
       // possible errors
       // - UserNotConfirmedException
       // - NotAuthorizedException
-      console.log(e);
+      console.log('🚀  -> file: SignInBox.tsx  -> line 48  -> e', e);
       setAlert(() => () => (
         <StyledAlert severity="error" title="Error">
           {e.message}

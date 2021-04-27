@@ -32,10 +32,10 @@ const validateJWT: ValidateJWT = async (token: string) =>
      * If the user's email is not verified
      * then reject validation.
      */
-    if (!decodedJWT.payload.email_verified) {
-      reject(new JWT.JsonWebTokenError("User's email address is not verified."));
-      return;
-    }
+    // if (!decodedJWT.payload.email_verified) {
+    //   reject(new JWT.JsonWebTokenError("User's email address is not verified."));
+    //   return;
+    // }
 
     const matchedJWK = JWKS.keys.find((JWK) => JWK.kid === decodedJWT.header.kid) as JWK;
     /**

@@ -6,12 +6,14 @@ type JWT = {
 
 type Position = [number, number, number];
 
-export interface ExtendedSocket extends socketio.Socket {
-  attender?: {
-    position: Position;
-    givenName: string;
-    familyName: string;
-    id: string;
-  };
-  idToken?: JWT;
+declare module 'socket.io' {
+  interface Socket {
+    attender: {
+      position: Position;
+      givenName: string;
+      familyName: string;
+      id: string;
+    };
+    idToken: JWT;
+  }
 }

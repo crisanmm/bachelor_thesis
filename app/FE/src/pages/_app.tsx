@@ -8,10 +8,18 @@ import React, { useState } from 'react';
 import {
   createMuiTheme,
   MuiThemeProvider,
-  StylesProvider,
+  StylesProvider as MuiStylesProvider,
+  ThemeOptions,
 } from '@material-ui/core/styles';
 import { theme } from '@utils';
-import { FormControlLabel, NoSsr, Switch, Paper, CssBaseline } from '@material-ui/core';
+import {
+  FormControlLabel,
+  NoSsr as MuiNoSsr,
+  Switch,
+  Paper,
+  CssBaseline as MuiCssBaseline,
+  PaletteType,
+} from '@material-ui/core';
 import type { Palette } from '@material-ui/core/styles/createPalette';
 import { Account } from '@contexts';
 import { Header, StyledPageWrapper } from '@components/shared';
@@ -38,14 +46,6 @@ const GlobalStyle = createGlobalStyle`
     }
 `;
 
-const StyledPaper = styled(Paper)`
-  z-index: -1;
-  position: fixed;
-  height: 100vh;
-  width: 100vw;
-  background-color: ${({ theme }) => theme.palette.background.default};
-`;
-
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
   console.log('🚀  -> file: _app.tsx  -> line 50  -> router', router);
@@ -53,37 +53,36 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   const [isDarkTheme, setIsDarkTheme] = useState(false);
   theme.palette.type = isDarkTheme ? 'dark' : 'light';
-  const muiTheme = createMuiTheme(theme);
+  const muiTheme = createMuiTheme(theme as ThemeOptions);
+  console.log(muiTheme);
 
   return (
-    <NoSsr>
-      <CssBaseline />
-      <StylesProvider injectFirst>
+    <MuiNoSsr>
+      <MuiStylesProvider injectFirst>
         <MuiThemeProvider theme={muiTheme}>
+          <MuiCssBaseline />
           <StyledComponentsThemeProvider theme={muiTheme}>
             <Account.Provider>
-              <StyledPaper square>
-                {isDev ? undefined : <Header />}
-                <StyledPageWrapper>
-                  <Component {...pageProps} />
-                </StyledPageWrapper>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      color="primary"
-                      checked={isDarkTheme}
-                      onChange={() => setIsDarkTheme(!isDarkTheme)}
-                    />
-                  }
-                  label="dark mode"
-                  style={{ position: 'fixed', bottom: '0px', right: '0px', zIndex: 99 }}
-                />
-              </StyledPaper>
+              {isDev ? undefined : <Header />}
+              <StyledPageWrapper>
+                <Component {...pageProps} />
+              </StyledPageWrapper>
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                    checked={isDarkTheme}
+                    onChange={() => setIsDarkTheme(!isDarkTheme)}
+                  />
+                }
+                label="dark mode"
+                style={{ position: 'fixed', bottom: '0px', right: '0px', zIndex: 99 }}
+              />
             </Account.Provider>
           </StyledComponentsThemeProvider>
         </MuiThemeProvider>
-      </StylesProvider>
-    </NoSsr>
+      </MuiStylesProvider>
+    </MuiNoSsr>
   );
 }
 

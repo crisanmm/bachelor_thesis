@@ -19,8 +19,7 @@ const Avatar: React.FunctionComponent<AvatarProps> = ({ avatarMeshRef, position,
   const texture = useLoader(THREE.TextureLoader, '/images/avatar.jpg');
 
   useFrame((state) => {
-    const [x, y, z] = position;
-    avatarMeshRef.current?.position.set(x, y, z);
+    avatarMeshRef.current?.position.lerp(new THREE.Vector3(...position), 0.025);
     avatarMeshRef.current?.lookAt(state.camera.position.x, 0, state.camera.position.z);
   });
 

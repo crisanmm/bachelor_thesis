@@ -26,6 +26,7 @@ interface StageContext {
   socket: Socket;
   emitter: Emitter;
 }
+
 const Context = createContext<StageContext>({} as StageContext);
 
 const Provider: React.FunctionComponent = ({ children }) => {

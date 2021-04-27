@@ -1,8 +1,8 @@
 type Size = 'sm' | 'md' | 'lg';
 
-const MEDIUM_STICK_WIDTH = 0.3125;
-const MEDIUM_STICK_HEIGHT = 3.125;
-const MEDIUM_AVATAR_RADIUS = 1;
+const MEDIUM_STICK_WIDTH = 0.5;
+const MEDIUM_STICK_HEIGHT = 5;
+const MEDIUM_AVATAR_RADIUS = 2;
 
 const computeAttenderSize = (size?: Size) => {
   let avatarRadius;
@@ -11,15 +11,15 @@ const computeAttenderSize = (size?: Size) => {
 
   switch (size) {
     case 'sm':
-      stickWidth = MEDIUM_STICK_WIDTH * 0.66;
-      stickHeight = MEDIUM_STICK_HEIGHT * 0.66;
-      avatarRadius = MEDIUM_AVATAR_RADIUS * 0.66;
+      stickWidth = MEDIUM_STICK_WIDTH * 0.75;
+      stickHeight = MEDIUM_STICK_HEIGHT * 0.75;
+      avatarRadius = MEDIUM_AVATAR_RADIUS * 0.75;
       break;
 
     case 'lg':
-      stickWidth = MEDIUM_STICK_WIDTH * 1.44;
-      stickHeight = MEDIUM_STICK_HEIGHT * 1.44;
-      avatarRadius = MEDIUM_AVATAR_RADIUS * 1.44;
+      stickWidth = MEDIUM_STICK_WIDTH * 1.5;
+      stickHeight = MEDIUM_STICK_HEIGHT * 1.75;
+      avatarRadius = MEDIUM_AVATAR_RADIUS * 1.5;
       break;
 
     default:

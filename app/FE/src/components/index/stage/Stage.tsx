@@ -1,6 +1,6 @@
 import React, { ReactNodeArray, Suspense, useContext } from 'react';
 import { Canvas } from 'react-three-fiber';
-import { OrbitControls } from '@components/index';
+import { CameraOptions, OrbitControls, RendererOptions } from '@components/index';
 import { StageContext } from '@contexts';
 import StyledCanvasWrapper from './Stage.style';
 import Plane from './Plane';
@@ -19,12 +19,12 @@ import AttenderManager from './attenderManager';
 //   return <>{children}</>;
 // };
 
-const SuspenseCanvas: React.FunctionComponent = ({ children, style }) => {
+const SuspenseCanvas: React.FunctionComponent = ({ children }) => {
   const { socket, emitter } = useContext(StageContext.Context);
 
   if (!socket) return <span>Connecting to stage...</span>;
   return (
-    <Canvas style={style} camera={{ fov: 60, position: [0, 0, 30] }}>
+    <Canvas>
       <StageContext.Context.Provider value={{ socket, emitter }}>
         {children}
       </StageContext.Context.Provider>
@@ -32,13 +32,15 @@ const SuspenseCanvas: React.FunctionComponent = ({ children, style }) => {
   );
 };
 
-const Stage: React.FunctionComponent = ({ style }) => (
+const Stage: React.FunctionComponent = () => (
   <StageContext.Provider>
     <StyledCanvasWrapper>
-      <SuspenseCanvas style={style}>
+      <SuspenseCanvas>
         <axesHelper args={[50]} />
 
-        <OrbitControls />
+        <RendererOptions />
+        <CameraOptions />
+        {/* <OrbitControls /> */}
 
         <ambientLight args={[0xc3c3c3, 0.5]} />
         <Suspense fallback={null}>

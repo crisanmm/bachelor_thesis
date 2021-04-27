@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { StageContext, Account } from '@contexts';
-import Attender from '../attender';
+import Attender from './attender';
 
 type Position = [number, number, number];
 
