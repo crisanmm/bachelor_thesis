@@ -1,0 +1,25 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 14.x
+    commands:
+      - apt --assume-yes update
+      - apt --assume-yes install npm
+    finally:
+      - echo Install phase done.
+  pre_build:
+    commands:
+      - cd app/FE
+      - npm ci
+    finally:
+      - echo Prebuild phase done.
+  build:
+    commands:
+      - npm run export
+    finally:
+      - echo Build phase done.
+artifacts:
+  base-directory: 'app/FE/out'
+  files:
+    - '**/*'
