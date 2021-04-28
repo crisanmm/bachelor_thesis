@@ -1,3 +1,3 @@
 #!/bin/bash
-rm -rf ~/websocket-server
-mkdir ~/websocket-server
+rm -rf /home/ubuntu/websocket-server
+mkdir /home/ubuntu/websocket-server

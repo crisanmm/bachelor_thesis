@@ -1,3 +1,4 @@
 #!/bin/bash
-cd ~/websocket-server
+cd /home/ubuntu/websocket-server
+yarn install
 node out/index.js

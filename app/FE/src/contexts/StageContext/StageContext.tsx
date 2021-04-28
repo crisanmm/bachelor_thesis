@@ -3,6 +3,8 @@ import { io, Socket } from 'socket.io-client';
 import { Account } from '@contexts';
 import mitt, { Emitter } from 'mitt';
 
+const WEBSOCKET_ADDRESS = 'ws://3.122.54.160:3000';
+
 const setupSocketEvents = (socket: Socket) => {
   socket.on('connect', () => {
     console.log('🚀  -> file: Socket.tsx  -> line 9  -> socket connected', 'socket connected');
@@ -35,7 +37,7 @@ const Provider: React.FunctionComponent = ({ children }) => {
 
   useEffect(() => {
     getSession().then((userSession) => {
-      const socket = io('ws://localhost:4000', {
+      const socket = io(WEBSOCKET_ADDRESS, {
         auth: { idToken: userSession.getIdToken().getJwtToken() },
       });
       setupSocketEvents(socket);
