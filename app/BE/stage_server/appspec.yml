@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-  - destination: /home/ubuntu/websocket-server
+  - destination: ~/websocket-server
 hooks:
   ApplicationStop:
     - location: scripts/application-stop.sh
