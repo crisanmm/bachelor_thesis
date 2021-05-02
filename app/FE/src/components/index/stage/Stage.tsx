@@ -1,57 +1,44 @@
-import React, { ReactNodeArray, Suspense, useContext } from 'react';
+import React, { Suspense, useContext } from 'react';
 import { Canvas } from 'react-three-fiber';
+import { Typography } from '@material-ui/core';
+import { ErrorOutline } from '@material-ui/icons';
 import { CameraOptions, OrbitControls, RendererOptions } from '@components/index';
-import { StageContext } from '@contexts';
+import { StyledContainer } from '@components/shared';
+import { SocketContext } from '@contexts';
+import { Plane, Platform, PlatformWall } from './stageComponents';
 import StyledCanvasWrapper from './Stage.style';
-import Plane from './Plane';
-import Platform from './Platform';
-import PlatformWall from './PlatformWall';
 import AttenderManager from './attenderManager';
 
-// const StageSuspense: React.FunctionComponent = ({ children }) => {
-//   const socket = useContext(Socket.Context);
-//   // console.log('🚀  -> file: Stage.tsx  -> line 13  -> socket', socket);
+const ForwardCanvas: React.FunctionComponent = ({ children }) => {
+  const { stageSocket, emitter } = useContext(SocketContext.Context);
 
-//   if (!socket) {
-//     // console.log('here');
-//     return <span>connecting to socket</span>;
-//   }
-//   return <>{children}</>;
-// };
-
-const SuspenseCanvas: React.FunctionComponent = ({ children }) => {
-  const { socket, emitter } = useContext(StageContext.Context);
-
-  if (!socket) return <span>Connecting to stage...</span>;
+  // because of react-three-fiber it is necessary to provide the context again in the Canvas element
   return (
     <Canvas>
-      <StageContext.Context.Provider value={{ socket, emitter }}>
+      <SocketContext.Context.Provider value={{ stageSocket, emitter }}>
         {children}
-      </StageContext.Context.Provider>
+      </SocketContext.Context.Provider>
     </Canvas>
   );
 };
 
 const Stage: React.FunctionComponent = () => (
-  <StageContext.Provider>
-    <StyledCanvasWrapper>
-      <SuspenseCanvas>
-        <axesHelper args={[50]} />
+  <StyledCanvasWrapper>
+    <ForwardCanvas>
+      <RendererOptions />
+      <CameraOptions />
+      {/* <OrbitControls /> */}
+      <axesHelper args={[50]} />
 
-        <RendererOptions />
-        <CameraOptions />
-        {/* <OrbitControls /> */}
-
-        <ambientLight args={[0xc3c3c3, 0.5]} />
-        <Suspense fallback={null}>
-          <Plane />
-          <Platform />
-          <PlatformWall />
-          <AttenderManager />
-        </Suspense>
-      </SuspenseCanvas>
-    </StyledCanvasWrapper>
-  </StageContext.Provider>
+      <ambientLight args={[0xc3c3c3, 0.5]} />
+      <Suspense fallback={null}>
+        <Plane />
+        <Platform />
+        <PlatformWall />
+        <AttenderManager />
+      </Suspense>
+    </ForwardCanvas>
+  </StyledCanvasWrapper>
 );
 
 export default Stage;

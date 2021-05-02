@@ -1,12 +1,12 @@
 import { useContext } from 'react';
 import * as THREE from 'three';
 import { useResource, useThree } from 'react-three-fiber';
-import { StageContext } from '@contexts';
+import { SocketContext } from '@contexts';
 
 const Plane = () => {
   const { scene } = useThree();
   const planeGeometry = useResource<THREE.PlaneGeometry>();
-  const { emitter } = useContext(StageContext.Context);
+  const { emitter } = useContext(SocketContext.Context);
   //   planeGeometry.current?.translate(5, 0, 0);
 
   return (

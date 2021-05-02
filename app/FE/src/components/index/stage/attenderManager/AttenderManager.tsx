@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { StageContext, Account } from '@contexts';
+import { SocketContext, AccountContext } from '@contexts';
 import Attender from './attender';
 
 type Position = [number, number, number];
@@ -14,8 +14,9 @@ interface AttenderType {
 type AttendersType = Array<AttenderType>;
 
 const AttenderManager = () => {
-  const { getSession } = useContext(Account.Context);
-  const { socket, emitter } = useContext(StageContext.Context);
+  const { getSession } = useContext(AccountContext.Context);
+  const socket = useContext(SocketContext.Context).stageSocket!;
+  const { emitter } = useContext(SocketContext.Context);
   const [myAttender, setMyAttender] = useState<AttenderType>({} as AttenderType);
   const [attenders, setAttenders] = useState<AttendersType>([]);
 
