@@ -1,11 +1,11 @@
 import * as Yup from 'yup';
 import React, { useContext, useState } from 'react';
-import { Formik, FormikHelpers, FormikProps } from 'formik';
+import { Formik } from 'formik';
 import { Button } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
 import { useRouter } from 'next/router';
 import { FormikForm, StyledAlert } from '@components/shared';
-import { Account } from '@contexts';
+import { AccountContext } from '@contexts';
 
 /**
  * Used for giving initial values to {@link https://formik.org/ | formik}.
@@ -38,12 +38,9 @@ const validationSchema = Yup.object().shape({
 const SignUpBox = () => {
   const router = useRouter();
   const [Alert, setAlert] = useState<React.ComponentType>(() => () => <></>);
-  const { signUp } = useContext(Account.Context);
+  const { signUp } = useContext(AccountContext.Context);
 
-  const onSubmit = async (
-    { email, firstName, lastName, password }: typeof initialValues,
-    actions: FormikHelpers<typeof initialValues>,
-  ) => {
+  const onSubmit = async ({ email, firstName, lastName, password }: typeof initialValues) => {
     try {
       await signUp(email, firstName, lastName, password);
       setAlert(() => () => (
@@ -54,15 +51,14 @@ const SignUpBox = () => {
       setTimeout(() => router.push('/sign-in'), 2000);
     } catch (e) {
       console.log(e);
-      switch (e.code) {
-        case 'UsernameExistsException':
-          setAlert(() => () => (
-            <StyledAlert severity="error" title="Error">
-              {e.message}
-            </StyledAlert>
-          ));
-          break;
-      }
+      // possible errors:
+      // - UsernameExistsException
+      // - CodeDeliveryFailureException
+      setAlert(() => () => (
+        <StyledAlert severity="error" title="Error">
+          {e.message}
+        </StyledAlert>
+      ));
     }
   };
 

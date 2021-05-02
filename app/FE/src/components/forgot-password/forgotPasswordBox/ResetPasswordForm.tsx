@@ -5,7 +5,7 @@ import { Button } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
 import { useRouter } from 'next/router';
 import { FormikForm, StyledAlert } from '@components/shared';
-import { Account } from '@contexts';
+import { AccountContext } from '@contexts';
 
 /**
  * Used for giving initial values to {@link https://formik.org/ | formik}.
@@ -40,7 +40,7 @@ interface ResetPasswordFormProps {
 const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ email }) => {
   const router = useRouter();
   const [Alert, setAlert] = useState<React.ComponentType>(() => () => <></>);
-  const { forgotPasswordReset } = useContext(Account.Context);
+  const { forgotPasswordReset } = useContext(AccountContext.Context);
 
   const resetPasswordOnSubmit = async ({ code, password }: typeof resetPasswordInitialValues) => {
     try {

@@ -1,2 +1,2 @@
-export { default as Account } from './Account';
-export { default as StageContext } from './StageContext';
+export { default as AccountContext } from './AccountContext';
+export { default as SocketContext } from './SocketContext';

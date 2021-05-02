@@ -4,7 +4,7 @@ import { Formik, FormikProps } from 'formik';
 import { Button } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
 import { FormikForm, StyledAlert, StyledLink } from '@components/shared';
-import { Account } from '@contexts';
+import { AccountContext } from '@contexts';
 
 /**
  * Used for giving initial values to {@link https://formik.org/ | formik}.
@@ -25,7 +25,7 @@ const validationSchema = Yup.object().shape({
 
 const SignInBox = () => {
   const [Alert, setAlert] = useState<React.ComponentType>(() => () => <></>);
-  const { signIn } = useContext(Account.Context);
+  const { signIn } = useContext(AccountContext.Context);
 
   const onSubmit = async ({ email, password }: typeof initialValues) => {
     try {

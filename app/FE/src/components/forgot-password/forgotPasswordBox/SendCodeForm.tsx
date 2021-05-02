@@ -4,7 +4,7 @@ import { Formik, FormikProps } from 'formik';
 import { Button } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
 import { FormikForm, StyledAlert } from '@components/shared';
-import { Account } from '@contexts';
+import { AccountContext } from '@contexts';
 
 /**
  * Used for giving initial values to {@link https://formik.org/ | formik}.
@@ -29,7 +29,7 @@ interface SendCodeFormProps {
 
 const SendCodeForm: React.FC<SendCodeFormProps> = ({ setEmail }) => {
   const [Alert, setAlert] = useState<React.ComponentType>(() => () => <></>);
-  const { forgotPasswordSendCode } = useContext(Account.Context);
+  const { forgotPasswordSendCode } = useContext(AccountContext.Context);
 
   const sendCodeOnSubmit = async ({ email }: typeof sendCodeInitialValues) => {
     try {
