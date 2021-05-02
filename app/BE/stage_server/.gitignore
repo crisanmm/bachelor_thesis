@@ -5,3 +5,9 @@ node_modules
 
 # macOS
 .DS_Store
+
+# GCP Service account key
+think-in-service-account-gcp.json
+
+# practice directory
+practice/

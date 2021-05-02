@@ -23,8 +23,9 @@ artifacts:
   base-directory: 'app/BE/stage_server'
   files:
     - 'out/**/*'
+    - 'scripts/**/*'
     - 'package.json'
     - 'package-lock.json'
     - 'appspec.yml'
-    - 'scripts/**/*'
-    - './env'
+    - '.env'
+    - 'think-in-service-account-gcp.json'

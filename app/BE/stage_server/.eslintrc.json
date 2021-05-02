@@ -1,7 +1,8 @@
 {
   "env": {
     "browser": true,
-    "es2021": true
+    "es2021": true,
+    "jest": true
   },
   "extends": ["airbnb"],
   "parser": "@typescript-eslint/parser",
@@ -31,6 +32,10 @@
     "no-unneeded-ternary": "off",
     "no-underscore-dangle": "off",
     "no-shadow": "off",
-    "no-param-reassign": "off"
+    "no-param-reassign": "off",
+    "curly": "off",
+    "nonblock-statement-body-position": "off",
+    "no-restricted-syntax": "off",
+    "func-names": ["warn", "never"]
   }
 }
