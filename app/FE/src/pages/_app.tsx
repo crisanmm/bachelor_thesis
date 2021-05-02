@@ -21,7 +21,7 @@ import {
   PaletteType,
 } from '@material-ui/core';
 import type { Palette } from '@material-ui/core/styles/createPalette';
-import { Account } from '@contexts';
+import { AccountContext } from '@contexts';
 import { Header, StyledPageWrapper } from '@components/shared';
 
 const GlobalStyle = createGlobalStyle`
@@ -48,13 +48,13 @@ const GlobalStyle = createGlobalStyle`
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
-  console.log('🚀  -> file: _app.tsx  -> line 50  -> router', router);
+  // console.log('🚀  -> file: _app.tsx  -> line 50  -> router', router);
   const isDev = router.route.startsWith('/dev');
 
   const [isDarkTheme, setIsDarkTheme] = useState(false);
   theme.palette.type = isDarkTheme ? 'dark' : 'light';
   const muiTheme = createMuiTheme(theme as ThemeOptions);
-  console.log(muiTheme);
+  // console.log(muiTheme);
 
   return (
     <MuiNoSsr>
@@ -62,7 +62,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <MuiThemeProvider theme={muiTheme}>
           <MuiCssBaseline />
           <StyledComponentsThemeProvider theme={muiTheme}>
-            <Account.Provider>
+            <AccountContext.Provider>
               {isDev ? undefined : <Header />}
               <StyledPageWrapper>
                 <Component {...pageProps} />
@@ -78,7 +78,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                 label="dark mode"
                 style={{ position: 'fixed', bottom: '0px', right: '0px', zIndex: 99 }}
               />
-            </Account.Provider>
+            </AccountContext.Provider>
           </StyledComponentsThemeProvider>
         </MuiThemeProvider>
       </MuiStylesProvider>

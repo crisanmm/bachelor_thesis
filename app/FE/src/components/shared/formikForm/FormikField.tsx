@@ -24,7 +24,7 @@ const FormikField: React.FC<FormikFieldProps> = ({ name, type, label, required }
           edge="end"
           onClick={() => setType(_type === 'password' ? 'text' : 'password')}
         >
-          {_type === 'password' ? <Visibility /> : <VisibilityOff />}
+          {_type === 'password' ? <VisibilityOff /> : <Visibility />}
         </IconButton>
       </InputAdornment>
     ),

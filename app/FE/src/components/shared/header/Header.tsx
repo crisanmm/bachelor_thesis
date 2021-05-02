@@ -2,11 +2,11 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Divider } from '@material-ui/core';
 import Link from 'next/link';
 import { StyledLogo } from '@components/shared';
-import { Account } from '@contexts';
+import { AccountContext } from '@contexts';
 import { StyledAppBar, StyledToolbar, StyledFiller, StyledSignInButton } from './Header.style';
 
 const Header = () => {
-  const { getSession, signOut } = useContext(Account.Context);
+  const { getSession, signOut } = useContext(AccountContext.Context);
   const [AuthButton, setAuthButton] = useState<React.ReactElement>();
 
   useEffect(() => {
