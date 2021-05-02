@@ -1,7 +1,7 @@
 import { createServer } from 'http';
 import chalk from 'chalk';
 import { config } from 'dotenv';
-import createSocketIOServer from './socketIOServer';
+import { createSocketIOServer } from './socketio/index';
 
 config({ path: '.env' });
 
