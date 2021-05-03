@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "dev": "ts-node-dev src/index.ts",
-    "start": "node out/index.js &",
+    "start": "node out/index.js > /dev/null &",
     "build": "tsc"
   },
   "repository": {
