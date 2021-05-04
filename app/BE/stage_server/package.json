@@ -7,7 +7,7 @@
     "create-env": "node scripts/application-start-create-env.js",
     "test": "jest",
     "dev": "ts-node-dev src/index.ts",
-    "start": "node out/index.js > /dev/null &",
+    "start": "nohup node out/index.js > stdout.log 2> stderr.log < /dev/null &",
     "build": "tsc"
   },
   "repository": {
