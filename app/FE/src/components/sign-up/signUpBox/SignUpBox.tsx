@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import React, { useContext, useState } from 'react';
-import { Formik } from 'formik';
+import { Formik, FormikProps } from 'formik';
 import { Button } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
 import { useRouter } from 'next/router';
