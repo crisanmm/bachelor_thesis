@@ -16,16 +16,20 @@ phases:
       - echo Prebuild phase done.
   build:
     commands:
+      - npm run create-env
+      - npm run test
       - npm run build
     finally:
       - echo Build phase done.
 artifacts:
   base-directory: 'app/BE/stage_server'
-  files:
-    - 'out/**/*'
-    - 'scripts/**/*'
-    - 'package.json'
-    - 'package-lock.json'
-    - 'appspec.yml'
-    - '.env'
-    - 'think-in-service-account-gcp.json'
+  exclude-paths: 'src/**/*'
+  files: '**/*'
+  # files:
+  #   - 'out/**/*'
+  #   - 'scripts/**/*'
+  #   - 'package.json'
+  #   - 'package-lock.json'
+  #   - 'appspec.yml'
+  #   - '.env'
+  #   - 'think-in-service-account-gcp.json'
