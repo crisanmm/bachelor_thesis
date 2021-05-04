@@ -12,5 +12,6 @@ createSocketIOServer(httpServer);
 
 process.env.WEBSOCKET_SERVER_PORT = process.env.WEBSOCKET_SERVER_PORT || '3000';
 httpServer.listen(process.env.WEBSOCKET_SERVER_PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(chalk.bold.green(`Listening on port ${process.env.WEBSOCKET_SERVER_PORT}`));
 });
