@@ -1,8 +1,9 @@
 /* eslint-disable max-len */
+import * as path from 'path';
 import { config } from 'dotenv';
 import { translateText, getLanguages } from './cloud-translation';
 
-config({ path: '.env' });
+config({ path: `${path.resolve(__dirname, '..', '..')}/.env` });
 
 describe('text translation', () => {
   test('should translate "ada are mere" to "ada has apples" with auto source language detection', async () => {
