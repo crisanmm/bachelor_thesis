@@ -20,7 +20,8 @@
       "@public/*": ["public/*"],
       "@utils": ["src/utils"],
       "@shared": ["src/shared"],
-      "@contexts": ["src/contexts"]
+      "@contexts": ["src/contexts"],
+      "#hooks": ["src/hooks"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
