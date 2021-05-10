@@ -1,14 +1,15 @@
 /* eslint-disable consistent-return */
 import * as JWT from 'jsonwebtoken';
 import jwkToPem, { JWK } from 'jwk-to-pem';
+import type { JWT as JWTPayloadType } from '../shared';
 import JWKS from './jwks.json';
 
-type JWTType = {
+type JWTCompleteType = {
   [key: string]: any;
 };
 
 interface ValidateJWT {
-  (token: string): Promise<JWTType>;
+  (token: string): Promise<JWTPayloadType>;
 }
 
 /**
@@ -18,7 +19,7 @@ interface ValidateJWT {
  */
 const validateJWT: ValidateJWT = async (token: string) =>
   new Promise((resolve, reject) => {
-    const decodedJWT = JWT.decode(token, { complete: true }) as JWTType | null;
+    const decodedJWT = JWT.decode(token, { complete: true }) as JWTCompleteType | null;
     /**
      * If the token couldn't be decoded
      * then reject validation.
@@ -50,7 +51,7 @@ const validateJWT: ValidateJWT = async (token: string) =>
     const pem = jwkToPem(matchedJWK);
     return JWT.verify(token, pem, { algorithms: ['RS256'] }, (err, decodedJWT) => {
       if (err) reject(err);
-      resolve(decodedJWT!);
+      resolve(decodedJWT! as JWTPayloadType);
     });
   });
 

@@ -1,8 +1,5 @@
 import socketio from 'socket.io';
-
-type JWT = {
-  [key: string]: any;
-};
+import type { JWT } from '../shared';
 
 type Position = [number, number, number];
 
