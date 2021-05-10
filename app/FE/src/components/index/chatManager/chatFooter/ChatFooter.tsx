@@ -1,5 +1,5 @@
 import React, { SetStateAction } from 'react';
-import { Box, Button, IconButton, Input, TextField } from '@material-ui/core';
+import { Box, Button, IconButton, Input, TextField, Tooltip } from '@material-ui/core';
 import { Photo, Send } from '@material-ui/icons';
 import { Emitter } from 'mitt';
 import {
@@ -29,23 +29,15 @@ const ChatFooter: React.FunctionComponent<ChatFooterProps> = ({
         hidden
         onChange={(e) => {
           // Signal event to ChatManager
-          emitter.emit('chats:file-upload', e);
-
-          // console.dir(e.target);
-          // const file = e.target.files[0];
-          // const fileReader = new FileReader();
-          // fileReader.readAsDataURL(file);
-          // fileReader.addEventListener('load', (e: any) => {
-          //   socket.current!.emit('file-upload', e.target.result);
-          // });
-          // // remove attached file
-          // e.target.value = null;
+          emitter.emit('chats:file-upload', { event: e, emittedTime: Date.now() });
         }}
       />
       <StyledButtonList>
-        <IconButton component="span">
-          <Photo />
-        </IconButton>
+        <Tooltip title="Attach a photo or video" arrow>
+          <IconButton component="span">
+            <Photo />
+          </IconButton>
+        </Tooltip>
       </StyledButtonList>
     </label>
 
@@ -57,7 +49,10 @@ const ChatFooter: React.FunctionComponent<ChatFooterProps> = ({
         e.preventDefault();
 
         // Signal event to ChatManager
-        emitter.emit('chats:private-message', inputMessage);
+        emitter.emit('chats:private-message', {
+          emittedInputMessage: inputMessage,
+          emittedTime: Date.now(),
+        });
 
         // Clear input message
         setInputMessage('');
@@ -75,34 +70,11 @@ const ChatFooter: React.FunctionComponent<ChatFooterProps> = ({
     </Box>
 
     <StyledSendButton>
-      <IconButton type="submit" form="chat-message" color="primary">
-        <Send />
-      </IconButton>
-      {/* <Button
-        type="submit"
-        form="chat-message"
-        variant="contained"
-        color="primary"
-        onClick={() => {
-          // if (chatMessage) {
-          //   const message = {
-          //     user: myId,
-          //     type: 'text'
-          //     data: chatMessage,
-          //     language: myLanguage![0],
-          //     time: Date.now(),
-          //   };
-          //   setMessages((messages) => [...messages, message]);
-          //   socket.current!.emit('private-message', {
-          //     destinationId: otherIds[0],
-          //     message,
-          //   });
-          //   setChatMessage('');
-          // }
-        }}
-      >
-        send
-      </Button> */}
+      <Tooltip title="Send message" arrow>
+        <IconButton type="submit" form="chat-message" color="primary">
+          <Send />
+        </IconButton>
+      </Tooltip>
     </StyledSendButton>
   </StyledChatFooter>
 );

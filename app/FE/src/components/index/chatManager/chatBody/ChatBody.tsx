@@ -1,47 +1,85 @@
-import { Avatar } from '@material-ui/core';
+import { Avatar, Container, Typography } from '@material-ui/core';
 import React from 'react';
-import { clamp } from '@utils';
-import { StyledMessages, StyledMessage } from './ChatBody.style';
-import type { Message, TextMessage, MediaMessage } from '../shared';
+import { StyledContainer } from '@components/shared';
+import { clamp, getAvatarAltText, getAvatarURI } from '@utils';
+import { StyledMessages, StyledMessage, StyledAvatar } from './ChatBody.style';
+import type {
+  MessageType,
+  TextMessageType,
+  MediaMessageType,
+  HeaderChatType,
+  UserInformationType,
+} from '../shared';
 
-const computeSpacing = (thisMessage: Message, lastMessage: Message) => {
+const computeSpacing = (thisMessage: MessageType, lastMessage: MessageType) => {
   if (!lastMessage) return 0;
 
   const secondsDifference = (thisMessage.time - lastMessage.time) / 1000;
 
   /**
    * spacing() function similar to React Material-UI spacing()
-   * 0.25 * 8 is equal to 0.25 * theme.spacing(1)
-   * 4 * 8 is equal to 4 * theme.spacing(1)
+   * 1 * 8 = theme.spacing(1)
    * */
-  return clamp(0.25 * 8, secondsDifference * 0.005, 4 * 8);
+  return clamp(0.75 * 8, secondsDifference * 0.005, 6 * 8);
 };
 
 interface ChatBodyProps {
-  messages: Message[];
-  myId: string;
+  headerChat: HeaderChatType;
+  messages: MessageType[];
+  userInformation: UserInformationType;
 }
 
-const ChatBody: React.FunctionComponent<ChatBodyProps> = ({ messages, myId }) => (
-  <StyledMessages>
-    {messages.map((message, index) => (
-      <StyledMessage
-        key={index}
-        mine={message.user === myId}
-        _spacing={computeSpacing(message, messages[index - 1])}
-      >
-        <Avatar alt="avatar" src="/images/avatar2.jpg" color="primary" />
-        {message.type === 'text' ? (
-          <span>{message.data}</span>
-        ) : (
-          <a href={message.data} target="_blank" rel="noreferrer">
-            <img alt={(message as MediaMessage).alt} src={message.data} />
-          </a>
-        )}
-      </StyledMessage>
-    ))}
-  </StyledMessages>
-);
+const ChatBody: React.FunctionComponent<ChatBodyProps> = ({
+  headerChat,
+  messages,
+  userInformation,
+}) => {
+  if (messages.length === 0)
+    return (
+      <StyledMessages>
+        <StyledContainer>
+          <StyledAvatar
+            alt={getAvatarAltText(headerChat.user.name)}
+            src={getAvatarURI(headerChat.user.id)}
+          />
+          <Typography>
+            No messages with
+            {` ${headerChat.user.name} `}
+            yet! Be the first one to interact 😁
+          </Typography>
+        </StyledContainer>
+      </StyledMessages>
+    );
+
+  return (
+    <StyledMessages>
+      {messages.map((message, index) => (
+        <StyledMessage
+          key={index}
+          mine={userInformation.id === message.user.id}
+          _spacing={computeSpacing(message, messages[index - 1])}
+        >
+          <Avatar
+            alt={getAvatarAltText(
+              userInformation.id === message.user.id ? userInformation.name : headerChat.user.name,
+            )}
+            src={getAvatarURI(
+              userInformation.id === message.user.id ? userInformation.id : headerChat.user.id,
+            )}
+            color="primary"
+          />
+          {message.type === 'text/plain' ? (
+            <span>{message.data}</span>
+          ) : (
+            <a href={message.data} target="_blank" rel="noreferrer">
+              <img alt={(message as MediaMessageType).alt} src={message.data} />
+            </a>
+          )}
+        </StyledMessage>
+      ))}
+    </StyledMessages>
+  );
+};
 
 export { computeSpacing };
 export default ChatBody;

@@ -41,11 +41,6 @@ const StyledBadge = styled(Badge)`
       content: '';
     }
   }
-
-  .MuiBadge-anchorOriginBottomRightCircle {
-    right: 28%;
-    bottom: 14%;
-  }
 `;
 
 const StyledAvatar = styled((props) => <Avatar alt={props.alt} src={props.src} {...props} />)`
@@ -54,14 +49,39 @@ const StyledAvatar = styled((props) => <Avatar alt={props.alt} src={props.src} {
   margin-right: ${({ theme }) => theme.spacing(1)}px;
 `;
 
-const StyledHeaderChat = styled.div`
+interface StyledHeaderChatProps {
+  selected: boolean;
+}
+
+const StyledHeaderChat = styled.div<StyledHeaderChatProps>`
+  cursor: pointer;
   display: flex;
+  max-width: 250px;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
-  background-color: ${({ theme }) => theme.palette.background.default};
+  background-color: ${({ selected, theme }) => {
+    if (selected) return theme.palette.action.selected;
+    return theme.palette.background.default;
+  }};
   border-right: 1px solid ${({ theme }) => theme.palette.divider};
   padding: 0 ${({ theme }) => theme.spacing(2)}px;
+
+  > span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .MuiBadge-anchorOriginTopRightCircle {
+    right: 28%;
+    top: 18%;
+  }
+
+  .MuiBadge-anchorOriginBottomRightCircle {
+    right: 28%;
+    bottom: 22%;
+  }
 `;
 
 export { StyledHeaderChats, StyledBadge, StyledAvatar, StyledHeaderChat };

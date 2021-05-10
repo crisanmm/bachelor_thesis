@@ -1,19 +1,34 @@
+/**
+ * Example user object:
+ *
+ * {
+ *
+ *  id: "4f5cd51e-770a-4123-97e8-55baeb910b3c"
+ *
+ *  name: "Crisan Mihai"
+ *
+ * }
+ */
+
+interface UserInformationType {
+  id: string; // uuid v4 format
+  email: string;
+  name: string;
+}
+
 interface BaseMessage {
-  user: string;
+  user: UserInformationType;
   time: number;
-  type: 'text' | 'media';
-  // raw text message
-  // or
-  // link to media type
+  type: 'text/plain' | 'image/jpeg'; // MIME type of messages
   data: string;
 }
 
-interface TextMessage extends BaseMessage {
+interface TextMessageType extends BaseMessage {
   // ISO-639-1 language code
   language: string;
 }
 
-interface MediaMessage extends BaseMessage {
+interface MediaMessageType extends BaseMessage {
   // alternative text description of the media
   alt: string;
 }
@@ -23,11 +38,19 @@ interface MediaMessage extends BaseMessage {
  *
  * {
  *
- *  user: d3a1d2c1-03e3-452c-bf40-00eb5bf639e3,
+ *  user: {
+ *
+ *       id: "4f5cd51e-770a-4123-97e8-55baeb910b3c",
+ *
+ *       name: "crisan mihai",
+ *
+ *       email: "crisanmihai@example.com",
+ *
+ *     }
  *
  *  time: 1619901459879
  *
- *  type: "text",
+ *  type: "text/plain",
  *
  *  data: "this is a text message",
  *
@@ -37,11 +60,19 @@ interface MediaMessage extends BaseMessage {
  *
  * {
  *
- *  user: d3a1d2c1-03e3-452c-bf40-00eb5bf639e3,
+ *  user: {
+ *
+ *       id: "4f5cd51e-770a-4123-97e8-55baeb910b3c",
+ *
+ *       name: "crisan mihai",
+ *
+ *       email: "crisanmihai@example.com",
+ *
+ *     }
  *
  *  time: 1619901459879
  *
- *  type: "media",
+ *  type: "image/jpeg",
  *
  *  data: "https://think-in-content.s3.eu-central-1.amazonaws.com/avatars/avatar3.jpg",
  *
@@ -49,6 +80,13 @@ interface MediaMessage extends BaseMessage {
  *
  * }
  */
-type Message = TextMessage | MediaMessage;
+type MessageType = TextMessageType | MediaMessageType;
 
-export type { Message, TextMessage, MediaMessage };
+interface HeaderChatType {
+  user: UserInformationType;
+  notifications: number;
+  online: boolean;
+  selected: boolean;
+}
+
+export type { TextMessageType, MediaMessageType, MessageType, HeaderChatType, UserInformationType };

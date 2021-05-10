@@ -1,11 +1,11 @@
-import { Divider, Paper } from '@material-ui/core';
+import { Avatar } from '@material-ui/core';
 import styled from 'styled-components';
 
 const StyledMessages = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  max-height: 600px;
+  height: 600px;
   overflow: scroll;
   padding: 0 ${({ theme }) => theme.spacing(1)}px;
   padding-top: ${({ theme }) => theme.spacing(1)}px;
@@ -40,4 +40,10 @@ const StyledMessage = styled.div<StyledMessageProps>`
   }
 `;
 
-export { StyledMessages, StyledMessage };
+const StyledAvatar = styled((props) => <Avatar alt={props.alt} src={props.src} {...props} />)`
+  height: ${({ theme }) => theme.spacing(10)}px;
+  width: ${({ theme }) => theme.spacing(10)}px;
+  margin-bottom: ${({ theme }) => theme.spacing(1)}px;
+`;
+
+export { StyledMessages, StyledMessage, StyledAvatar };
