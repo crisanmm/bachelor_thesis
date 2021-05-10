@@ -11,3 +11,6 @@ GOOGLE_APPLICATION_CREDENTIALS.json
 
 # practice directory
 practice/
+
+# Built app
+out/
