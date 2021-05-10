@@ -34,4 +34,12 @@ const StyledFiller = styled.div`
 
 const StyledSignInButton = styled(Button)``;
 
-export { StyledAppBar, StyledToolbar, StyledFiller, StyledSignInButton };
+const StyledDivider = styled.div`
+  border: none;
+  height: 1px;
+  margin: 0;
+  flex-shrink: 0;
+  background-color: ${({ theme }) => theme.palette.divider};
+`;
+
+export { StyledAppBar, StyledToolbar, StyledFiller, StyledSignInButton, StyledDivider };

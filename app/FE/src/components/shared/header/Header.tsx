@@ -1,18 +1,30 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Divider } from '@material-ui/core';
 import Link from 'next/link';
+import { IconButton, Tooltip } from '@material-ui/core';
+import { Brightness4, Brightness7 } from '@material-ui/icons';
 import { StyledLogo } from '@components/shared';
-import { AccountContext } from '@contexts';
-import { StyledAppBar, StyledToolbar, StyledFiller, StyledSignInButton } from './Header.style';
+import { AccountContext, DarkThemeContext } from '@contexts';
+import {
+  StyledAppBar,
+  StyledToolbar,
+  StyledFiller,
+  StyledSignInButton,
+  StyledDivider,
+} from './Header.style';
 
 const Header = () => {
   const { getSession, signOut } = useContext(AccountContext.Context);
-  const [AuthButton, setAuthButton] = useState<React.ReactElement>();
+  const [isDarkTheme, toggleTheme] = useContext(DarkThemeContext.Context);
+  const [AuthButton, setAuthButton] = useState<React.FunctionComponent>(() => () => (
+    <Link href="/sign-in">
+      <StyledSignInButton color="inherit">Sign In</StyledSignInButton>
+    </Link>
+  ));
 
   useEffect(() => {
     getSession()
       .then(() => {
-        setAuthButton(
+        setAuthButton(() => () => (
           <StyledSignInButton
             color="inherit"
             onClick={() => {
@@ -21,15 +33,15 @@ const Header = () => {
             }}
           >
             Sign Out
-          </StyledSignInButton>,
-        );
+          </StyledSignInButton>
+        ));
       })
       .catch(() => {
-        setAuthButton(
-          <Link href="/sign-in">
-            <StyledSignInButton color="inherit">Sign In</StyledSignInButton>
-          </Link>,
-        );
+        // setAuthButton(
+        //   <Link href="/sign-in">
+        //     <StyledSignInButton color="inherit">Sign In</StyledSignInButton>
+        //   </Link>,
+        // );
       });
   }, []);
 
@@ -38,9 +50,14 @@ const Header = () => {
       <StyledToolbar>
         <StyledLogo />
         <StyledFiller />
-        {AuthButton ? AuthButton : undefined}
+        <AuthButton />
+        <Tooltip title="Toggle light/dark theme" arrow>
+          <IconButton onClick={() => toggleTheme()}>
+            {isDarkTheme ? <Brightness7 /> : <Brightness4 />}
+          </IconButton>
+        </Tooltip>
       </StyledToolbar>
-      <Divider />
+      <StyledDivider />
     </StyledAppBar>
   );
 };

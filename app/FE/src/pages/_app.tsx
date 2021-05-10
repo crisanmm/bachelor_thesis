@@ -21,37 +21,36 @@ import {
   PaletteType,
 } from '@material-ui/core';
 import type { Palette } from '@material-ui/core/styles/createPalette';
-import { AccountContext } from '@contexts';
-import { Header, StyledPageWrapper } from '@components/shared';
+import { AccountContext, DarkThemeContext } from '@contexts';
+import { useDarkMode } from '#hooks';
 
-const GlobalStyle = createGlobalStyle`
-    @font-face {
-        font-family: 'Mulish';
-        src: url('/fonts/Mulish-VariableFont.woff');
-    }
+// const GlobalStyle = createGlobalStyle`
+//     @font-face {
+//         font-family: 'Mulish';
+//         src: url('/fonts/Mulish-VariableFont.woff');
+//     }
 
-    @font-face {
-        font-family: 'Poppins';
-        src: url('/fonts/Poppins-Regular.woff');
-    }
+//     @font-face {
+//         font-family: 'Poppins';
+//         src: url('/fonts/Poppins-Regular.woff');
+//     }
 
-    * {
-        box-sizing: border-box;        
-        font-family: Mulish;
-    }
+//     * {
+//         box-sizing: border-box;
+//         font-family: Mulish;
+//     }
 
-    body {
-        margin: 0;
-        padding: 0;
-    }
-`;
+//     body {
+//         margin: 0;
+//         padding: 0;
+//     }
+// `;
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
   // console.log('🚀  -> file: _app.tsx  -> line 50  -> router', router);
-  const isDev = router.route.startsWith('/dev');
 
-  const [isDarkTheme, setIsDarkTheme] = useState(false);
+  const [isDarkTheme, toggleTheme] = useDarkMode();
   theme.palette.type = isDarkTheme ? 'dark' : 'light';
   const muiTheme = createMuiTheme(theme as ThemeOptions);
   // console.log(muiTheme);
@@ -63,21 +62,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           <MuiCssBaseline />
           <StyledComponentsThemeProvider theme={muiTheme}>
             <AccountContext.Provider>
-              {isDev ? undefined : <Header />}
-              <StyledPageWrapper>
+              <DarkThemeContext.Provider value={[isDarkTheme, toggleTheme]}>
                 <Component {...pageProps} />
-              </StyledPageWrapper>
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                    checked={isDarkTheme}
-                    onChange={() => setIsDarkTheme(!isDarkTheme)}
-                  />
-                }
-                label="dark mode"
-                style={{ position: 'fixed', bottom: '0px', right: '0px', zIndex: 99 }}
-              />
+              </DarkThemeContext.Provider>
             </AccountContext.Provider>
           </StyledComponentsThemeProvider>
         </MuiThemeProvider>
