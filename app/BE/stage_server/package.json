@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Serves stage oriented information",
   "main": "index.js",
+  "type":"commonjs",
   "scripts": {
     "create-env": "node scripts/application-start-create-env.js",
     "test": "jest",
