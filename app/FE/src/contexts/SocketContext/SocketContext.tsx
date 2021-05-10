@@ -47,7 +47,7 @@ const Provider: React.FunctionComponent = ({ children }) => {
       .then((userSession) => {
         const socketOptions = {
           auth: { idToken: userSession.getIdToken().getJwtToken() },
-          query: { room: 'dev-room' },
+          query: { stage: 'dev-room' },
         };
 
         const stageSocket = io(`${WEBSOCKET_ADDRESS}/stages`, socketOptions);
