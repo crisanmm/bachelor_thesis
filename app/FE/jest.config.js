@@ -11,6 +11,7 @@ module.exports = {
   // preset is optional, you don't need it in case you use babel preset typescript
   preset: 'ts-jest',
   // note this prefix option
+  testEnvironment: 'node',
   moduleNameMapper: moduleNameMapped,
   transform: {
     '\\.[jt]sx?$': 'babel-jest',
