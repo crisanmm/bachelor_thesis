@@ -30,14 +30,7 @@ const SignInBox = () => {
   const onSubmit = async ({ email, password }: typeof initialValues) => {
     try {
       await signIn(email, password);
-      setAlert(() => () => (
-        <StyledAlert severity="success" title="Success">
-          Successfully signed in.
-        </StyledAlert>
-      ));
-      setTimeout(() => {
-        window.location.pathname = '/';
-      }, 2000);
+      onSuccess();
     } catch (e) {
       // possible errors
       // - UserNotConfirmedException
@@ -49,6 +42,17 @@ const SignInBox = () => {
         </StyledAlert>
       ));
     }
+  };
+
+  const onSuccess = () => {
+    setAlert(() => () => (
+      <StyledAlert severity="success" title="Success">
+        Successfully signed in.
+      </StyledAlert>
+    ));
+    setTimeout(() => {
+      window.location.pathname = '/';
+    }, 1500);
   };
 
   return (
