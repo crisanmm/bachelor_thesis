@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
-interface UseDarkModeTuple extends Array<any> {
+interface useDarkModeTuple extends Array<any> {
   0: boolean;
   1: () => void;
 }
 
 interface useDarkModeType {
-  (): UseDarkModeTuple;
+  (): useDarkModeTuple;
 }
 
 const useDarkMode: useDarkModeType = () => {

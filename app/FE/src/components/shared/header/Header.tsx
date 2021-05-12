@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { IconButton, Tooltip } from '@material-ui/core';
-import { Brightness4, Brightness7 } from '@material-ui/icons';
+import { Person, Brightness4, Brightness7 } from '@material-ui/icons';
 import { StyledLogo } from '@components/shared';
 import { AccountContext, DarkThemeContext } from '@contexts';
 import {
