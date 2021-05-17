@@ -3,12 +3,14 @@ import React, { useEffect, useLayoutEffect } from 'react';
 import { useFrame, useResource, useUpdate } from 'react-three-fiber';
 import type { Size } from './shared';
 import { computeAttenderSize } from './shared';
+import type { Position } from '../shared';
 
 interface AttenderStickProps {
   stickMeshRef: {
     current: THREE.Mesh;
   };
-  position: [number, number, number];
+  position: Position;
+  avatar: string;
   size?: Size;
   color?: string | number;
 }
@@ -16,12 +18,12 @@ interface AttenderStickProps {
 const AttenderStick: React.FunctionComponent<AttenderStickProps> = ({
   stickMeshRef,
   position,
+  avatar,
   size,
   color,
 }) => {
   const [stickWidth, stickHeight] = computeAttenderSize(size);
   const geometryRef = useResource<THREE.PlaneGeometry>();
-  console.log(stickMeshRef.current?.position);
 
   useFrame((state) => {
     stickMeshRef.current?.position.lerp(new THREE.Vector3(...position), 0.025);

@@ -1,11 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { SocketContext, AccountContext } from '@contexts';
+import { SocketContext, AccountContext } from '#contexts';
 import Attender from './attender';
-
-type Position = [number, number, number];
+import { Position } from './shared';
 
 interface AttenderType {
   position: Position;
+  avatar: string;
   givenName: string;
   familyName: string;
   id: string;
@@ -56,6 +56,7 @@ const AttenderManager = () => {
       .then((userSession) => {
         const attender: AttenderType = {
           position: [0, 0, 0],
+          avatar: userSession.getIdToken().payload.picture,
           givenName: userSession.getIdToken().payload.given_name,
           familyName: userSession.getIdToken().payload.family_name,
           id: userSession.getIdToken().payload.sub,
@@ -69,10 +70,21 @@ const AttenderManager = () => {
   return (
     <>
       {Object.keys(myAttender).length === 0 ? undefined : (
-        <Attender key={myAttender.id} position={myAttender.position} size="lg" color="green" />
+        <Attender
+          key={myAttender.id}
+          position={myAttender.position}
+          avatar={myAttender.avatar}
+          size="lg"
+          color="green"
+        />
       )}
-      {attenders.map((a) => (
-        <Attender key={a.id} position={a.position} size="sm" />
+      {attenders.map((attender) => (
+        <Attender
+          key={attender.id}
+          position={attender.position}
+          avatar={attender.avatar}
+          size="sm"
+        />
       ))}
     </>
   );

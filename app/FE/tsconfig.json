@@ -16,11 +16,11 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@components/*": ["src/components/*"],
-      "@public/*": ["public/*"],
-      "@utils": ["src/utils"],
-      "@shared": ["src/shared"],
-      "@contexts": ["src/contexts"],
+      "#components/*": ["src/components/*"],
+      "#public/*": ["public/*"],
+      "#utils": ["src/utils"],
+      "#shared": ["src/shared"],
+      "#contexts": ["src/contexts"],
       "#hooks": ["src/hooks"]
     }
   },

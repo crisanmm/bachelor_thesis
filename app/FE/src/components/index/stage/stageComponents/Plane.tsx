@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import * as THREE from 'three';
 import { useResource, useThree } from 'react-three-fiber';
-import { SocketContext } from '@contexts';
+import { SocketContext } from '#contexts';
 
 const Plane = () => {
   const { scene } = useThree();

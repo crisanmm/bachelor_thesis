@@ -1,7 +1,8 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { SignUpBox } from '@components/sign-up';
-import { Header, StyledPageWrapper, StyledLink, StyledContainer } from '@components/shared';
+import { Typography, Box } from '@material-ui/core';
+import { SignUpBox } from '#components/sign-up';
+import { Header, StyledPageWrapper, StyledLink } from '#components/shared';
 import { useUser } from '#hooks';
 
 const SignUp = () => {
@@ -26,13 +27,15 @@ const SignUp = () => {
 
       <StyledPageWrapper>
         <SignUpBox />
-        <StyledContainer>
-          Already have an account?&nbsp;
-          <StyledLink href="/sign-in" color="primary">
-            Sign in
-          </StyledLink>
-          .
-        </StyledContainer>
+        <Box m={2}>
+          <Typography variant="body1" color="textPrimary" align="center">
+            Already have an account?&nbsp;
+            <StyledLink href="/sign-in" color="primary">
+              Sign in
+            </StyledLink>
+            .
+          </Typography>
+        </Box>
       </StyledPageWrapper>
     </>
   );

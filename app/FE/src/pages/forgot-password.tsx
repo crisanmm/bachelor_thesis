@@ -1,7 +1,8 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { ForgotPasswordBox } from '@components/forgot-password';
-import { Header, StyledPageWrapper, StyledLink, StyledContainer } from '@components/shared';
+import { Typography, Box } from '@material-ui/core';
+import { ForgotPasswordBox } from '#components/forgot-password';
+import { Header, StyledPageWrapper, StyledLink } from '#components/shared';
 import { useUser } from '#hooks';
 
 const ForgotPassword = () => {
@@ -26,13 +27,15 @@ const ForgotPassword = () => {
 
       <StyledPageWrapper>
         <ForgotPasswordBox />
-        <StyledContainer>
-          Don&apos;t have an account?&nbsp;
-          <StyledLink href="/sign-up" color="primary">
-            Sign up
-          </StyledLink>
-          .
-        </StyledContainer>
+        <Box m={2}>
+          <Typography variant="body1" color="textPrimary" align="center">
+            Don&apos;t have an account?&nbsp;
+            <StyledLink href="/sign-up" color="primary">
+              Sign up
+            </StyledLink>
+            .
+          </Typography>
+        </Box>
       </StyledPageWrapper>
     </>
   );

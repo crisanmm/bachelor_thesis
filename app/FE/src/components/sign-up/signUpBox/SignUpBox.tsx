@@ -1,11 +1,11 @@
 import * as Yup from 'yup';
 import React, { useContext, useState } from 'react';
 import { Formik, FormikProps } from 'formik';
-import { Button } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
 import { useRouter } from 'next/router';
-import { FormikForm, StyledAlert } from '@components/shared';
-import { AccountContext } from '@contexts';
+import { FormikForm, StyledAlert, ChooseAvatar } from '#components/shared';
+import { AccountContext } from '#contexts';
 
 /**
  * Used for giving initial values to {@link https://formik.org/ | formik}.
@@ -38,11 +38,12 @@ const validationSchema = Yup.object().shape({
 const SignUpBox = () => {
   const router = useRouter();
   const [Alert, setAlert] = useState<React.ComponentType>(() => () => <></>);
+  const [avatarSrc, setAvatarSrc] = useState<string>();
   const { signUp } = useContext(AccountContext.Context);
 
-  const onSubmit = async ({ email, firstName, lastName, password }: typeof initialValues) => {
+  const onSubmit = async ({ email, password, firstName, lastName }: typeof initialValues) => {
     try {
-      await signUp(email, firstName, lastName, password);
+      await signUp(email, password, firstName, lastName, '');
       setAlert(() => () => (
         <StyledAlert severity="success" title="Success">
           Successfully created an account.
@@ -64,15 +65,22 @@ const SignUpBox = () => {
 
   return (
     <FormikForm.StyledFormWrapper>
-      <FormikForm.StyledFormHeading>Sign up</FormikForm.StyledFormHeading>
-      <FormikForm.StyledFormDescription>
+      <Typography variant="h5" gutterBottom>
+        Sign up
+      </Typography>
+      <Typography variant="body2" align="center" color="textSecondary">
         By creating an account you will be able to join conference booths, making your profile
         publicly visible to the other attenders.
-      </FormikForm.StyledFormDescription>
+      </Typography>
       <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
         {(props): { props: FormikProps<typeof initialValues> } => (
           <>
             <FormikForm.StyledForm>
+              <ChooseAvatar
+                email={props.values.email}
+                avatarSrc={avatarSrc}
+                setAvatarSrc={setAvatarSrc}
+              />
               <FormikForm.FormikField type="email" name="email" label="Email" required />
               <FormikForm.FormikField type="text" name="firstName" label="First name" required />
               <FormikForm.FormikField type="text" name="lastName" label="Last name" required />
@@ -83,6 +91,7 @@ const SignUpBox = () => {
                 label="Password Confirm"
                 required
               />
+
               <Button
                 endIcon={<ArrowForward />}
                 variant="contained"

@@ -1,28 +1,38 @@
-import React, { createContext } from 'react';
-import {
-  CognitoUserSession,
-  ISignUpResult,
-  CodeDeliveryDetails,
-} from 'amazon-cognito-identity-js';
+import React, { createContext, useEffect } from 'react';
+import { CognitoUserSession, ISignUpResult, CodeDeliveryDetails } from 'amazon-cognito-identity-js';
 import Amplify, { Auth } from 'aws-amplify';
+import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth';
 
 Amplify.configure({
   Auth: {
     region: 'eu-central-1',
-    userPoolId: 'eu-central-1_bzl57SX04',
-    userPoolWebClientId: 'sdpfrpukifetupagvhgh6vh5d',
+    userPoolId: 'eu-central-1_pu83KKkCb',
+    userPoolWebClientId: '7bvt3iiug8uajvnlmbkg2i3fls',
+    oauth: {
+      domain: 'think-in.auth.eu-central-1.amazoncognito.com',
+      scope: ['email', 'profile', 'openid'],
+      redirectSignIn: 'http://localhost:3000/',
+      redirectSignOut: 'http://localhost:3000/',
+      responseType: 'token',
+    },
   },
 });
 
 interface SignUp {
-  (email: string, firstName: string, lastName: string, password: string): Promise<ISignUpResult>;
+  (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+    picture: string,
+  ): Promise<ISignUpResult>;
 }
 
-const signUp: SignUp = async (email, firstName, lastName, password) =>
+const signUp: SignUp = async (email, password, firstName, lastName, picture) =>
   Auth.signUp({
     username: email,
     password,
-    attributes: { given_name: firstName, family_name: lastName },
+    attributes: { given_name: firstName, family_name: lastName, picture },
   });
 
 interface SignIn {
@@ -30,6 +40,9 @@ interface SignIn {
 }
 
 const signIn: SignIn = async (email, password) => Auth.signIn({ username: email, password });
+
+const signInWithGoogle = () =>
+  Auth.federatedSignIn({ provider: CognitoHostedUIIdentityProvider.Google });
 
 interface SignOut {
   (): any;
@@ -53,6 +66,7 @@ const forgotPasswordReset: ForgotPasswordReset = async (email, code, newPassword
 const value = {
   signUp,
   signIn,
+  signInWithGoogle,
   signOut,
   getSession: () => Auth.currentSession(),
   forgotPasswordSendCode,
@@ -61,8 +75,12 @@ const value = {
 
 const Context = createContext(value);
 
-const Provider: React.FunctionComponent = ({ children }) => (
-  <Context.Provider value={value}>{children}</Context.Provider>
-);
+const Provider: React.FunctionComponent = ({ children }) => {
+  useEffect(() => {
+    Auth.currentSession().then((s) => console.log(s));
+  }, []);
+
+  return <Context.Provider value={value}>{children}</Context.Provider>;
+};
 
 export default { Context, Provider };

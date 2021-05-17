@@ -1,7 +1,7 @@
-import { AccountContext, SocketContext } from '@contexts';
 import React, { useContext, useEffect, useState } from 'react';
 import { Container, Paper } from '@material-ui/core';
-import { getUserLanguage } from '@utils';
+import { getUserLanguage } from '#utils';
+import { AccountContext, SocketContext } from '#contexts';
 import type { MessageType, HeaderChatType, UserInformationType } from './shared';
 import ChatHeader from './chatHeader';
 import ChatBody from './chatBody';

@@ -3,8 +3,8 @@ import React, { useState, useContext } from 'react';
 import { Formik, FormikProps } from 'formik';
 import { Button } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
-import { FormikForm, StyledAlert } from '@components/shared';
-import { AccountContext } from '@contexts';
+import { FormikForm, StyledAlert } from '#components/shared';
+import { AccountContext } from '#contexts';
 
 /**
  * Used for giving initial values to {@link https://formik.org/ | formik}.

@@ -5,3 +5,4 @@ export { default as StyledContainer } from './styledContainer';
 export { default as StyledPageWrapper } from './styledPageWrapper';
 export { default as FormikForm } from './formikForm';
 export { default as Header } from './header';
+export { default as ChooseAvatar } from './chooseAvatar';

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import Link from 'next/link';
 import React from 'react';
-import LogoSvg from '@public/icons/logo.svg';
+import LogoSvg from '#public/icons/logo.svg';
 
 interface LogoProps {
   /*

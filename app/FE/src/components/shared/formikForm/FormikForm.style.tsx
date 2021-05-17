@@ -18,19 +18,6 @@ const StyledFormWrapper = styled(({ theme, ...props }: { theme: DefaultTheme }) 
 `}
 `;
 
-const StyledFormHeading = styled.h2`
-  ${({ theme }) => `
-  margin-bottom: ${theme.spacing(1)}px;
-`}
-`;
-
-const StyledFormDescription = styled.span`
-  ${({ theme }) => `
-  text-align: center;
-  margin-bottom: ${theme.spacing(2)}px;
-`}
-`;
-
 const StyledForm = styled(Form)`
   display: flex;
   flex-direction: column;
@@ -54,4 +41,4 @@ const StyledForm = styled(Form)`
   }
 `;
 
-export { StyledFormWrapper, StyledFormHeading, StyledFormDescription, StyledForm };
+export { StyledFormWrapper, StyledForm };

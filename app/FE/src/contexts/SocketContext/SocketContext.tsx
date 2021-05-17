@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { AccountContext } from '@contexts';
 import mitt, { Emitter } from 'mitt';
-import { StyledContainer } from '@components/shared';
 import { ErrorOutline } from '@material-ui/icons';
 import { Typography } from '@material-ui/core';
+import { AccountContext } from '#contexts';
+import { StyledContainer } from '#components/shared';
 
 // const WEBSOCKET_ADDRESS = 'ws://3.122.54.160:3000';
 const WEBSOCKET_ADDRESS = 'ws://localhost:4000';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Emitter } from 'mitt';
-import { getAvatarURI } from '@utils';
+import { getAvatarURI } from '#utils';
 import { Badge } from '@material-ui/core';
 import { StyledHeaderChats, StyledBadge, StyledAvatar, StyledHeaderChat } from './ChatHeader.style';
 import type { HeaderChatType } from '../shared';

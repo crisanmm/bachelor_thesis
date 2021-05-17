@@ -1,10 +1,11 @@
 import * as Yup from 'yup';
 import React, { useState, useContext } from 'react';
 import { Formik, FormikProps } from 'formik';
-import { Button } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
-import { FormikForm, StyledAlert, StyledLink } from '@components/shared';
-import { AccountContext } from '@contexts';
+import { FormikForm, StyledAlert, StyledLink } from '#components/shared';
+import { AccountContext } from '#contexts';
+import { StyledGoogleLoginButton, StyledSocialLoginSeparator } from './SignInBox.style';
 
 /**
  * Used for giving initial values to {@link https://formik.org/ | formik}.
@@ -25,7 +26,7 @@ const validationSchema = Yup.object().shape({
 
 const SignInBox = () => {
   const [Alert, setAlert] = useState<React.ComponentType>(() => () => <></>);
-  const { signIn } = useContext(AccountContext.Context);
+  const { signIn, signInWithGoogle } = useContext(AccountContext.Context);
 
   const onSubmit = async ({ email, password }: typeof initialValues) => {
     try {
@@ -57,10 +58,16 @@ const SignInBox = () => {
 
   return (
     <FormikForm.StyledFormWrapper>
-      <FormikForm.StyledFormHeading>Sign in</FormikForm.StyledFormHeading>
-      <FormikForm.StyledFormDescription>
+      <Typography variant="h5" gutterBottom>
+        Sign in
+      </Typography>
+      <Typography variant="body2" align="center" color="textSecondary">
         After you sign in you can join conference booths and message other people.
-      </FormikForm.StyledFormDescription>
+      </Typography>
+      <StyledGoogleLoginButton onClick={() => signInWithGoogle()}>
+        Sign in with Google
+      </StyledGoogleLoginButton>
+      <StyledSocialLoginSeparator />
       <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
         {(props: FormikProps<typeof initialValues>) => (
           <>

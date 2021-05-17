@@ -1,7 +1,7 @@
 import { Avatar, Container, Typography } from '@material-ui/core';
 import React from 'react';
-import { StyledContainer } from '@components/shared';
-import { clamp, getAvatarAltText, getAvatarURI } from '@utils';
+import { StyledContainer } from '#components/shared';
+import { clamp, getAvatarAltText, getAvatarURI } from '#utils';
 import { StyledMessages, StyledMessage, StyledAvatar } from './ChatBody.style';
 import type {
   MessageType,

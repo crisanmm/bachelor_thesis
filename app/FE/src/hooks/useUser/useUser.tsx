@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
-import { AccountContext } from '@contexts';
 import { CognitoUserSession } from 'amazon-cognito-identity-js';
+import { AccountContext } from '#contexts';
 
 type useUserReturnType = {
   // true if user is logged in, false otherwise

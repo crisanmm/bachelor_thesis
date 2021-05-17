@@ -11,7 +11,6 @@ import {
   StylesProvider as MuiStylesProvider,
   ThemeOptions,
 } from '@material-ui/core/styles';
-import { theme } from '@utils';
 import {
   FormControlLabel,
   NoSsr as MuiNoSsr,
@@ -21,7 +20,8 @@ import {
   PaletteType,
 } from '@material-ui/core';
 import type { Palette } from '@material-ui/core/styles/createPalette';
-import { AccountContext, DarkThemeContext } from '@contexts';
+import { lightTheme, darkTheme } from '#utils';
+import { AccountContext, DarkThemeContext } from '#contexts';
 import { useDarkMode } from '#hooks';
 
 // const GlobalStyle = createGlobalStyle`
@@ -51,9 +51,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   // console.log('🚀  -> file: _app.tsx  -> line 50  -> router', router);
 
   const [isDarkTheme, toggleTheme] = useDarkMode();
-  theme.palette.type = isDarkTheme ? 'dark' : 'light';
-  const muiTheme = createMuiTheme(theme as ThemeOptions);
-  // console.log(muiTheme);
+  const muiTheme = createMuiTheme((isDarkTheme ? darkTheme : lightTheme) as ThemeOptions);
 
   return (
     <MuiNoSsr>
@@ -77,5 +75,5 @@ function reportWebVitals(metric: NextWebVitalsMetric) {
   //   console.log(metric);
 }
 
-export { reportWebVitals };
 export default MyApp;
+export { reportWebVitals };

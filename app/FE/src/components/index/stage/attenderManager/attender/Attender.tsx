@@ -1,11 +1,12 @@
 import * as THREE from 'three';
-import React, { Suspense, useContext } from 'react';
+import React, { Suspense } from 'react';
 import { useResource } from 'react-three-fiber';
 import AttenderAvatar from './AttenderAvatar';
 import AttenderStick from './AttenderStick';
 
 interface AttenderProps {
   position: [number, number, number];
+  avatar: string;
   size?: 'sm' | 'md' | 'lg';
   color?: number | string;
 }
