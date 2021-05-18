@@ -1,5 +1,10 @@
 import React, { createContext, useEffect } from 'react';
-import { CognitoUserSession, ISignUpResult, CodeDeliveryDetails } from 'amazon-cognito-identity-js';
+import {
+  CognitoUserSession,
+  ISignUpResult,
+  CodeDeliveryDetails,
+  CognitoUser,
+} from 'amazon-cognito-identity-js';
 import Amplify, { Auth } from 'aws-amplify';
 import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth';
 
@@ -35,6 +40,18 @@ const signUp: SignUp = async (email, password, firstName, lastName, picture) =>
     attributes: { given_name: firstName, family_name: lastName, picture },
   });
 
+interface UpdateUserAttributes {
+  (
+    user: CognitoUser,
+    attributes: {
+      [key: string]: string;
+    },
+  ): Promise<string>;
+}
+
+const updateUserAttributes: UpdateUserAttributes = async (user, attributes) =>
+  Auth.updateUserAttributes(user, attributes);
+
 interface SignIn {
   (email: string, password: string): Promise<CognitoUserSession>;
 }
@@ -65,6 +82,7 @@ const forgotPasswordReset: ForgotPasswordReset = async (email, code, newPassword
 
 const value = {
   signUp,
+  updateUserAttributes,
   signIn,
   signInWithGoogle,
   signOut,

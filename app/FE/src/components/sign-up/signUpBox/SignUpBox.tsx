@@ -6,6 +6,7 @@ import { ArrowForward } from '@material-ui/icons';
 import { useRouter } from 'next/router';
 import { FormikForm, StyledAlert, ChooseAvatar } from '#components/shared';
 import { AccountContext } from '#contexts';
+import { uploadAvatar, uploadAvatarOnSignUp } from '#utils';
 
 /**
  * Used for giving initial values to {@link https://formik.org/ | formik}.
@@ -39,11 +40,13 @@ const SignUpBox = () => {
   const router = useRouter();
   const [Alert, setAlert] = useState<React.ComponentType>(() => () => <></>);
   const [avatarSrc, setAvatarSrc] = useState<string>();
-  const { signUp } = useContext(AccountContext.Context);
+  const { signUp, updateUserAttributes } = useContext(AccountContext.Context);
 
   const onSubmit = async ({ email, password, firstName, lastName }: typeof initialValues) => {
     try {
-      await signUp(email, password, firstName, lastName, '');
+      const { userSub: userId } = await signUp(email, password, firstName, lastName, '');
+      uploadAvatarOnSignUp(userId, avatarSrc!);
+
       setAlert(() => () => (
         <StyledAlert severity="success" title="Success">
           Successfully created an account.

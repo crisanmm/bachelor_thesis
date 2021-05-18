@@ -14,17 +14,19 @@ interface ChooseAvatarProps {
   email: string;
   avatarSrc: string | undefined;
   setAvatarSrc: React.Dispatch<SetStateAction<string | undefined>>;
+  isCustomAvatarSet?: boolean;
 }
 
 const ChooseAvatar: React.FunctionComponent<ChooseAvatarProps> = ({
   email,
   avatarSrc,
   setAvatarSrc,
+  isCustomAvatarSet = false,
 }) => {
-  const [isCustomAvatarSet, setIsCustomAvatarSet] = useState<boolean>(false);
+  const [_isCustomAvatarSet, _setIsCustomAvatarSet] = useState<boolean>(isCustomAvatarSet);
 
   useEffect(() => {
-    if (!isCustomAvatarSet) setAvatarSrc(getIdenticonSrc(email));
+    if (!_isCustomAvatarSet) setAvatarSrc(getIdenticonSrc(email));
   }, [email]);
 
   return (
@@ -46,7 +48,7 @@ const ChooseAvatar: React.FunctionComponent<ChooseAvatarProps> = ({
         accept="image/*"
         hidden
         onChange={(e: any) => {
-          setIsCustomAvatarSet(true);
+          _setIsCustomAvatarSet(true);
           const file = e.target.files[0];
           const fileReader = new FileReader();
           fileReader.readAsDataURL(file);

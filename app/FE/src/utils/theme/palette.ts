@@ -11,7 +11,7 @@ const lightPalette = {
 
 const darkPalette = {
   primary: {
-    main: Color(deepPurple[500]).lighten(0.15).hex(),
+    main: Color(deepPurple[500]).lighten(0.25).hex(),
   },
   secondary: red,
   type: 'dark',
