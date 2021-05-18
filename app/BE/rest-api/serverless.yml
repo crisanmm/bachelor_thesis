@@ -1,0 +1,52 @@
+app: think-in
+service: think-in-api
+# app and org for use with dashboard.serverless.com
+org: crisanmm
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  lambdaHashingVersion: 20201221
+  region: eu-central-1
+  memorySize: 128
+  timeout: 5
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - 's3:*'
+          Resource:
+            - 'arn:aws:s3:::think-in-content/*'
+        - Effect: 'Allow'
+          Action:
+            - cognito-identity:Describe*
+            - cognito-identity:Get*
+            - cognito-identity:List*
+            - cognito-idp:Describe*
+            - cognito-idp:AdminGet*
+            - cognito-idp:AdminList*
+            - cognito-idp:AdminUpdate*
+            - cognito-idp:List*
+            - cognito-idp:Get*
+            - cognito-sync:Describe*
+            - cognito-sync:Get*
+            - cognito-sync:List*
+            - iam:ListOpenIdConnectProviders
+            - iam:ListRoles
+            - sns:ListPlatformApplications
+          Resource:
+            - '*'
+
+functions:
+  post-avatar:
+    handler: avatars/post-avatar.postAvatar
+    events:
+      - http:
+          path: /avatars
+          method: post
+          cors: true
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-iam-roles-per-function
