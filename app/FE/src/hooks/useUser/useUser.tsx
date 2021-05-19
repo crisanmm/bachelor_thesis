@@ -7,6 +7,9 @@ type useUserReturnType = {
   isLoggedIn: boolean;
   // true if user is logging in, false otherwise
   isLoggingIn: boolean;
+  // true if user is logged with a third party (e.g. social providers like Facebook, Google),
+  // false otherwise
+  isSignedInWithAThirdParty: boolean | undefined;
   // CognitoUserSession if the user is logged in, undefined otherwise
   userSession: CognitoUserSession | undefined;
 };
@@ -19,6 +22,7 @@ const useUser: useUserType = () => {
   const { getSession } = useContext(AccountContext.Context);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(true);
+  const [isSignedInWithAThirdParty, setIsSignedInWithAThirdParty] = useState<boolean>();
   const [userSession, setUserSession] = useState<CognitoUserSession>();
 
   useEffect(() => {
@@ -27,6 +31,11 @@ const useUser: useUserType = () => {
         setIsLoggedIn(true);
         setIsLoggingIn(false);
         setUserSession(userSession);
+        setIsSignedInWithAThirdParty(
+          (userSession.getIdToken().payload['cognito:username'] as string)
+            .toLowerCase()
+            .startsWith('google'),
+        );
       })
       .catch((error) => {
         setIsLoggingIn(false);
@@ -34,7 +43,7 @@ const useUser: useUserType = () => {
       });
   }, []);
 
-  return { isLoggedIn, isLoggingIn, userSession };
+  return { isLoggedIn, isLoggingIn, isSignedInWithAThirdParty, userSession };
 };
 
 export default useUser;
