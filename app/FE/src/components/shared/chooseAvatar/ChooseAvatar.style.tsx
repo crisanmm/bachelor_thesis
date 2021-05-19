@@ -6,7 +6,7 @@ const StyledChooseAvatarWrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: ${({ theme }) => theme.spacing(1)}px;
+  padding: ${({ theme }) => theme.spacing(2)}px;
 `;
 
 const StyledChooseAvatar = styled(Avatar)`

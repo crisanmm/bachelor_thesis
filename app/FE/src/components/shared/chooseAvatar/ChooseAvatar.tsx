@@ -4,24 +4,29 @@ import murmurhash from 'murmurhash';
 import { Typography, Tooltip } from '@material-ui/core';
 import { StyledChooseAvatarWrapper, StyledChooseAvatar } from './ChooseAvatar.style';
 
-const getIdenticonSrc = (email: string) => {
-  const hash = murmurhash.v3(email, Math.random() * 1e5).toString(2);
-  const identicon = new Identicon(hash, { format: 'png', size: 96 });
-  return `data:image/png;base64,${identicon.toString()}`;
+// eslint-disable-next-line consistent-return
+const getIdenticonSrc = (email?: string) => {
+  if (email) {
+    const hash = murmurhash.v3(email, Math.random() * 1e5).toString(2);
+    const identicon = new Identicon(hash, { format: 'png', size: 96 });
+    return `data:image/png;base64,${identicon.toString()}`;
+  }
 };
 
 interface ChooseAvatarProps {
-  email: string;
   avatarSrc: string | undefined;
   setAvatarSrc: React.Dispatch<SetStateAction<string | undefined>>;
+  email?: string;
   isCustomAvatarSet?: boolean;
+  disabled?: boolean;
 }
 
 const ChooseAvatar: React.FunctionComponent<ChooseAvatarProps> = ({
-  email,
   avatarSrc,
   setAvatarSrc,
+  email,
   isCustomAvatarSet = false,
+  disabled = false,
 }) => {
   const [_isCustomAvatarSet, _setIsCustomAvatarSet] = useState<boolean>(isCustomAvatarSet);
 
@@ -43,6 +48,7 @@ const ChooseAvatar: React.FunctionComponent<ChooseAvatarProps> = ({
       </StyledChooseAvatarWrapper>
 
       <input
+        disabled={disabled}
         id="avatar-upload"
         type="file"
         accept="image/*"
