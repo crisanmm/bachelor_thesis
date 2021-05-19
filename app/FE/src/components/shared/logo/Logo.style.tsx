@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { DefaultTheme, ThemeProvider } from 'styled-components';
 import Link from 'next/link';
 import React from 'react';
 import LogoSvg from '#public/icons/logo.svg';
@@ -53,7 +53,7 @@ interface StyledLogoProps {
 //   </Link>
 // )
 
-const StyledLogo = styled((props) => {
+const StyledLogo = styled(({ theme, ...props }: { theme: DefaultTheme }) => {
   const href = '/';
   return (
     <Link href={href}>
@@ -65,6 +65,10 @@ const StyledLogo = styled((props) => {
 })`
   cursor: pointer;
   max-height: 45px;
+
+  svg {
+    color: ${({ theme }) => theme.palette.primary.main};
+  }
 `;
 
 export default StyledLogo;
