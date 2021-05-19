@@ -17,6 +17,7 @@ const StyledAlert = styled((props: StyledAlertProps) => {
 })`
   margin: 0 auto;
   margin-top: ${({ theme }) => theme.spacing(1)}px;
+  margin-bottom: ${({ theme }) => theme.spacing(1)}px;
 `;
 
 export default StyledAlert;
