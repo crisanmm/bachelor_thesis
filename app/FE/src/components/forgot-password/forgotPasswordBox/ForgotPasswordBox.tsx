@@ -4,7 +4,7 @@ import { FormikForm } from '#components/shared';
 import SendCodeForm from './SendCodeForm';
 import ResetPasswordForm from './ResetPasswordForm';
 
-const ForgotPasswordBox = () => {
+const ForgotPasswordBox: React.FunctionComponent = () => {
   const [email, setEmail] = useState<string>();
 
   return (

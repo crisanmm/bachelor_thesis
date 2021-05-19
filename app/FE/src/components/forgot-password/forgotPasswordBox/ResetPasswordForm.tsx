@@ -37,7 +37,7 @@ interface ResetPasswordFormProps {
   email: string;
 }
 
-const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ email }) => {
+const ResetPasswordForm: React.FunctionComponent<ResetPasswordFormProps> = ({ email }) => {
   const router = useRouter();
   const [Alert, setAlert] = useState<React.ComponentType>(() => () => <></>);
   const { forgotPasswordReset } = useContext(AccountContext.Context);

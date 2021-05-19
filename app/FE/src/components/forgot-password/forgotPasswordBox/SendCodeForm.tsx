@@ -27,7 +27,7 @@ interface SendCodeFormProps {
   setEmail: (email: string) => void /* eslint-disable-line */;
 }
 
-const SendCodeForm: React.FC<SendCodeFormProps> = ({ setEmail }) => {
+const SendCodeForm: React.FunctionComponent<SendCodeFormProps> = ({ setEmail }) => {
   const [Alert, setAlert] = useState<React.ComponentType>(() => () => <></>);
   const { forgotPasswordSendCode } = useContext(AccountContext.Context);
 
