@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { io, Socket } from 'socket.io-client';
 import mitt, { Emitter } from 'mitt';
 import { ErrorOutline } from '@material-ui/icons';
@@ -41,6 +42,7 @@ const Provider: React.FunctionComponent = ({ children }) => {
   const { getSession } = useContext(AccountContext.Context);
   const [stageSocket, setStageSocket] = useState<Socket | null>();
   const [chatSocket, setChatSocket] = useState<Socket | null>();
+  const router = useRouter();
 
   useEffect(() => {
     getSession()
@@ -57,6 +59,12 @@ const Provider: React.FunctionComponent = ({ children }) => {
         const chatSocket = io(`${WEBSOCKET_ADDRESS}/chats`, socketOptions);
         setupSocketEvents(chatSocket);
         setChatSocket(chatSocket);
+
+        // when user changes from index page, disconnect sockets
+        router.events.on('routeChangeStart', () => {
+          stageSocket.disconnect();
+          chatSocket.disconnect();
+        });
       })
       .catch((e) => {
         console.log('🚀  -> file: StageContext.tsx  -> line 48  -> e', e);
