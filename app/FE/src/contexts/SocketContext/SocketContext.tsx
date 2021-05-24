@@ -6,6 +6,7 @@ import { ErrorOutline } from '@material-ui/icons';
 import { Typography } from '@material-ui/core';
 import { AccountContext } from '#contexts';
 import { StyledContainer } from '#components/shared';
+import { getAttributesFromSession } from '#utils';
 
 // const WEBSOCKET_ADDRESS = 'ws://3.122.54.160:3000';
 const WEBSOCKET_ADDRESS = 'ws://localhost:4000';
@@ -49,7 +50,13 @@ const Provider: React.FunctionComponent = ({ children }) => {
       .then((userSession) => {
         const socketOptions = {
           auth: { idToken: userSession.getIdToken().getJwtToken() },
-          query: { stage: 'dev-room' },
+          query: {
+            stage: 'dev-room',
+            attender: JSON.stringify({
+              position: [0, 0, 0],
+              ...getAttributesFromSession(userSession),
+            }),
+          },
         };
 
         const stageSocket = io(`${WEBSOCKET_ADDRESS}/stages`, socketOptions);

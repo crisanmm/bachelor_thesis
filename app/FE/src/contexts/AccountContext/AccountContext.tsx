@@ -43,8 +43,9 @@ const signUp: SignUp = async (email, password, firstName, lastName, picture) =>
     attributes: { given_name: firstName, family_name: lastName, picture },
   });
 
+type UpdateUserAttributesType = { [key: string]: string };
 interface UpdateUserAttributes {
-  (attributes: { [key: string]: string }): Promise<string>;
+  (attributes: UpdateUserAttributesType): Promise<string>;
 }
 
 const updateUserAttributes: UpdateUserAttributes = async (attributes) => {
@@ -178,4 +179,5 @@ const Provider: React.FunctionComponent = ({ children }) => {
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
+export type { UpdateUserAttributesType };
 export default { Context, Provider };
