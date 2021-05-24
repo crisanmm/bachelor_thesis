@@ -77,7 +77,7 @@ const getChats = async (event: any) => {
       },
     });
   } catch (e) {
-    return makeResponse(400, false, { error: e.message });
+    return makeResponse(400, false, { error: e });
   }
 };
 

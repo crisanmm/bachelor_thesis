@@ -57,8 +57,7 @@ functions:
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
-          - dynamodb:List*
-          - dynamodb:Read*
+          - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}
 
   get-chats-id:
@@ -71,8 +70,7 @@ functions:
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
-          - dynamodb:List*
-          - dynamodb:Read*
+          - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}
 
   post-chats:
@@ -85,7 +83,7 @@ functions:
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
-          - dynamodb:Write*
+          - dynamodb:PutItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}
 
   put-chats:
@@ -98,7 +96,7 @@ functions:
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
-          - dynamodb:Write*
+          - dynamodb:PutItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}
 
   delete-chats:
@@ -111,7 +109,7 @@ functions:
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
-          - dynamodb:Write*
+          - dynamodb:DeleteItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}
 
 resources:

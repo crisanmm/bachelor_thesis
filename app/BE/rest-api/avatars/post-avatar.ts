@@ -2,6 +2,7 @@ import { S3, CognitoIdentityServiceProvider } from 'aws-sdk';
 import * as JWT from 'jsonwebtoken';
 import parseDataUrl from 'parse-data-url';
 import sharp from 'sharp';
+import { makeResponse } from '../shared';
 
 const USER_POOL_ID = 'eu-central-1_pu83KKkCb';
 
@@ -45,25 +46,6 @@ const uploadAvatarToS3AndUpdateUserAttribute: uploadAvatarToS3AndUpdateUserAttri
   return avatarURI;
 };
 
-interface MakeResponse {
-  (statusCode: number, success: boolean, body: object): object;
-}
-
-/**
- * Convenience function for creating a response.
- * @param statusCode HTTP status code.
- * @param body Response body object
- * @param success Boolean value indicating response success
- * @returns AWS Lambda HTTP event response
- */
-const makeResponse: MakeResponse = (statusCode, success, body) => {
-  return {
-    statusCode: String(statusCode),
-    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-    body: JSON.stringify({ success, ...body }),
-  };
-};
-
 const postAvatar = async (event: any) => {
   console.log(event);
 
@@ -72,7 +54,7 @@ const postAvatar = async (event: any) => {
   const parsedDataUrl = parseDataUrl(requestBody.avatarDataURI);
   if (!parsedDataUrl) return makeResponse(400, false, { error: 'Failed decoding avatarURI' });
 
-  if (requestBody.id) {
+  if (requestBody.userId) {
     // this branch is taken when avatar is uploaded at sign-up, before user is confirmed
 
     // make sure that user is not confirmed before uploading avatar
@@ -82,13 +64,15 @@ const postAvatar = async (event: any) => {
         await cognitoIdentityServiceProvider
           .adminGetUser({
             UserPoolId: USER_POOL_ID,
-            Username: requestBody.id,
+            Username: requestBody.userId,
           })
           .promise()
       ).$response;
     } catch (e) {
       console.log('🚀  -> file: post-avatar.ts  -> line 90  -> e', e);
-      return makeResponse(400, false, { error: `Couldn't find user with id ${requestBody.id}.` });
+      return makeResponse(400, false, {
+        error: `Couldn't find user with id ${requestBody.userId}.`,
+      });
     }
 
     console.log('🚀  -> file: post-avatar.ts  -> line 84  -> response', response);
@@ -98,7 +82,7 @@ const postAvatar = async (event: any) => {
       switch (userConfirmed) {
         case 'UNCONFIRMED':
           const avatarURI = await uploadAvatarToS3AndUpdateUserAttribute(
-            requestBody.id as string,
+            requestBody.userId as string,
             parsedDataUrl.toBuffer()
           );
           return makeResponse(201, true, { avatarURI });

@@ -72,6 +72,14 @@ components:
         data:
           type: object
           properties:
+            lastEvaluatedPK:
+              type: string
+              description: Last evaluated Partition Key. Used for pagination. Won't be returned if there is no next page. Has to be passed in as a query parameter if pagination is desired.
+              example: chat_90a163822ac71f5f4b661ab5c8231405cd2a0dbe8997c77ba9abd41cabbfb300
+            lastEvaluatedSK:
+              type: string
+              description: Last evaluated Sort/Range Key. Won't be returned if there is no next page. Has to be passed in as a query parameter if pagination is desired.
+              example: message_1621866737654_II4xPooT0XfggFHEVBPxQ
             items:
               type: array
               items:
@@ -86,32 +94,11 @@ components:
         data:
           type: object
           properties:
-            lastEvaluatedKey:
-              type: object
-              description: Used for pagination. Won't be returned if there is no next page.
-              properties:
-                PK:
-                  type: string
-                  description: DynamoDB Partition Key
-                  example: '#CHATROOM#90a163822ac71f5f4b661ab5c8231405cd2a0dbe8997c77ba9abd41cabbfb300'
-                SK:
-                  type: string
-                  description: DynamoDB Sort/Range Key
-                  example: '#1619901459880#4f5cd51e-770a-4123-97e8-55baeb910b3c'
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/ChatMessage'
+            item:
+              $ref: '#/components/schemas/ChatMessage'
 
     PostChatsChatIdRequestBody:
-      type: object
-      properties:
-        chatRoomId:
-          type: string
-          description: Hash of the IDs of the users that are in this chatroom
-          example: '90a163822ac72f5f4b661ab5c8231405cd2a0dbe8997c77ba9abd41cabbfb300'
-        message:
-          $ref: '#/components/schemas/ChatMessage'
+      $ref: '#/components/schemas/ChatMessage'
 
     PostChatsChatIdResponseBody:
       type: object
@@ -120,20 +107,24 @@ components:
           type: boolean
           example: true
         data:
-          type: object
-          properties:
-            PK:
-              type: string
-              description: Partition Key as stored in DynamoDB. Has the form "#CHATROOM#<CHATROOM-ID>"
-              example: '#CHATROOM#90a163822ac72f5f4b661ab5c8231405cd2a0dbe8997c77ba9abd41cabbfb300'
-            SK:
-              type: string
-              description: Sort/Range Key as stored in DynamoDB. Has the form "#<MILLISECOND-TIMESTAMP>#<USER-ID>"
-              example: 1619901459879
-            message:
-              $ref: '#/components/schemas/ChatMessage'
+          allOf:
+            - type: object
+              properties:
+                PK:
+                  type: string
+                  description: Partition Key as stored in DynamoDB. Has the form "chat_<CHATROOM-ID>".
+                  example: 'chat_90a163822ac72f5f4b661ab5c8231405cd2a0dbe8997c77ba9abd41cabbfb300'
+                SK:
+                  type: string
+                  description: Sort/Range Key as stored in DynamoDB. Has the form "message_<MILLISECOND-TIMESTAMP>_<NANOID>" (https://www.npmjs.com/package/nanoid).
+                  example: 'message_1621866737654_w9MyfZgs-hIZCS3PZQ8tw'
+            - $ref: '#/components/schemas/ChatMessage'
 
-    
+    PutChatsChatIdMessageIdRequestBody:
+      $ref: '#/components/schemas/PostChatsChatIdRequestBody'
+
+    PutChatChatIdMessageIdResponseBody:
+      $ref: '#/components/schemas/PostChatsChatIdResponseBody'
 
 paths:
   /chats/{chatId}:
@@ -167,17 +158,11 @@ paths:
               $ref: '#/components/schemas/PostChatsChatIdRequestBody'
       responses:
         '201':
-          description: Created. Returns the sent message.
+          description: Created. Returns the newly created message.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    $ref: '#/components/schemas/PostChatsChatIdResponseBody'
+                $ref: '#/components/schemas/PostChatsChatIdResponseBody'
         '400':
           description: Bad Request. Possibly malformed request body.
           content:
@@ -205,7 +190,6 @@ paths:
         description: The message ID to perform operations on.
         schema:
           $ref: '#/components/schemas/MessageId'
-
     get:
       tags:
         - chats
@@ -232,27 +216,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PutChatsIdResponseBody'
+              $ref: '#/components/schemas/PutChatsChatIdMessageIdRequestBody'
       responses:
         '200':
           description: OK. Updated message.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    $ref: '#/components/schemas/ChatMessagePostResponseBody'
+                $ref: '#/components/schemas/PutChatChatIdMessageIdResponseBody'
         '400':
           description: Bad Request. Possibly malformed request body.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseBody'
-
     delete:
       tags:
         - chats
@@ -260,104 +237,3 @@ paths:
       responses:
         '200':
           description: OK. Deleted message.
-# paths:
-#   /chats:
-#     get:
-#       summary: Get list of chat messages.
-#       parameters:
-#         - in: query
-#           required: false
-#           name: offset
-#           schema:
-#             type: number
-#             example: 0
-#         - in: query
-#           required: false
-#           name: limit
-#           schema:
-#             type: number
-#             example: 10
-#       responses:
-#         "200":
-#           description: OK. List successfully retrieved.
-#           content:
-#             application/json:
-#               schema:
-#                 type: array
-#                 items:
-#                   $ref: "#/components/schemas/message"
-
-#     post:
-#       summary: Adds a message in a chat room.
-#       requestBody:
-#         required: true
-#         content:
-#           application/json:
-#             schema:
-#               $ref: "#/components/schemas/message"
-#       responses:
-#         '201':
-#           description: Returns the sent message.
-#           content:
-#             application/json:
-#               schema:
-#               $ref: "#/components/schemas/message"
-#         '400':
-#           description: Bad request. Request body is malformed.
-
-#   /chats/{idchat}:
-#     parameters:
-#     - in: path
-#       name: idchat
-#       schema:
-#         type: integer
-#       required: true
-#     - in: query
-#       name: limit
-#       schema:
-#         type: integer
-#       required: false
-
-#     get:
-#       summary: Returns the message with id {idchat} in a chat room.
-#       responses:
-#         '200':
-#           description: OK. Message with specific ID retrieved.
-#           content:
-#             application/json:
-#               schema:
-#                 type: array
-#                 items:
-#                   $ref: "#/components/schemas/message"
-#         '400':
-#           description: Bad request. Possibly malformed parameter, is {idchat} an integer?
-
-#     put:
-#       summary: Create or update chat message with specific ID.
-#       requestBody:
-#         required: true
-#         content:
-#           application/json:
-#             schema:
-#               $ref: "#/components/schemas/message"
-#       responses:
-#         '201':
-#           description: Created. Chat message with specific ID successfully created.
-#           content:
-#             application/json:
-#               schema:
-#                 type: array
-#                 items:
-#                   $ref: "#/components/schemas/message"
-#         '400':
-#           description: Bad request. Request body is malformed.
-
-#     delete:
-#       summary: Deletes a chat message with specific ID.
-#       responses:
-#         "204":
-#           description: No content. Chat message with specific ID successfully deleted.
-#           content:
-#             application/json:
-#             schema:
-#                 $ref: "#/components/schemas/message"

@@ -64,7 +64,7 @@ const postChats = async (event: any) => {
     });
   }
 
-  return makeResponse(201, true, { data: { PK, SK, ...validatedMessage } });
+  return makeResponse(201, true, { data: item });
 };
 
 export { postChats };
