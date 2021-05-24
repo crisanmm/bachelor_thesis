@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useFrame, useThree } from 'react-three-fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 
 const RendererOptions = () => {
   const { gl } = useThree();

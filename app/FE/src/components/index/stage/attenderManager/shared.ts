@@ -1,3 +1,9 @@
+import type { UserAttributes } from '#utils';
+
 type Position = [number, number, number];
 
-export type { Position };
+type AttenderType = {
+  position: Position;
+} & UserAttributes;
+
+export type { Position, AttenderType };

@@ -1,38 +1,35 @@
 import * as THREE from 'three';
-import React, { useEffect, useLayoutEffect } from 'react';
-import { useFrame, useResource, useUpdate } from 'react-three-fiber';
+import React, { useState, useRef, useLayoutEffect } from 'react';
+import { useFrame } from '@react-three/fiber';
 import type { Size } from './shared';
 import { computeAttenderSize } from './shared';
-import type { Position } from '../shared';
+import type { AttenderType } from '../shared';
 
 interface AttenderStickProps {
-  stickMeshRef: {
-    current: THREE.Mesh;
-  };
-  position: Position;
-  avatar: string;
   size?: Size;
   color?: string | number;
 }
 
-const AttenderStick: React.FunctionComponent<AttenderStickProps> = ({
-  stickMeshRef,
+const AttenderStick: React.FunctionComponent<AttenderStickProps & AttenderType> = ({
   position,
-  avatar,
   size,
   color,
 }) => {
+  const stickMeshRef = useRef<THREE.Mesh>();
   const [stickWidth, stickHeight] = computeAttenderSize(size);
-  const geometryRef = useResource<THREE.PlaneGeometry>();
+  const geometryRef = useRef<THREE.PlaneGeometry>();
 
-  useFrame((state) => {
-    stickMeshRef.current?.position.lerp(new THREE.Vector3(...position), 0.025);
-    stickMeshRef.current?.lookAt(state.camera.position.x, 0, state.camera.position.z);
-  });
+  // reuse this vector in useFrame
+  const [vector] = useState(() => new THREE.Vector3(...position));
 
   useLayoutEffect(() => {
     geometryRef.current?.translate(0, stickHeight / 2, 0);
   }, []);
+
+  useFrame((state) => {
+    stickMeshRef.current?.position.lerp(vector.set(...position), 0.025);
+    stickMeshRef.current?.lookAt(state.camera.position.x, 0, state.camera.position.z);
+  });
 
   return (
     <mesh ref={stickMeshRef}>

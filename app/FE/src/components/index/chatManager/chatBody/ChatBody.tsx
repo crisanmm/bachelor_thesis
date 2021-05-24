@@ -1,7 +1,13 @@
 import { Avatar, Container, Typography } from '@material-ui/core';
 import React from 'react';
 import { StyledContainer } from '#components/shared';
-import { clamp, getAvatarAltText, getAvatarURI } from '#utils';
+import {
+  clamp,
+  computeAttenderDisplayName,
+  getAvatarAltText,
+  getAvatarURI,
+  UserAttributes,
+} from '#utils';
 import { StyledMessages, StyledMessage, StyledAvatar } from './ChatBody.style';
 import type {
   MessageType,
@@ -26,25 +32,21 @@ const computeSpacing = (thisMessage: MessageType, lastMessage: MessageType) => {
 interface ChatBodyProps {
   headerChat: HeaderChatType;
   messages: MessageType[];
-  userInformation: UserInformationType;
+  myUser: UserAttributes;
 }
 
-const ChatBody: React.FunctionComponent<ChatBodyProps> = ({
-  headerChat,
-  messages,
-  userInformation,
-}) => {
+const ChatBody: React.FunctionComponent<ChatBodyProps> = ({ headerChat, messages, myUser }) => {
   if (messages.length === 0)
     return (
       <StyledMessages>
         <StyledContainer>
           <StyledAvatar
-            alt={getAvatarAltText(headerChat.user.name)}
+            alt={getAvatarAltText(computeAttenderDisplayName(headerChat.user))}
             src={getAvatarURI(headerChat.user.id)}
           />
           <Typography>
             No messages with
-            {` ${headerChat.user.name} `}
+            {` ${computeAttenderDisplayName(headerChat.user)} `}
             yet! Be the first one to interact 😁
           </Typography>
         </StyledContainer>
@@ -56,15 +58,15 @@ const ChatBody: React.FunctionComponent<ChatBodyProps> = ({
       {messages.map((message, index) => (
         <StyledMessage
           key={index}
-          mine={userInformation.id === message.user.id}
+          mine={myUser.id === message.userInformation.id}
           _spacing={computeSpacing(message, messages[index - 1])}
         >
           <Avatar
             alt={getAvatarAltText(
-              userInformation.id === message.user.id ? userInformation.name : headerChat.user.name,
+              myUser.id === message.userInformation.id ? myUser.name : headerChat.user.name,
             )}
             src={getAvatarURI(
-              userInformation.id === message.user.id ? userInformation.id : headerChat.user.id,
+              myUser.id === message.userInformation.id ? myUser.id : headerChat.user.id,
             )}
             color="primary"
           />

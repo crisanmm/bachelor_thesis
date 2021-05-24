@@ -1,11 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Container, Paper } from '@material-ui/core';
-import { getUserLanguage } from '#utils';
+import {
+  computeAttenderDisplayName,
+  getAttributesFromSession,
+  getUserLanguage,
+  UserAttributes,
+} from '#utils';
 import { AccountContext, SocketContext } from '#contexts';
-import type { MessageType, HeaderChatType, UserInformationType } from './shared';
+import type { MessageType, HeaderChatType } from './shared';
 import ChatHeader from './chatHeader';
 import ChatBody from './chatBody';
 import ChatFooter from './chatFooter';
+import { AttenderType } from '../stage/attenderManager/shared';
 
 interface ChatsPrivateMessageEventType {
   emittedInputMessage: string; // the input message when the send button was pressed
@@ -18,7 +24,7 @@ interface ChatsFileUploadEventType {
 }
 
 interface PrivateMessageEventType {
-  fromUserId: string; // the uuid v4 id from the originator of the message
+  fromUser: AttenderType; // the uuid v4 id from the originator of the message
   message: MessageType; // the sent message
 }
 
@@ -27,6 +33,30 @@ interface UserOnlineStateEventType {
   state: boolean; // false if the user went offline, true otherwise
 }
 
+/**
+ * Find the header chat in header chat array.
+ * @param headerChats Header chat array.
+ * @param id The id of the user
+ * @returns The header chat if it is in the array, null otherwise.
+ */
+const getHeaderChatWithUserId = (headerChats: HeaderChatType[], userId: string) => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const headerChat of headerChats) if (headerChat.user.id === userId) return headerChat;
+  return null;
+};
+
+/**
+ * Find out if a header chat is in the header chat array
+ * @param headerChats Header chat array.
+ * @param id The id of the user.
+ * @returns True if the header chat is in the array, false otherwise.
+ */
+const isHeaderChatWithIdInHeaderChatArray = (headerChats: HeaderChatType[], userId: string) => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const headerChat of headerChats) if (headerChat.user.id === userId) return true;
+  return false;
+};
+
 const getSelectedHeaderChat = (headerChats: HeaderChatType[]) =>
   headerChats.filter((headerChat) => headerChat.selected)[0];
 
@@ -34,110 +64,153 @@ const ChatManager = () => {
   const { getSession } = useContext(AccountContext.Context);
   const socket = useContext(SocketContext.Context).chatSocket!;
   const { emitter } = useContext(SocketContext.Context);
-  const [userInformation, setUserInformation] = useState<UserInformationType>(
-    (undefined as unknown) as UserInformationType,
-  );
+  const [myUser, setMyUser] = useState<UserAttributes>(undefined as unknown as UserAttributes);
   const [headerChats, setHeaderChats] = useState<HeaderChatType[]>([
     {
-      user: { id: 'global', name: 'Global', email: '' },
+      user: {
+        id: 'global',
+        givenName: 'Global',
+        familyName: 'Chat',
+        email: 'global@think-in.me',
+        emailVerified: true,
+        picture: 'https://think-in-content.s3.eu-central-1.amazonaws.com/avatars/global.jpg',
+      },
       notifications: 0,
       selected: true,
       online: true,
     },
     {
-      user: { id: 'stage', name: 'Stage', email: '' },
+      user: {
+        id: 'stage',
+        givenName: 'Stage',
+        familyName: 'Chat',
+        email: 'stage@think-in.me',
+        emailVerified: true,
+        picture: 'https://think-in-content.s3.eu-central-1.amazonaws.com/avatars/stage.jpg',
+      },
       notifications: 0,
       selected: false,
       online: true,
     },
-    {
-      user: { id: 'drake', name: 'Drake', email: '' },
-      notifications: 0,
-      selected: false,
-      online: false,
-    },
-    {
-      user: { id: '4f5cd51e-770a-4123-97e8-55baeb910b3c', name: 'user one name', email: '' },
-      notifications: 0,
-      selected: false,
-      online: false,
-    },
-    {
-      user: { id: 'd3a1d2c1-03e3-452c-bf40-00eb5bf639e3', name: 'user two name', email: '' },
-      notifications: 0,
-      selected: false,
-      online: false,
-    },
+    // {
+    //   user: {
+    //     id: '4f5cd51e-770a-4123-97e8-55baeb910b3c',
+    //     givenName: 'user',
+    //     familyName: 'one',
+    //     email: '',
+    //     emailVerified: true,
+    //     picture: 'https://think-in-content.s3.eu-central-1.amazonaws.com/avatars/stage.png',
+    //   },
+    //   notifications: 0,
+    //   selected: false,
+    //   online: false,
+    // },
   ]);
   const [messages, setMessages] = useState<MessageType[]>([
     {
-      user: {
+      userInformation: {
         id: '4f5cd51e-770a-4123-97e8-55baeb910b3c',
         name: 'crisan mihai',
-        email: '',
       },
-      time: 1619901459879,
       type: 'text/plain',
       data: 'this is a text message',
       language: 'en',
     },
     {
-      user: { id: 'notme', name: 'Not Me', email: '' },
-      time: 1619901459879,
+      userInformation: { id: 'notme', name: 'Not Me' },
       type: 'text/plain',
       data: 'this is a text message too',
       language: 'en',
     },
     {
-      user: {
+      userInformation: {
         id: '4f5cd51e-770a-4123-97e8-55baeb910b3c',
         name: 'crisan mihai',
-        email: '',
       },
-      time: 1619901459879,
       type: 'image/jpeg',
       data: 'https://think-in-content.s3.eu-central-1.amazonaws.com/avatars/avatar3.jpg',
       alt: "Ana's avatar picture",
     },
     {
-      user: {
+      userInformation: {
         id: '4f5cd51e-770a-4123-97e8-55baeb910b3c',
         name: 'crisan mihai',
-        email: '',
       },
-      time: 1619901459879,
       type: 'text/plain',
-      data:
-        'this is a text messagethis is a text message this is a text message this is a text message this is a text message this is a text message',
+      data: 'this is a text messagethis is a text message this is a text message this is a text message this is a text message this is a text message',
       language: 'en',
     },
     {
-      user: {
+      userInformation: {
         id: '4f5cd51e-770a-4123-97e8-55baeb910b3c',
         name: 'crisan mihai',
-        email: '',
       },
-      time: 1619982112537,
       type: 'text/plain',
-      data:
-        'this is a text messagethis is a text message this is a text message this is a text message this is a text message this is a text message',
+      data: 'this is a text messagethis is a text message this is a text message this is a text message this is a text message this is a text message',
       language: 'en',
     },
   ]);
   const [inputMessage, setInputMessage] = useState<string>('');
 
   useEffect(() => {
-    if (userInformation === undefined) {
+    if (myUser === undefined) {
       getSession().then((userSession) => {
-        setUserInformation({
-          id: userSession.getIdToken().payload.sub,
-          name: `${userSession.getIdToken().payload.given_name} ${
-            userSession.getIdToken().payload.family_name
-          }`,
-          email: userSession.getIdToken().payload.email,
-        });
+        const userAttributes = getAttributesFromSession(userSession);
+        setMyUser(userAttributes);
+        // socket.emit('set-attender', userAttributes);
       });
     } else {
+      emitter.on('chats:close-chat', (chatIndex: number) => {
+        setHeaderChats((headerChats) => {
+          const newHeaderChats = headerChats.filter((headerChat, index) => index !== chatIndex);
+
+          /**
+           * if the header chat that was deleted was the one selected,
+           * then select the global chat
+           */
+          if (
+            newHeaderChats
+              .map((headerChat) => headerChat.selected)
+              .every((selected) => selected === false)
+          )
+            newHeaderChats[0].selected = true;
+          return newHeaderChats;
+        });
+        // TODO: show persisted  messages
+        setMessages([]);
+      });
+
+      emitter.on('chats:opened-chat', (userAttributes: UserAttributes) => {
+        setHeaderChats((headerChats) => {
+          // TODO: show persisted messages
+          setMessages([]);
+
+          // if the chat is already opened just set it to selected
+          if (isHeaderChatWithIdInHeaderChatArray(headerChats, userAttributes.id))
+            return headerChats.map((headerChat) => {
+              if (headerChat.user.id === userAttributes.id) {
+                headerChat.selected = true;
+                headerChat.notifications = 0;
+              } else {
+                headerChat.selected = false;
+              }
+              return headerChat;
+            });
+
+          // otherwise add it and set it to selected
+          const headerChat = {
+            user: userAttributes,
+            notifications: 0,
+            selected: true,
+            online: true,
+          };
+          return [
+            ...headerChats.map((headerChat) => ({ ...headerChat, selected: false })),
+            headerChat,
+          ];
+        });
+      });
+
       emitter.on('chats:change-chat', (chatIndex: number) => {
         // chatIndex is always a number
         setHeaderChats((headerChats) =>
@@ -157,21 +230,26 @@ const ChatManager = () => {
 
       emitter.on(
         'chats:private-message',
-        ({ emittedInputMessage, emittedTime }: ChatsPrivateMessageEventType) => {
+        ({ emittedInputMessage }: ChatsPrivateMessageEventType) => {
           // Add message locally
           const message = {
-            user: userInformation,
-            time: emittedTime,
+            userInformation: { id: myUser.id, name: computeAttenderDisplayName(myUser) },
             type: 'text/plain',
             data: emittedInputMessage,
             language: getUserLanguage(),
           };
           setMessages((messages) => [...messages, message as MessageType]);
 
-          // Send message to websocket server
-          socket.emit('private-message', {
-            toUserId: getSelectedHeaderChat(headerChats).user.id,
-            message,
+          /**
+           * Use setHeaderChats in order to get the latest headerChats and avoid headerChats closure
+           */
+          setHeaderChats((headerChats) => {
+            // Send message to websocket server
+            socket.emit('private-message', {
+              toUser: getSelectedHeaderChat(headerChats).user,
+              message,
+            });
+            return headerChats;
           });
         },
       );
@@ -186,7 +264,7 @@ const ChatManager = () => {
           setMessages((messages) => [
             ...messages,
             {
-              user: userInformation,
+              userInformation: { id: myUser.id, name: computeAttenderDisplayName(myUser) },
               time: emittedTime,
               type: 'image/jpeg',
               data: event.target.result,
@@ -200,19 +278,46 @@ const ChatManager = () => {
         });
       });
 
-      socket.on('private-message', async ({ fromUserId, message }: PrivateMessageEventType) => {
-        console.log('🚀  -> file: ChatManager.tsx  -> line 173  -> fromUserId', fromUserId);
-        if (message.user.id === getSelectedHeaderChat(headerChats).user.id) {
-          setMessages((messages) => [...messages, message]);
-        } else {
-          setHeaderChats((headerChats) => {
-            const fromUserHeaderChat = headerChats.filter(
-              (headerChat) => headerChat.user.id === fromUserId,
-            )[0];
-            fromUserHeaderChat.notifications += 1;
-            return [...headerChats];
-          });
-        }
+      socket.on('private-message', async ({ fromUser, message }: PrivateMessageEventType) => {
+        /**
+         * Use setHeaderChats in order to get the latest headerChats and avoid headerChats closure
+         */
+        console.log('🚀  -> file: ChatManager.tsx  -> line 294  -> fromUser', fromUser);
+        setHeaderChats((headerChats) => {
+          if (message.userInformation.id === getSelectedHeaderChat(headerChats).user.id) {
+            // if the user has this chat opened and selected then simply change the messages
+            setMessages((messages) => [...messages, message]);
+            return headerChats;
+          }
+
+          if (isHeaderChatWithIdInHeaderChatArray(headerChats, fromUser.id)) {
+            // if the user has this chat opened but not selected then add notification to it
+            return headerChats.map((headerChat) => {
+              if (headerChat.user.id === fromUser.id) {
+                headerChat.notifications += 1;
+              }
+              return headerChat;
+            });
+          }
+
+          // if the user doesn't have this chat opened then add it
+          const headerChat = {
+            user: fromUser,
+            notifications: 1,
+            selected: false,
+            online: true,
+          };
+          return [...headerChats, headerChat];
+
+          // setHeaderChats((headerChats) => {
+          //   const fromUserHeaderChat = headerChats.filter(
+          //     (headerChat) => headerChat.user.id === fromUser.id,
+          //   )[0];
+          //   fromUserHeaderChat.notifications += 1;
+          //   return [...headerChats];
+          // });
+          // return headerChats;
+        });
       });
 
       socket.on('file-upload', (response) => {
@@ -242,9 +347,9 @@ const ChatManager = () => {
         });
       });
     }
-  }, [userInformation]);
+  }, [myUser]);
 
-  if (userInformation === undefined) return <></>;
+  if (myUser === undefined) return <></>;
 
   return (
     <Container>
@@ -253,7 +358,7 @@ const ChatManager = () => {
         <ChatBody
           headerChat={getSelectedHeaderChat(headerChats)}
           messages={messages}
-          userInformation={userInformation}
+          myUser={myUser}
         />
         <ChatFooter
           emitter={emitter}
@@ -265,5 +370,5 @@ const ChatManager = () => {
   );
 };
 
-export default ChatManager;
 export { getSelectedHeaderChat };
+export default ChatManager;

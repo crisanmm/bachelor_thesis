@@ -6,3 +6,4 @@ export { default as StyledPageWrapper } from './styledPageWrapper';
 export { default as FormikForm } from './formikForm';
 export { default as Header } from './header';
 export { default as ChooseAvatar } from './chooseAvatar';
+export { default as ContactListItem } from './contactListItem';

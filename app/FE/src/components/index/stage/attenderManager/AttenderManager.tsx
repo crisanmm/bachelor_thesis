@@ -1,15 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { SocketContext, AccountContext } from '#contexts';
+import { getAttributesFromSession } from '#utils';
 import Attender from './attender';
-import { Position } from './shared';
-
-interface AttenderType {
-  position: Position;
-  avatar: string;
-  givenName: string;
-  familyName: string;
-  id: string;
-}
+import { AttenderType } from './shared';
 
 type AttendersType = Array<AttenderType>;
 
@@ -54,15 +47,14 @@ const AttenderManager = () => {
 
     getSession()
       .then((userSession) => {
+        const attributes = getAttributesFromSession(userSession);
+
         const attender: AttenderType = {
           position: [0, 0, 0],
-          avatar: userSession.getIdToken().payload.picture,
-          givenName: userSession.getIdToken().payload.given_name,
-          familyName: userSession.getIdToken().payload.family_name,
-          id: userSession.getIdToken().payload.sub,
+          ...attributes,
         };
         setMyAttender(attender);
-        socket.emit('attender-join', attender);
+        socket.emit('attender-join');
       })
       .catch();
   }, []);
@@ -70,21 +62,10 @@ const AttenderManager = () => {
   return (
     <>
       {Object.keys(myAttender).length === 0 ? undefined : (
-        <Attender
-          key={myAttender.id}
-          position={myAttender.position}
-          avatar={myAttender.avatar}
-          size="lg"
-          color="green"
-        />
+        <Attender key={myAttender.id} {...myAttender} size="lg" color="green" isMyAttender />
       )}
       {attenders.map((attender) => (
-        <Attender
-          key={attender.id}
-          position={attender.position}
-          avatar={attender.avatar}
-          size="sm"
-        />
+        <Attender key={attender.id} {...attender} size="sm" color="white" />
       ))}
     </>
   );

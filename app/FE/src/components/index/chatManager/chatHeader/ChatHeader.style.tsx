@@ -1,10 +1,12 @@
 import styled, { DefaultTheme, keyframes } from 'styled-components';
-import { Avatar, Paper, Badge } from '@material-ui/core';
+import { MoreVert } from '@material-ui/icons';
+import { Avatar, Paper, Badge, IconButton } from '@material-ui/core';
 
 const StyledHeaderChats = styled(({ theme, ...props }: { theme: DefaultTheme }) => (
   <Paper elevation={0} square {...props} />
 ))`
-  min-width: 100%;
+  width: 100%;
+  /* min-width: 100%; */
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -49,6 +51,13 @@ const StyledAvatar = styled((props) => <Avatar alt={props.alt} src={props.src} {
   margin-right: ${({ theme }) => theme.spacing(1)}px;
 `;
 
+const StyledHeaderChatWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
+`;
+
 interface StyledHeaderChatProps {
   selected: boolean;
 }
@@ -64,8 +73,10 @@ const StyledHeaderChat = styled.div<StyledHeaderChatProps>`
     if (selected) return theme.palette.action.selected;
     return theme.palette.background.default;
   }};
-  border-right: 1px solid ${({ theme }) => theme.palette.divider};
-  padding: 0 ${({ theme }) => theme.spacing(2)}px;
+  padding: 0 ${({ theme }) => theme.spacing(1.5)}px;
+
+  transition: background-color ${({ theme }) => theme.transitions.duration.shortest}ms
+    ${({ theme }) => theme.transitions.easing.easeInOut};
 
   > span {
     white-space: nowrap;
@@ -84,4 +95,28 @@ const StyledHeaderChat = styled.div<StyledHeaderChatProps>`
   }
 `;
 
-export { StyledHeaderChats, StyledBadge, StyledAvatar, StyledHeaderChat };
+interface StyledIconButtonProps {
+  selected: boolean;
+}
+
+const StyledIconButton = styled(IconButton)<StyledIconButtonProps>`
+  border-radius: 0;
+  background-color: ${({ selected, theme }) => {
+    if (selected) return theme.palette.action.selected;
+    return theme.palette.background.default;
+  }};
+`;
+
+const StyledVerticalDivider = styled.div`
+  border-right: 1px solid ${({ theme }) => theme.palette.divider};
+`;
+
+export {
+  StyledHeaderChats,
+  StyledBadge,
+  StyledAvatar,
+  StyledHeaderChatWrapper,
+  StyledHeaderChat,
+  StyledIconButton,
+  StyledVerticalDivider,
+};

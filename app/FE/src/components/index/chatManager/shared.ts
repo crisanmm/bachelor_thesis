@@ -1,3 +1,5 @@
+import type { UserAttributes } from '#utils';
+
 /**
  * Example user object:
  *
@@ -9,16 +11,13 @@
  *
  * }
  */
-
-interface UserInformationType {
-  id: string; // uuid v4 format
-  email: string;
+type UserInformationType = {
+  id: string;
   name: string;
-}
+};
 
 interface BaseMessage {
-  user: UserInformationType;
-  time: number;
+  userInformation: UserInformationType;
   type: 'text/plain' | 'image/jpeg'; // MIME type of messages
   data: string;
 }
@@ -38,17 +37,13 @@ interface MediaMessageType extends BaseMessage {
  *
  * {
  *
- *  user: {
+ *  userInformation: {
  *
  *       id: "4f5cd51e-770a-4123-97e8-55baeb910b3c",
  *
  *       name: "crisan mihai",
  *
- *       email: "crisanmihai@example.com",
- *
- *     }
- *
- *  time: 1619901459879
+ *     },
  *
  *  type: "text/plain",
  *
@@ -60,17 +55,13 @@ interface MediaMessageType extends BaseMessage {
  *
  * {
  *
- *  user: {
+ *  userInformation: {
  *
  *       id: "4f5cd51e-770a-4123-97e8-55baeb910b3c",
  *
  *       name: "crisan mihai",
  *
- *       email: "crisanmihai@example.com",
- *
- *     }
- *
- *  time: 1619901459879
+ *     },
  *
  *  type: "image/jpeg",
  *
@@ -83,10 +74,10 @@ interface MediaMessageType extends BaseMessage {
 type MessageType = TextMessageType | MediaMessageType;
 
 interface HeaderChatType {
-  user: UserInformationType;
+  user: UserAttributes;
   notifications: number;
   online: boolean;
   selected: boolean;
 }
 
-export type { TextMessageType, MediaMessageType, MessageType, HeaderChatType, UserInformationType };
+export type { UserInformationType, TextMessageType, MediaMessageType, MessageType, HeaderChatType };

@@ -1,6 +1,7 @@
 import React, { Suspense, useContext } from 'react';
-import { Canvas } from 'react-three-fiber';
-import { Typography } from '@material-ui/core';
+import { Canvas } from '@react-three/fiber';
+import { ThemeProvider as StyledComponentsThemeProvider } from 'styled-components';
+import { Typography, MuiThemeProvider, useTheme as useMuiTheme } from '@material-ui/core';
 import { ErrorOutline } from '@material-ui/icons';
 import { CameraOptions, OrbitControls, RendererOptions } from '#components/index';
 import { StyledContainer } from '#components/shared';
@@ -11,13 +12,20 @@ import AttenderManager from './attenderManager';
 
 const ForwardCanvas: React.FunctionComponent = ({ children }) => {
   const { stageSocket, emitter } = useContext(SocketContext.Context);
+  const muiTheme = useMuiTheme();
+  console.log('🚀  -> file: Stage.tsx  -> line 17  -> muiTheme', muiTheme);
 
-  // because of react-three-fiber it is necessary to provide the context again in the Canvas element
+  // because of the way react/react-three-fiber works it is necessary
+  // to provide the context again in the Canvas element
   return (
     <Canvas>
-      <SocketContext.Context.Provider value={{ stageSocket, emitter }}>
-        {children}
-      </SocketContext.Context.Provider>
+      <MuiThemeProvider theme={muiTheme}>
+        <StyledComponentsThemeProvider theme={muiTheme}>
+          <SocketContext.Context.Provider value={{ stageSocket, emitter }}>
+            {children}
+          </SocketContext.Context.Provider>
+        </StyledComponentsThemeProvider>
+      </MuiThemeProvider>
     </Canvas>
   );
 };

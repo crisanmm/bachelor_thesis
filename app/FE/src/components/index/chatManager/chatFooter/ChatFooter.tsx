@@ -51,7 +51,6 @@ const ChatFooter: React.FunctionComponent<ChatFooterProps> = ({
         // Signal event to ChatManager
         emitter.emit('chats:private-message', {
           emittedInputMessage: inputMessage,
-          emittedTime: Date.now(),
         });
 
         // Clear input message
