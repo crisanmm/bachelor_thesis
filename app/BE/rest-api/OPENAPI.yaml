@@ -1,0 +1,363 @@
+openapi: 3.0.0
+
+info:
+  title: Think-in API
+  description: >
+    This API documents the endpoints that the Think-in application uses.
+  version: 1.0.0
+
+servers:
+  - url: https://api.think-in.me/dev
+
+components:
+  schemas:
+    ChatMessage:
+      type: object
+      properties:
+        userInformation:
+          type: object
+          properties:
+            name:
+              type: string
+              example: Ana
+            id:
+              type: string
+              example: '4f5cd51e-770a-4123-97e8-55baeb910b3c'
+        time:
+          type: number
+          description: 'Number of milliseconds elapsed since January 1, 1970 00:00:00 UTC'
+          example: 1619901459879
+        data:
+          type: string
+          example: 'this is a text message'
+        type:
+          description: MIME type of message
+          type: string
+          example: 'text/plain'
+        language:
+          description: in case type is 'text/plain', ISO-639-1 language code
+          type: string
+          example: 'en'
+        alt:
+          description: in case type is 'image/jpeg', image alternative text
+          type: string
+          example: a dog running
+
+    ChatId:
+      type: string
+      description: SHA256 hash of the user IDs of this chat.
+      example: 90a163822ac71f5f4b661ab5c8231405cd2a0dbe8997c77ba9abd41cabbfb300
+
+    MessageId:
+      type: string
+      description: UNIX milliseconds timestamp and nanoid (https://www.npmjs.com/package/nanoid) separated by the '_' character.
+      example: 90a163822ac71f5f4b661ab5c8231405cd2a0dbe8997c77ba9abd41cabbfb300
+
+    ErrorResponseBody:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: 'Failed decoding avatarURI'
+
+    GetChatsChatIdResponseBody:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/ChatMessage'
+
+    GetChatsChatIdMessageIdResponseBody:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            lastEvaluatedKey:
+              type: object
+              description: Used for pagination. Won't be returned if there is no next page.
+              properties:
+                PK:
+                  type: string
+                  description: DynamoDB Partition Key
+                  example: '#CHATROOM#90a163822ac71f5f4b661ab5c8231405cd2a0dbe8997c77ba9abd41cabbfb300'
+                SK:
+                  type: string
+                  description: DynamoDB Sort/Range Key
+                  example: '#1619901459880#4f5cd51e-770a-4123-97e8-55baeb910b3c'
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/ChatMessage'
+
+    PostChatsChatIdRequestBody:
+      type: object
+      properties:
+        chatRoomId:
+          type: string
+          description: Hash of the IDs of the users that are in this chatroom
+          example: '90a163822ac72f5f4b661ab5c8231405cd2a0dbe8997c77ba9abd41cabbfb300'
+        message:
+          $ref: '#/components/schemas/ChatMessage'
+
+    PostChatsChatIdResponseBody:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            PK:
+              type: string
+              description: Partition Key as stored in DynamoDB. Has the form "#CHATROOM#<CHATROOM-ID>"
+              example: '#CHATROOM#90a163822ac72f5f4b661ab5c8231405cd2a0dbe8997c77ba9abd41cabbfb300'
+            SK:
+              type: string
+              description: Sort/Range Key as stored in DynamoDB. Has the form "#<MILLISECOND-TIMESTAMP>#<USER-ID>"
+              example: 1619901459879
+            message:
+              $ref: '#/components/schemas/ChatMessage'
+
+    
+
+paths:
+  /chats/{chatId}:
+    parameters:
+      - in: path
+        required: true
+        name: chatId
+        description: The chat ID to perform operations on.
+        schema:
+          $ref: '#/components/schemas/ChatId'
+    get:
+      tags:
+        - chats
+      summary: Get messages from a chat.
+      responses:
+        '200':
+          description: OK. Returns chat messages.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetChatsChatIdResponseBody'
+    post:
+      tags:
+        - chats
+      summary: Post a chat message.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostChatsChatIdRequestBody'
+      responses:
+        '201':
+          description: Created. Returns the sent message.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/PostChatsChatIdResponseBody'
+        '400':
+          description: Bad Request. Possibly malformed request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '409':
+          description: Conflict. Resource already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+
+  /chats/{chatId}/{messageId}:
+    parameters:
+      - in: path
+        required: true
+        name: chatId
+        description: The chat ID to perform operations on.
+        schema:
+          $ref: '#/components/schemas/ChatId'
+      - in: path
+        required: true
+        name: messageId
+        description: The message ID to perform operations on.
+        schema:
+          $ref: '#/components/schemas/MessageId'
+
+    get:
+      tags:
+        - chats
+      summary: Delete chat room with path parameter id.
+      responses:
+        '200':
+          description: OK. Returned chat messages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetChatsChatIdMessageIdResponseBody'
+        '400':
+          description: Bad request. Possibly malformed path parameter.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+    put:
+      tags:
+        - chats
+      summary: Update a chat message.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutChatsIdResponseBody'
+      responses:
+        '200':
+          description: OK. Updated message.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/ChatMessagePostResponseBody'
+        '400':
+          description: Bad Request. Possibly malformed request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+
+    delete:
+      tags:
+        - chats
+      summary: Delete a chat message.
+      responses:
+        '200':
+          description: OK. Deleted message.
+# paths:
+#   /chats:
+#     get:
+#       summary: Get list of chat messages.
+#       parameters:
+#         - in: query
+#           required: false
+#           name: offset
+#           schema:
+#             type: number
+#             example: 0
+#         - in: query
+#           required: false
+#           name: limit
+#           schema:
+#             type: number
+#             example: 10
+#       responses:
+#         "200":
+#           description: OK. List successfully retrieved.
+#           content:
+#             application/json:
+#               schema:
+#                 type: array
+#                 items:
+#                   $ref: "#/components/schemas/message"
+
+#     post:
+#       summary: Adds a message in a chat room.
+#       requestBody:
+#         required: true
+#         content:
+#           application/json:
+#             schema:
+#               $ref: "#/components/schemas/message"
+#       responses:
+#         '201':
+#           description: Returns the sent message.
+#           content:
+#             application/json:
+#               schema:
+#               $ref: "#/components/schemas/message"
+#         '400':
+#           description: Bad request. Request body is malformed.
+
+#   /chats/{idchat}:
+#     parameters:
+#     - in: path
+#       name: idchat
+#       schema:
+#         type: integer
+#       required: true
+#     - in: query
+#       name: limit
+#       schema:
+#         type: integer
+#       required: false
+
+#     get:
+#       summary: Returns the message with id {idchat} in a chat room.
+#       responses:
+#         '200':
+#           description: OK. Message with specific ID retrieved.
+#           content:
+#             application/json:
+#               schema:
+#                 type: array
+#                 items:
+#                   $ref: "#/components/schemas/message"
+#         '400':
+#           description: Bad request. Possibly malformed parameter, is {idchat} an integer?
+
+#     put:
+#       summary: Create or update chat message with specific ID.
+#       requestBody:
+#         required: true
+#         content:
+#           application/json:
+#             schema:
+#               $ref: "#/components/schemas/message"
+#       responses:
+#         '201':
+#           description: Created. Chat message with specific ID successfully created.
+#           content:
+#             application/json:
+#               schema:
+#                 type: array
+#                 items:
+#                   $ref: "#/components/schemas/message"
+#         '400':
+#           description: Bad request. Request body is malformed.
+
+#     delete:
+#       summary: Deletes a chat message with specific ID.
+#       responses:
+#         "204":
+#           description: No content. Chat message with specific ID successfully deleted.
+#           content:
+#             application/json:
+#             schema:
+#                 $ref: "#/components/schemas/message"
