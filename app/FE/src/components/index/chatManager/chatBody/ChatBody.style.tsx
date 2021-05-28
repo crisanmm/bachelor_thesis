@@ -5,9 +5,9 @@ const StyledMessages = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  height: 600px;
+  height: 400px;
   overflow: scroll;
-  padding: 0 ${({ theme }) => theme.spacing(1)}px;
+  padding: ${({ theme }) => theme.spacing(2)}px;
   padding-top: ${({ theme }) => theme.spacing(1)}px;
 `;
 
@@ -33,17 +33,28 @@ const StyledMessage = styled.div<StyledMessageProps>`
     border-radius: ${({ theme }) => theme.spacing(0.5)}px;
     padding: ${({ theme }) => theme.spacing(1)}px;
   }
-
-  > a img {
-    border-radius: ${({ theme }) => theme.spacing(2)}px;
-    max-height: 400px;
-  }
 `;
 
-const StyledAvatar = styled((props) => <Avatar alt={props.alt} src={props.src} {...props} />)`
+const StyledImage = styled.img`
+  border-radius: ${({ theme }) => theme.spacing(2)}px;
+
+  ${({ theme }) => theme.breakpoints.down('sm')} {
+    max-height: 200px;
+    max-width: 200px;
+  }
+
+  max-height: 300px;
+  max-width: 300px;
+`;
+
+const StyledNoMessagesAvatar = styled((props) => <Avatar alt={props.alt} src={props.src} {...props} />)`
   height: ${({ theme }) => theme.spacing(10)}px;
   width: ${({ theme }) => theme.spacing(10)}px;
   margin-bottom: ${({ theme }) => theme.spacing(1)}px;
 `;
 
-export { StyledMessages, StyledMessage, StyledAvatar };
+const StyledMessagesAvatar = styled((props) => <Avatar alt={props.alt} src={props.src} {...props} />)`
+  cursor: pointer;
+`;
+
+export { StyledMessages, StyledMessage, StyledImage, StyledNoMessagesAvatar, StyledMessagesAvatar };

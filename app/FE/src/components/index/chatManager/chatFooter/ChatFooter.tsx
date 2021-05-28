@@ -1,5 +1,5 @@
 import React, { SetStateAction } from 'react';
-import { Box, Button, IconButton, Input, TextField, Tooltip } from '@material-ui/core';
+import { Box, IconButton, Tooltip } from '@material-ui/core';
 import { Photo, Send } from '@material-ui/icons';
 import { Emitter } from 'mitt';
 import {
@@ -12,13 +12,13 @@ import {
 interface ChatFooterProps {
   emitter: Emitter;
   inputMessage: string;
-  setInputMessage: React.Dispatch<SetStateAction<string>>;
+  setState: any;
 }
 
 const ChatFooter: React.FunctionComponent<ChatFooterProps> = ({
   emitter,
   inputMessage,
-  setInputMessage,
+  setState,
 }) => (
   <StyledChatFooter>
     <label htmlFor="image-upload">
@@ -51,17 +51,20 @@ const ChatFooter: React.FunctionComponent<ChatFooterProps> = ({
         // Signal event to ChatManager
         emitter.emit('chats:private-message', {
           emittedInputMessage: inputMessage,
+          emittedTime: Date.now(),
         });
 
         // Clear input message
-        setInputMessage('');
+        setState({ inputMessage: '' });
       }}
       style={{ width: '100%' }}
     >
       <StyledTextField
         variant="outlined"
         value={inputMessage}
-        onChange={(e) => setInputMessage(e.target.value)}
+        onChange={(e) => {
+          setState({ inputMessage: e.target.value });
+        }}
         fullWidth
         // rowsMax={2}
         // multiline

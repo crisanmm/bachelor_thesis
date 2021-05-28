@@ -14,12 +14,14 @@ import type { UserAttributes } from '#utils';
 type UserInformationType = {
   id: string;
   name: string;
+  picture: string;
 };
 
 interface BaseMessage {
   userInformation: UserInformationType;
   type: 'text/plain' | 'image/jpeg'; // MIME type of messages
   data: string;
+  time: number;
 }
 
 interface TextMessageType extends BaseMessage {
