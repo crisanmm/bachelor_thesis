@@ -17,5 +17,7 @@ declare module 'mitt' {
   export interface Emitter {
     on<T = any>(type: EventType, handler: MyHandler<T>): void;
     on(type: '*', handler: MyWildcardHandler): void;
+    off<T = any>(type: EventType, handler: MyHandler<T>): void;
+    off(type: '*', handler: MyWildcardHandler): void;
   }
 }
