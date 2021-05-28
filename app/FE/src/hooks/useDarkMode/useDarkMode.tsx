@@ -11,16 +11,15 @@ interface useDarkModeType {
 
 const useDarkMode: useDarkModeType = () => {
   const [isDarkTheme, setIsDarkTheme] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('isDarkTheme') === 'true' ? true : false;
-    }
+    // Make sure this is only run on browser
+    if (typeof window !== 'undefined') return localStorage.getItem('isDarkTheme') === 'true' ? true : false;
     return false;
   });
 
   const toggleTheme = () => {
     setIsDarkTheme((isDarkTheme) => {
-      if (typeof window !== 'undefined')
-        localStorage.setItem('isDarkTheme', (!isDarkTheme).toString());
+      // Make sure this is only run on browser
+      if (typeof window !== 'undefined') localStorage.setItem('isDarkTheme', (!isDarkTheme).toString());
       return !isDarkTheme;
     });
   };
