@@ -47,9 +47,8 @@ const MainAttributesBox = () => {
   const [avatarSrc, setAvatarSrc] = useState<string>();
   const [changesWereMade, setChangesWereMade] = useState(false);
   const { isSignedInWithAThirdParty } = useUser();
-  const { deleteUser } = useContext(AccountContext.Context);
-
-  const { getSession, updateUserAttributes, uploadAvatar } = useContext(AccountContext.Context);
+  const { deleteUser, getSession, updateUserAttributes, adminUpdateUserAttributes, uploadAvatar } =
+    useContext(AccountContext.Context);
 
   const onSubmit = async ({
     firstName,
@@ -61,28 +60,40 @@ const MainAttributesBox = () => {
   }: typeof initialValues) => {
     try {
       // if (changesWereMade) {
+      // Upload new avatar only if picture was changed
+      if (getAttributesFromSession(await getSession()).picture !== avatarSrc)
+        await uploadAvatar(avatarSrc!);
+
       const attributes: UpdateUserAttributesType = {
-        'given_name': firstName,
-        'family_name': lastName,
         'custom:custom_facebook': customFacebook ?? '',
         'custom:custom_linkedin': customLinkedin ?? '',
         'custom:custom_phone': customPhone ?? '',
         'custom:custom_job': customJob ?? '',
       };
 
-      await updateUserAttributes(attributes);
+      if (!isSignedInWithAThirdParty) {
+        attributes.given_name = firstName;
+        attributes.family_name = lastName;
 
-      // Upload new avatar only if picture was changed
-      if (getAttributesFromSession(await getSession()).picture !== avatarSrc)
-        await uploadAvatar(avatarSrc!);
+        await updateUserAttributes(attributes);
+        setAlert(() => () => (
+          <StyledAlert severity="success" title="Success">
+            Successfully updated profile.
+          </StyledAlert>
+        ));
+        setTimeout(() => router.reload(), 500);
+      } else {
+        // if signed in with third party, call a HTTP triggered lambda function that
+        // changes the custom attributes
+        await adminUpdateUserAttributes(attributes);
+        setAlert(() => () => (
+          <StyledAlert severity="success" title="Success">
+            Successfully updated profile. Please log out and log in again for the changes to show.
+          </StyledAlert>
+        ));
+        setTimeout(() => router.reload(), 2000);
+      }
       // }
-
-      setAlert(() => () => (
-        <StyledAlert severity="success" title="Success">
-          Successfully updated profile.
-        </StyledAlert>
-      ));
-      setTimeout(() => router.reload(), 500);
     } catch (e) {
       setAlert(() => () => (
         <StyledAlert severity="error" title="Error">
@@ -144,7 +155,8 @@ const MainAttributesBox = () => {
     <FormikForm.StyledFormWrapper>
       {isSignedInWithAThirdParty && (
         <MuiAlert severity="warning">
-          You are logged in with a third party, you can&apos;t change your account information.
+          You are logged in with a third party, you can&apos;t change some of your account
+          information.
         </MuiAlert>
       )}
 
@@ -209,37 +221,25 @@ const MainAttributesBox = () => {
                   label="Last name"
                   required
                 />
+                <FormikForm.FormikField type="text" name="customJob" label="Job" />
                 <FormikForm.FormikField
-                  disabled={isSignedInWithAThirdParty}
-                  type="text"
-                  name="customJob"
-                  label="Job"
-                />
-                <FormikForm.FormikField
-                  disabled={isSignedInWithAThirdParty}
                   type="text"
                   name="customFacebook"
                   label="Link to Facebook"
                 />
                 <FormikForm.FormikField
-                  disabled={isSignedInWithAThirdParty}
                   type="text"
                   name="customLinkedin"
                   label="Link to LinkedIn"
                 />
-                <FormikForm.FormikField
-                  disabled={isSignedInWithAThirdParty}
-                  type="text"
-                  name="customPhone"
-                  label="Phone number"
-                />
+                <FormikForm.FormikField type="text" name="customPhone" label="Phone number" />
 
                 <Button
                   endIcon={<ArrowForward />}
                   variant="contained"
                   color="primary"
                   type="submit"
-                  disabled={isSignedInWithAThirdParty || props.isSubmitting}
+                  disabled={props.isSubmitting}
                 >
                   save changes
                 </Button>
@@ -264,13 +264,7 @@ const MainAttributesBox = () => {
         </Link>
 
         <Box mt={2}>
-          <Button
-            disabled={isSignedInWithAThirdParty}
-            color="secondary"
-            variant="contained"
-            fullWidth
-            onClick={onClickDeleteAccount}
-          >
+          <Button color="secondary" variant="contained" fullWidth onClick={onClickDeleteAccount}>
             Delete account
           </Button>
         </Box>
