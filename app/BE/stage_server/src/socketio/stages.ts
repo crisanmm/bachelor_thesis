@@ -1,17 +1,9 @@
 import { Socket, Server } from 'socket.io';
-
-type Position = [number, number, number];
+import type { Position, AttenderType } from '../shared';
 
 interface AttenderPositionChange {
   id: string;
   position: Position;
-}
-
-interface AttenderType {
-  position: Position;
-  givenName: string;
-  familyName: string;
-  id: string;
 }
 
 const registerListeners = (io: Server) => {
@@ -21,14 +13,14 @@ const registerListeners = (io: Server) => {
   });
 
   io.of('/stages').on('connection', async (socket) => {
-    socket.on('attender-join', async (attender: AttenderType) => {
-      socket.attender = attender;
-      console.log(`${socket.idToken.email} has joined the stage`);
+    socket.on('attender-join', async () => {
+      // socket.attender = attender;
+      console.log(`${socket.idTokenDecoded.email} has joined the stage`);
 
       /**
        * Inform other attenders in this room that a new attender has joined.
        */
-      socket.in(socket.handshake.query.room!).emit('attender-join', attender);
+      socket.in(socket.handshake.query.room!).emit('attender-join', socket.attender);
 
       /**
        * Inform the new attender of all the other attenders in this room.
@@ -48,16 +40,13 @@ const registerListeners = (io: Server) => {
 
     socket.on('attender-leave', (attender: AttenderType) => {
       /**
-       * Disconnection initiated by the user.
+       * Disconnection when user changes stage.
        */
       socket.in(socket.handshake.query.room!).emit('attender-leave', attender);
       socket.disconnect();
     });
 
     socket.on('disconnect', (reason: string) => {
-      /**
-       * Disconnection because of lost connection.
-       */
       console.log(`Client disconnected, reason: ${reason}`);
       if (socket.attender)
         socket.in(socket.handshake.query.room!).emit('attender-leave', socket.attender);

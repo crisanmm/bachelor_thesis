@@ -22,12 +22,17 @@
   },
   "homepage": "https://github.com/crisanmm/bachelor_thesis#readme",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.17.0",
+    "@aws-sdk/s3-request-presigner": "^3.17.0",
     "@google-cloud/translate": "^6.2.0",
+    "axios": "^0.21.1",
     "chalk": "^4.1.0",
     "dotenv": "^8.2.0",
     "jsonwebtoken": "^8.5.1",
     "jwk-to-pem": "^2.0.5",
-    "socket.io": "^4.0.1"
+    "mime-types": "^2.1.30",
+    "socket.io": "^4.0.1",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
@@ -36,8 +41,10 @@
     "@types/jest": "^26.0.23",
     "@types/jsonwebtoken": "^8.5.1",
     "@types/jwk-to-pem": "^2.0.0",
+    "@types/mime-types": "^2.1.0",
     "@types/node": "^14.14.39",
     "@types/socket.io": "^2.1.13",
+    "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^4.17.0",
     "@typescript-eslint/parser": "^4.17.0",
     "babel-jest": "^26.6.3",

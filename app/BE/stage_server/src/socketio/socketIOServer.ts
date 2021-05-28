@@ -22,8 +22,10 @@ const registerGeneralMiddleware = (io: SocketIOServer) => {
   ['/stages', '/chats'].forEach((namespace) => {
     io.of(namespace).use(async (socket, next) => {
       try {
-        const idToken = await validateJWT(socket.handshake.auth.idToken as string);
-        socket.idToken = idToken;
+        const idTokenDecoded = await validateJWT(socket.handshake.auth.idToken as string);
+        socket.idToken = socket.handshake.auth.idToken;
+        socket.idTokenDecoded = idTokenDecoded;
+        socket.attender = JSON.parse(socket.handshake.query.attender as string);
         next();
       } catch (e) {
         console.log(e);

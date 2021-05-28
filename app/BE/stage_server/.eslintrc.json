@@ -26,7 +26,7 @@
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": "warn",
     "no-new": "warn",
-    "max-len": ["warn", { "code": 100 }],
+    "max-len": ["warn", { "code": 120 }],
     "default-case": "off",
     "prefer-promise-reject-errors": "off",
     "no-unneeded-ternary": "off",

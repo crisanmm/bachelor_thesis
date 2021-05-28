@@ -46,4 +46,44 @@ type JWT = {
   'token_use': string;
 };
 
-export type { JWT };
+type Position = [number, number, number];
+
+interface AttenderType {
+  position: Position;
+  picture: string;
+  id: string;
+  email: string;
+  emailVerified: boolean;
+  givenName: string;
+  familyName: string;
+  customFacebook?: string;
+  customLinkedin?: string;
+  customPhone?: string;
+  customJob?: string;
+}
+
+type UserInformationType = {
+  id: string;
+  name: string;
+};
+
+interface BaseMessage {
+  userInformation: UserInformationType;
+  type: 'text/plain' | 'image/jpeg'; // MIME type of messages
+  data: string;
+  time: number;
+}
+
+interface TextMessageType extends BaseMessage {
+  // ISO-639-1 language code
+  language: string;
+}
+
+interface MediaMessageType extends BaseMessage {
+  // alternative text description of the media
+  alt: string;
+}
+
+type MessageType = TextMessageType | MediaMessageType;
+
+export type { JWT, Position, AttenderType, TextMessageType, MediaMessageType, MessageType };

@@ -1,16 +1,13 @@
 import socketio from 'socket.io';
-import type { JWT } from '../shared';
+import type { JWT, AttenderType } from '../shared';
 
 type Position = [number, number, number];
 
 declare module 'socket.io' {
   interface Socket {
-    attender: {
-      position: Position;
-      givenName: string;
-      familyName: string;
-      id: string;
-    };
-    idToken: JWT;
+    attender: AttenderType;
+    positon: Position;
+    idToken: string;
+    idTokenDecoded: JWT;
   }
 }
