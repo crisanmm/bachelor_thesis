@@ -65,7 +65,7 @@ const AttenderManager = () => {
         <Attender key={myAttender.id} {...myAttender} size="lg" color="green" isMyAttender />
       )}
       {attenders.map((attender) => (
-        <Attender key={attender.id} {...attender} size="sm" color="white" />
+        <Attender key={attender.id} {...attender} size="md" color="white" />
       ))}
     </>
   );

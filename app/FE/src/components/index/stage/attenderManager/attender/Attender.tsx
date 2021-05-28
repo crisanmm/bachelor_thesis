@@ -1,10 +1,9 @@
-import React, { Suspense, useState, useContext } from 'react';
+import React, { Suspense, useState } from 'react';
 import { AttenderType } from '../shared';
 import AttenderStick from './AttenderStick';
 import AttenderAvatar from './AttenderAvatar';
 import AttenderName from './AttenderName';
 import AttenderDialog from './AttenderDialog';
-import { SocketContext } from '#contexts';
 
 interface AttenderProps {
   size?: 'sm' | 'md' | 'lg';
@@ -13,12 +12,7 @@ interface AttenderProps {
 }
 
 const Attender: React.FunctionComponent<AttenderProps & AttenderType> = (props) => {
-  const { emitter } = useContext(SocketContext.Context);
   const [isAvatarClicked, setIsAvatarClicked] = useState(false);
-
-  emitter.on(`attender-${props.id}:avatar-clicked`, () => {
-    setIsAvatarClicked(true);
-  });
 
   return (
     <Suspense fallback={null}>
