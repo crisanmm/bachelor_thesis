@@ -132,13 +132,11 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
        * then select the global chat
        */
       if (newHeaderChats.map((headerChat) => headerChat.selected).every((selected) => selected === false))
-        newHeaderChats[0].selected = true;
+        newHeaderChats[0] = { ...newHeaderChats[0], selected: true };
 
-      return { headerChats: newHeaderChats };
+      // reset last evaluated key
+      return { headerChats: newHeaderChats, lastEvaluatedKey: undefined };
     });
-
-    // reset last evaluated key
-    this.setState({ lastEvaluatedKey: undefined });
   };
 
   onChatsOpenedChat = (userAttributes: UserAttributes) => {
@@ -297,6 +295,7 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
     // if the selected header chat changed in the meantime, ignore this response
     // else process it
     if (getSelectedHeaderChat(this.state.headerChats).user.id === withUser.id) {
+      console.log('here2');
       const lastEvaluatedKey = {
         lastEvaluatedPK: data.lastEvaluatedPK,
         lastEvaluatedSK: data.lastEvaluatedSK,
@@ -420,6 +419,7 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
     if (
       getSelectedHeaderChat(prevState.headerChats).user.id !== getSelectedHeaderChat(this.state.headerChats).user.id
     ) {
+      console.log('here');
       this.setState({ areMessagesInInitialLoad: true });
       this.props.socket.emit('chat-messages', {
         withUser: getSelectedHeaderChat(this.state.headerChats).user,
