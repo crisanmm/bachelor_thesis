@@ -6,7 +6,13 @@ import { useUser } from '#hooks';
 
 const ProfileChangePassword = () => {
   const router = useRouter();
-  const { isSignedInWithAThirdParty } = useUser();
+  const { isLoggedIn, isLoggingIn, isSignedInWithAThirdParty } = useUser();
+
+  if (!isLoggedIn) {
+    // if user is not logged in, redirect to index page
+    if (!isLoggingIn) router.push('/');
+    return <></>;
+  }
 
   // isSignedInWithAThirdParty is undefined if it's still loading
   if (isSignedInWithAThirdParty === undefined) return <></>;
