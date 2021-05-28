@@ -32,6 +32,9 @@ const getChats = async (event: any) => {
   if (!event.pathParameters.chatId)
     return makeResponse(400, false, { error: 'No chat ID found as path parameter.' });
 
+  let limit = 20;
+  if (event.queryStringParameters?.limit) limit = event.queryStringParameters.limit;
+
   /**
    * LastEvaluatedKey required if pagination is wanted
    */
@@ -43,17 +46,20 @@ const getChats = async (event: any) => {
   }
 
   const PK = `chat_${event.pathParameters.chatId}`;
+  const SK_PREFIX = 'message_';
 
   const params: DynamoDB.QueryInput = {
     TableName: process.env.DYNAMODB_TABLE_NAME as string,
-    KeyConditionExpression: '#PK = :PK',
+    KeyConditionExpression: '#PK = :PK AND begins_with(#SK, :SK_PREFIX)',
     ExpressionAttributeNames: {
       '#PK': 'PK',
+      '#SK': 'SK'
     } as DynamoDB.ExpressionAttributeNameMap,
     ExpressionAttributeValues: {
       ':PK': PK,
+      ':SK_PREFIX': SK_PREFIX
     } as DynamoDB.ExpressionAttributeValueMap,
-    Limit: 20,
+    Limit: limit,
     ConsistentRead: true,
     ScanIndexForward: false,
   };

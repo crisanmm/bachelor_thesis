@@ -14,38 +14,38 @@ provider:
     DYNAMODB_TABLE_NAME: think-in-database
 
 functions:
-  # post-avatar:
-  #   handler: avatars/post-avatar.postAvatar
-  #   events:
-  #     - http:
-  #         path: /avatars
-  #         method: post
-  #         cors: true
-  #   iamRoleStatements:
-  #     - Effect: 'Allow'
-  #       Action:
-  #         - 's3:*'
-  #       Resource:
-  #         - 'arn:aws:s3:::think-in-content/*'
-  #     - Effect: 'Allow'
-  #       Action:
-  #         - cognito-identity:Describe*
-  #         - cognito-identity:Get*
-  #         - cognito-identity:List*
-  #         - cognito-idp:Describe*
-  #         - cognito-idp:AdminGet*
-  #         - cognito-idp:AdminList*
-  #         - cognito-idp:AdminUpdate*
-  #         - cognito-idp:List*
-  #         - cognito-idp:Get*
-  #         - cognito-sync:Describe*
-  #         - cognito-sync:Get*
-  #         - cognito-sync:List*
-  #         - iam:ListOpenIdConnectProviders
-  #         - iam:ListRoles
-  #         - sns:ListPlatformApplications
-  #       Resource:
-  #         - '*'
+  post-avatar:
+    handler: avatars/post-avatar.postAvatar
+    events:
+      - http:
+          path: /avatars
+          method: post
+          cors: true
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action:
+          - 's3:*'
+        Resource:
+          - 'arn:aws:s3:::think-in-content/*'
+      - Effect: 'Allow'
+        Action:
+          - cognito-identity:Describe*
+          - cognito-identity:Get*
+          - cognito-identity:List*
+          - cognito-idp:Describe*
+          - cognito-idp:AdminGet*
+          - cognito-idp:AdminList*
+          - cognito-idp:AdminUpdate*
+          - cognito-idp:List*
+          - cognito-idp:Get*
+          - cognito-sync:Describe*
+          - cognito-sync:Get*
+          - cognito-sync:List*
+          - iam:ListOpenIdConnectProviders
+          - iam:ListRoles
+          - sns:ListPlatformApplications
+        Resource:
+          - '*'
 
   get-chats:
     handler: chats/get-chats.getChats
@@ -110,6 +110,102 @@ functions:
       - Effect: 'Allow'
         Action:
           - dynamodb:DeleteItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}
+
+  get-user:
+    handler: users/get-user.getUser
+    events:
+      - http:
+          path: /users/{userId}
+          method: get
+          cors: true
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action:
+          - cognito-identity:Describe*
+          - cognito-identity:Get*
+          - cognito-identity:List*
+          - cognito-idp:Describe*
+          - cognito-idp:AdminGet*
+          - cognito-idp:AdminList*
+          - cognito-idp:AdminUpdate*
+          - cognito-idp:List*
+          - cognito-idp:Get*
+          - cognito-sync:Describe*
+          - cognito-sync:Get*
+          - cognito-sync:List*
+          - iam:ListOpenIdConnectProviders
+          - iam:ListRoles
+          - sns:ListPlatformApplications
+        Resource:
+          - '*'
+
+  put-user:
+    handler: users/put-user.putUser
+    events:
+      - http:
+          path: /users/{userId}
+          method: put
+          cors: true
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action:
+          - cognito-identity:Describe*
+          - cognito-identity:Get*
+          - cognito-identity:List*
+          - cognito-idp:Describe*
+          - cognito-idp:AdminGet*
+          - cognito-idp:AdminList*
+          - cognito-idp:AdminUpdate*
+          - cognito-idp:List*
+          - cognito-idp:Get*
+          - cognito-sync:Describe*
+          - cognito-sync:Get*
+          - cognito-sync:List*
+          - iam:ListOpenIdConnectProviders
+          - iam:ListRoles
+          - sns:ListPlatformApplications
+        Resource:
+          - '*'
+
+  get-notifications:
+    handler: notifications/get-notifications.getNotifications
+    events:
+      - http:
+          path: /notifications/{userId}
+          method: get
+          cors: true
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}
+  
+  post-notifications:
+    handler: notifications/post-notifications.postNotifications
+    events:
+      - http:
+          path: /notifications/{userId}
+          method: post
+          cors: true
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}
+
+  delete-notifications:
+    handler: notifications/delete-notifications.deleteNotifications
+    events:
+      - http:
+          path: /notifications/{userId}
+          method: delete
+          cors: true
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action:
+          - dynamodb:Query
+          - dynamodb:BatchWriteItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}
 
 resources:

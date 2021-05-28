@@ -23,7 +23,7 @@ const uploadAvatarToS3AndUpdateUserAttribute: uploadAvatarToS3AndUpdateUserAttri
   userId,
   avatarBuffer
 ) => {
-  const processedAvatar = await sharp(avatarBuffer).resize(96, 96).jpeg().toBuffer();
+  const processedAvatar = await sharp(avatarBuffer).resize(256, 256).jpeg().toBuffer();
 
   const { Location: avatarURI } = await s3
     .upload({
@@ -97,7 +97,9 @@ const postAvatar = async (event: any) => {
     // this branch is taken when avatar is uploaded after sign-up, after email is verified
 
     // ID token already validated by API Gateway, just decode it
-    const { sub: userId } = JWT.decode(event.headers.Authorization.split(' ')[1]) as any;
+    const { 'cognito:username': userId } = JWT.decode(
+      event.headers.Authorization.split(' ')[1]
+    ) as any;
 
     const avatarURI = await uploadAvatarToS3AndUpdateUserAttribute(
       userId,
