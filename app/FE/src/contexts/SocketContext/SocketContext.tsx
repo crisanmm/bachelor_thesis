@@ -9,7 +9,7 @@ import { StyledContainer } from '#components/shared';
 import { getAttributesFromSession } from '#utils';
 
 // const WEBSOCKET_ADDRESS = 'ws://3.122.54.160:3000';
-const WEBSOCKET_ADDRESS = 'ws://localhost:4000';
+const WEBSOCKET_ADDRESS = 'ws://192.168.0.103:4000';
 
 const setupSocketEvents = (socket: Socket) => {
   socket.on('connect', () => {
@@ -17,10 +17,7 @@ const setupSocketEvents = (socket: Socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log(
-      '🚀  -> file: Socket.tsx  -> line 13  -> socket disconnected',
-      'socket disconnected',
-    );
+    console.log('🚀  -> file: Socket.tsx  -> line 13  -> socket disconnected', 'socket disconnected');
   });
 
   socket.on('connect_error', (err) => {
@@ -39,7 +36,11 @@ interface StageContext {
 
 const Context = createContext<StageContext>({} as StageContext);
 
-const Provider: React.FunctionComponent = ({ children }) => {
+interface SocketContextProviderProps {
+  stageId: string;
+}
+
+const Provider: React.FunctionComponent<SocketContextProviderProps> = ({ children, stageId }) => {
   const { getSession } = useContext(AccountContext.Context);
   const [stageSocket, setStageSocket] = useState<Socket | null>();
   const [chatSocket, setChatSocket] = useState<Socket | null>();
@@ -49,9 +50,8 @@ const Provider: React.FunctionComponent = ({ children }) => {
     getSession()
       .then((userSession) => {
         const socketOptions = {
-          auth: { idToken: userSession.getIdToken().getJwtToken() },
+          auth: { idToken: userSession.getIdToken().getJwtToken(), stageId },
           query: {
-            stage: 'dev-room',
             attender: JSON.stringify({
               position: [0, 0, 0],
               ...getAttributesFromSession(userSession),
@@ -91,9 +91,7 @@ const Provider: React.FunctionComponent = ({ children }) => {
       </StyledContainer>
     );
 
-  return (
-    <Context.Provider value={{ stageSocket, chatSocket, emitter }}>{children}</Context.Provider>
-  );
+  return <Context.Provider value={{ stageSocket, chatSocket, emitter }}>{children}</Context.Provider>;
 };
 
 export default { Context, Provider };

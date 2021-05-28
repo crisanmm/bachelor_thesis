@@ -8,6 +8,7 @@ import {
 } from 'amazon-cognito-identity-js';
 import Amplify, { Auth } from 'aws-amplify';
 import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth';
+import { API_ENDPOINTS, getAttributesFromSession } from '#utils';
 
 const API_URI = 'https://api.think-in.me/dev';
 
@@ -51,6 +52,17 @@ interface UpdateUserAttributes {
 const updateUserAttributes: UpdateUserAttributes = async (attributes) => {
   const user = (await Auth.currentUserPoolUser()) as CognitoUser;
   return Auth.updateUserAttributes(user, attributes);
+};
+
+const adminUpdateUserAttributes: UpdateUserAttributes = async (attributes) => {
+  const userSession = await Auth.currentSession();
+  const idToken = userSession.getIdToken().getJwtToken();
+  const { id } = getAttributesFromSession(userSession);
+  const response = await axios.put(`${API_ENDPOINTS.USERS}/${id}`, attributes, {
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+  });
+  if (response.status === 200) return 'Successful user attributes update to third party user.';
+  return 'Failure user attributes update to third party user.';
 };
 
 interface VerifyEmailAttribute {
@@ -154,6 +166,7 @@ const deleteUser: DeleteUser = async () => {
 const value = {
   signUp,
   updateUserAttributes,
+  adminUpdateUserAttributes,
   signIn,
   verifyEmailAttribute,
   signInWithGoogle,
