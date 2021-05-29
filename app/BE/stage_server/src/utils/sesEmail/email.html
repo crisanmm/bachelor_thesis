@@ -1,0 +1,60 @@
+<html>
+  <head> </head>
+
+  <body>
+    <div style="font-family: Roboto, 'Helvetica Neue', Ubuntu, sans-serif; text-align: center">
+      <div style="max-width: 400px; margin: auto">
+        <a href="https://think-in.me">
+          <img
+            src="https://think-in.s3.eu-central-1.amazonaws.com/icons/logo.png"
+            alt="think-in logo"
+            title="think-in logo"
+            style="display: block; margin: auto"
+            width="65"
+            height="45"
+          />
+        </a>
+      </div>
+
+      <div style="width: 100%; border-bottom: 1px solid rgba(0, 0, 0, 0.12); margin: 8px 0px"></div>
+
+      <div style="max-width: 400px; margin: 32px auto">
+        {{name}} has sent you at least one message:
+        <div style="padding: 16px">
+          <div
+            style="
+              max-width: 350px;
+              margin: auto;
+              border-radius: 4px;
+              background-color: #fafafa;
+              width: 100%;
+              display: table;
+            "
+          >
+            <div style="padding: 16px">
+              <img
+                src="{{picture}}"
+                style="
+                  width: 96px;
+                  height: 96px;
+                  overflow: hidden;
+                  position: relative;
+                  font-size: 1.25rem;
+                  flex-shrink: 0;
+                  line-height: 1;
+                  user-select: none;
+                  border-radius: 50%;
+                "
+              />
+            </div>
+            <span style="font-size: 1.25rem; font-weight: 400; line-height: 1.334; letter-spacing: 0em">{{name}}</span>
+            <div style="width: 60%; padding: 32px; margin: 16px auto; border-radius: 4px; background-color: #f6f6f6">
+              {{message}}
+            </div>
+          </div>
+        </div>
+        <span> View the message by signing in to <a href="https://think-in.me">think-in.me</a>. </span>
+      </div>
+    </div>
+  </body>
+</html>

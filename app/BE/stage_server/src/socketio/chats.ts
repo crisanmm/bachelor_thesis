@@ -8,6 +8,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import * as mime from 'mime-types';
 import { getLanguages, translateText } from '../utils/cloud-translation';
 import type { AttenderType, MessageType } from '../shared';
+import { sendEmail } from '../utils/sesEmail';
 
 const s3 = new S3Client({});
 const API_URL = 'https://api.think-in.me/dev';
@@ -45,6 +46,7 @@ interface ChatMessagesEventType {
 interface ComputeChatId {
   (...userIds: string[]): string;
 }
+console.log(__dirname);
 
 const registerListeners = (io: Server) => {
   let computeChatId: ComputeChatId;
@@ -82,8 +84,6 @@ const registerListeners = (io: Server) => {
 
     socket.on('private-message', async ({ toUser, message }: PrivateMessageEventType) => {
       const url = new URL(`${API_URL}/chats/${computeChatId(toUser.id, socket.attender.id)}`);
-      console.log('🚀  -> file: chats.ts  -> line 81  -> message', message);
-      console.log('🚀  -> file: chats.ts  -> line 81  -> toUser', toUser);
       try {
         await axios.post(url.toString(), message, { headers: getAPIHeaders(socket.idToken) });
         if (userIdToSocketIdMap.has(toUser.id)) {
@@ -106,6 +106,9 @@ const registerListeners = (io: Server) => {
         } else {
           // toUser is offline, save notification to DB, notify user upon next log in
           // TODO: Send email to user.
+          console.log('sending email');
+          await sendEmail({ destinationEmail: toUser.email, fromUser: socket.attender, message });
+          console.log('email sent');
           await axios.post(`${API_URL}/notifications/${toUser.id}`, socket.attender, {
             headers: getAPIHeaders(socket.idToken),
           });

@@ -1,0 +1,5 @@
+{{name}} has just sent you a message:
+
+{{message}}
+
+Go to https://think-in.me/ to see and reply to the message.
