@@ -1,4 +1,4 @@
-import { Avatar } from '@material-ui/core';
+import { Avatar, Button } from '@material-ui/core';
 import styled from 'styled-components';
 
 const StyledMessages = styled.div`
@@ -26,13 +26,22 @@ const StyledMessage = styled.div<StyledMessageProps>`
   > :nth-child(2) {
     margin: auto ${({ theme }) => theme.spacing(1)}px;
   }
+`;
 
-  > span {
-    margin: auto 0;
-    background: ${({ theme }) => theme.palette.background.default};
-    border-radius: ${({ theme }) => theme.spacing(0.5)}px;
-    padding: ${({ theme }) => theme.spacing(1)}px;
+const StyledTextMessageBody = styled.div`
+  margin: auto 0;
+  background: ${({ theme }) => theme.palette.background.default};
+  border-radius: ${({ theme }) => theme.spacing(0.5)}px;
+  padding: ${({ theme }) => theme.spacing(1)}px;
+
+  > p {
+    margin: 0;
   }
+`;
+
+const StyledShowOriginalButton = styled(Button)`
+  padding: ${({ theme }) => theme.spacing(0.1)}px;
+  text-transform: lowercase;
 `;
 
 const StyledImage = styled.img`
@@ -57,4 +66,12 @@ const StyledMessagesAvatar = styled((props) => <Avatar alt={props.alt} src={prop
   cursor: pointer;
 `;
 
-export { StyledMessages, StyledMessage, StyledImage, StyledNoMessagesAvatar, StyledMessagesAvatar };
+export {
+  StyledMessages,
+  StyledMessage,
+  StyledTextMessageBody,
+  StyledShowOriginalButton,
+  StyledImage,
+  StyledNoMessagesAvatar,
+  StyledMessagesAvatar,
+};

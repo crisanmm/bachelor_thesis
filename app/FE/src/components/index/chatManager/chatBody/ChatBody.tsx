@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Typography, Tooltip, CircularProgress } from '@material-ui/core';
+import { Typography, Tooltip, CircularProgress, Button } from '@material-ui/core';
 import { Emitter } from 'mitt';
 import { StyledContainer } from '#components/shared';
 import {
@@ -10,12 +10,15 @@ import {
   getAvatarURI,
   UserAttributes,
   API_ENDPOINTS,
+  TranslatedMessageType,
 } from '#utils';
 import { useAvatar } from '#hooks';
 import { AttenderDialogPopUp } from '#components/index';
 import {
   StyledMessages,
   StyledMessage,
+  StyledTextMessageBody,
+  StyledShowOriginalButton,
   StyledImage,
   StyledNoMessagesAvatar,
   StyledMessagesAvatar,
@@ -46,10 +49,13 @@ const ChatMessage: React.FunctionComponent<ChatMessageProps> = ({ emitter, messa
   const isMessageMine = myUser.id === message.userInformation.id;
   const [isAvatarClicked, setIsAvatarClicked] = useState(false);
   // const avatar = useAvatar(isMessageMine ? myUser.picture : message.userInformation.picture);
+  const [isTranslatedMessageShown, setIsTranslatedMessageShown] = useState<boolean>(
+    (message as TranslatedMessageType).translatedData ? true : false,
+  );
   const userName = isMessageMine ? computeAttenderDisplayName(myUser) : message.userInformation.name;
 
   const [additionalUserInformation, setAdditionalUserInformation] = useState<UserAttributes>();
-  const avatarOnClick = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const onClickAvatar = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (!isAvatarClicked) {
       try {
         const response = await axios.get(`${API_ENDPOINTS.USERS}/${message.userInformation.id}`);
@@ -87,6 +93,10 @@ const ChatMessage: React.FunctionComponent<ChatMessageProps> = ({ emitter, messa
     }
   };
 
+  const onClickShowOriginal = () => {
+    setIsTranslatedMessageShown((isTranslatedMessageShown) => !isTranslatedMessageShown);
+  };
+
   return (
     <>
       <StyledMessage key={index} mine={isMessageMine} _spacing={spacing}>
@@ -95,17 +105,21 @@ const ChatMessage: React.FunctionComponent<ChatMessageProps> = ({ emitter, messa
             <StyledMessagesAvatar
               alt={getAvatarAltText(userName)}
               src={message.userInformation.picture}
-              onClick={avatarOnClick}
+              onClick={onClickAvatar}
             />
           </div>
         </Tooltip>
-        <Tooltip
-          title={`Sent at ${new Date(message.time).toLocaleString()}`}
-          arrow
-          placement={isMessageMine ? 'left' : 'right'}
-        >
+        <Tooltip title={`Sent at ${new Date(message.time).toLocaleString()}`} arrow>
           {message.type === 'text/plain' ? (
-            <span>{message.data}</span>
+            <StyledTextMessageBody>
+              <p>{isTranslatedMessageShown ? (message as TranslatedMessageType).translatedData : message.data}</p>
+              {(message as TranslatedMessageType).translatedData && (
+                <StyledShowOriginalButton variant="text" onClick={onClickShowOriginal}>
+                  show&nbsp;
+                  {isTranslatedMessageShown ? 'original' : 'translated'}
+                </StyledShowOriginalButton>
+              )}
+            </StyledTextMessageBody>
           ) : (
             <a href={message.data} target="_blank" rel="noreferrer">
               <StyledImage alt={(message as MediaMessageType).alt} src={message.data} />
