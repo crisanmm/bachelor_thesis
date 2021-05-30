@@ -1,8 +1,17 @@
 import * as yup from 'yup';
+import * as path from 'path';
 
 const loadEnvironmentVariables = () => {
   process.env.DYNAMODB_TABLE_NAME = 'think-in-database';
   process.env.USER_POOL_ID = 'eu-central-1_pu83KKkCb';
+  process.env.GOOGLE_PROJECT_ID = 'think-in-312413';
+
+  const GOOGLE_APPLICATION_CREDENTIALS_PATH = path.resolve(
+    __dirname,
+    'translation',
+    'GOOGLE_APPLICATION_CREDENTIALS.json',
+  );
+  process.env.GOOGLE_APPLICATION_CREDENTIALS = GOOGLE_APPLICATION_CREDENTIALS_PATH;
 };
 
 interface MakeResponse {
@@ -35,6 +44,7 @@ interface UserAttributes {
   customLinkedin?: string;
   customPhone?: string;
   customJob?: string;
+  customLanguage?: string;
 }
 
 type UserInformationType = {
@@ -104,13 +114,30 @@ const validateNotification: ValidateNotification = (notification) => {
     customJob: yup.string(),
   });
 
-  return schema.validate(notification, {
-    stripUnknown: true,
-    abortEarly: true,
-  }) as Promise<UserAttributes>;
+  return schema.validate(notification, { stripUnknown: true, abortEarly: true }) as Promise<UserAttributes>;
 };
 
-export { makeResponse, validateMessage, validateNotification, loadEnvironmentVariables };
+interface Translation {
+  text: string;
+  to: string; // ISO-639-1 language code
+  from?: string; // ISO-639-1 language code
+}
+
+interface ValidateTranslation {
+  (translation: any): Promise<Translation>;
+}
+
+const validateTranslation: ValidateTranslation = (translation) => {
+  const schema = yup.object().shape({
+    text: yup.string().required('text property representing text to be translated is required'),
+    to: yup.string().required('to property language code representing language to translate text to is required'),
+    from: yup.string(),
+  });
+
+  return schema.validate(translation, { stripUnknown: true, abortEarly: true }) as Promise<Translation>;
+};
+
+export { makeResponse, validateMessage, validateNotification, validateTranslation, loadEnvironmentVariables };
 export type { Message, TextMessageType, MediaMessageType, UserAttributes };
 
 // (async () => {

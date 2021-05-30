@@ -180,7 +180,7 @@ functions:
         Action:
           - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}
-  
+
   post-notifications:
     handler: notifications/post-notifications.postNotifications
     events:
@@ -207,6 +207,26 @@ functions:
           - dynamodb:Query
           - dynamodb:BatchWriteItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}
+
+  post-translate:
+    handler: translation/post-translate.postTranslate
+    events:
+      - http:
+          path: /translation/translate
+          method: post
+          cors: true
+
+  get-languages:
+    handler: translation/get-languages.getLanguages
+    events:
+      - http:
+          path: /translation/languages
+          method: get
+          cors: true
+
+package:
+  include:
+    - translation/GOOGLE_APPLICATION_CREDENTIALS.json
 
 resources:
   Resources:

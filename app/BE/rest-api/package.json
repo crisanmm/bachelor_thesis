@@ -18,6 +18,7 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
+    "@google-cloud/translate": "^6.2.1",
     "aws-sdk": "^2.908.0",
     "jsonwebtoken": "^8.5.1",
     "nanoid": "^2.1.11",
