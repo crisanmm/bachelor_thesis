@@ -9,7 +9,7 @@ const USER_POOL_ID = 'eu-central-1_pu83KKkCb';
 const s3 = new S3();
 const cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider();
 
-interface uploadAvatarToS3AndUpdateUserAttribute {
+interface UploadAvatarToS3AndUpdateUserAttribute {
   (userId: string, avatarBuffer: Buffer): Promise<string>;
 }
 
@@ -19,10 +19,7 @@ interface uploadAvatarToS3AndUpdateUserAttribute {
  * @param avatarBuffer Buffer that contains the avatar image
  * @returns URI to the avatar resource hosted on S3
  */
-const uploadAvatarToS3AndUpdateUserAttribute: uploadAvatarToS3AndUpdateUserAttribute = async (
-  userId,
-  avatarBuffer
-) => {
+const uploadAvatarToS3AndUpdateUserAttribute: UploadAvatarToS3AndUpdateUserAttribute = async (userId, avatarBuffer) => {
   const processedAvatar = await sharp(avatarBuffer).resize(256, 256).jpeg().toBuffer();
 
   const { Location: avatarURI } = await s3
@@ -31,7 +28,6 @@ const uploadAvatarToS3AndUpdateUserAttribute: uploadAvatarToS3AndUpdateUserAttri
       Key: `avatars/${userId}.jpg`,
       Body: processedAvatar,
       ContentType: 'image/jpeg',
-      ACL: 'public-read',
     })
     .promise();
 
@@ -83,7 +79,7 @@ const postAvatar = async (event: any) => {
         case 'UNCONFIRMED':
           const avatarURI = await uploadAvatarToS3AndUpdateUserAttribute(
             requestBody.userId as string,
-            parsedDataUrl.toBuffer()
+            parsedDataUrl.toBuffer(),
           );
           return makeResponse(201, true, { avatarURI });
 
@@ -97,15 +93,15 @@ const postAvatar = async (event: any) => {
     // this branch is taken when avatar is uploaded after sign-up, after email is verified
 
     // ID token already validated by API Gateway, just decode it
-    const { 'cognito:username': userId } = JWT.decode(
-      event.headers.Authorization.split(' ')[1]
-    ) as any;
+    const { 'cognito:username': userId } = JWT.decode(event.headers.Authorization.split(' ')[1]) as any;
 
-    const avatarURI = await uploadAvatarToS3AndUpdateUserAttribute(
-      userId,
-      parsedDataUrl.toBuffer()
-    );
-    return makeResponse(201, true, { avatarURI });
+    try {
+      const avatarURI = await uploadAvatarToS3AndUpdateUserAttribute(userId, parsedDataUrl.toBuffer());
+      return makeResponse(201, true, { avatarURI });
+    } catch (e) {
+      console.log('🚀  -> file: post-avatar.ts  -> line 111  -> e', JSON.stringify(e, null, 2));
+      console.log('🚀  -> file: post-avatar.ts  -> line 111  -> e', e);
+    }
   }
 };
 
