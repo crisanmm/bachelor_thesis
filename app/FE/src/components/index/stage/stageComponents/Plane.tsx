@@ -1,6 +1,6 @@
 import { useContext, useRef } from 'react';
 import * as THREE from 'three';
-import { ThreeEvent, useThree } from '@react-three/fiber';
+import { ThreeEvent, useLoader, useThree } from '@react-three/fiber';
 import { SocketContext } from '#contexts';
 
 const Plane = () => {
@@ -10,15 +10,20 @@ const Plane = () => {
   const { emitter } = useContext(SocketContext.Context);
   //   planeGeometryRef.current?.translate(5, 0, 0);
 
+  const [colorMap, displacementMap, normalMap, roughnessMap, aoMap] = useLoader(THREE.TextureLoader, [
+    'threejs/textures/stage_floor/color.jpg',
+    'threejs/textures/stage_floor/displacement.png',
+    'threejs/textures/stage_floor/normal.jpg',
+    'threejs/textures/stage_floor/roughness.jpg',
+    'threejs/textures/stage_floor/ambientOcclusion.jpg',
+  ]);
+
   const onPointerDown = (e: ThreeEvent<PointerEvent>) => {
     // stopPropagation doesn't really work...
     e.stopPropagation();
 
     // only run the event if the stage plane is the only intersected object
-    if (
-      e.intersections.length === 1 &&
-      e.intersections[0].object.uuid === meshRef.current?.uuid
-    ) {
+    if (e.intersections.length === 1 && e.intersections[0].object.uuid === meshRef.current?.uuid) {
       const { x, y, z } = e.intersections[0].point;
       const geometry = new THREE.SphereGeometry(1, 32, 32);
       const material = new THREE.MeshBasicMaterial({ color: 0x00fff00 });
@@ -31,13 +36,16 @@ const Plane = () => {
   };
 
   return (
-    <mesh
-      ref={meshRef}
-      rotation={[-Math.PI / 2, 0, 0]}
-      onPointerDown={onPointerDown}
-    >
+    <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]} onPointerDown={onPointerDown}>
       <planeGeometry ref={planeGeometryRef} args={[50, 60]} />
-      <meshStandardMaterial color={0x006994} side={THREE.DoubleSide} />
+      <meshStandardMaterial
+        side={THREE.DoubleSide}
+        map={colorMap}
+        displacementMap={displacementMap}
+        normalMap={normalMap}
+        roughnessMap={roughnessMap}
+        aoMap={aoMap}
+      />
     </mesh>
   );
 };

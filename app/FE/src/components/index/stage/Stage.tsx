@@ -21,9 +21,7 @@ const ForwardCanvas: React.FunctionComponent = ({ children }) => {
     <Canvas>
       <MuiThemeProvider theme={muiTheme}>
         <StyledComponentsThemeProvider theme={muiTheme}>
-          <SocketContext.Context.Provider value={{ stageSocket, emitter }}>
-            {children}
-          </SocketContext.Context.Provider>
+          <SocketContext.Context.Provider value={{ stageSocket, emitter }}>{children}</SocketContext.Context.Provider>
         </StyledComponentsThemeProvider>
       </MuiThemeProvider>
     </Canvas>
@@ -39,6 +37,9 @@ const Stage: React.FunctionComponent = () => (
       <axesHelper args={[50]} />
 
       <ambientLight args={[0xc3c3c3, 0.5]} />
+      <directionalLight args={[0xffffff, 0.1]} />
+      <pointLight args={[0xffffff, 0.75, 30]} position={[0, 15, 0]} />
+
       <Suspense fallback={null}>
         <Plane />
         <Platform />
