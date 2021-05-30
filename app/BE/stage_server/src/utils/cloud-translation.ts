@@ -5,8 +5,8 @@ const translateClient = new v2.Translate({ projectId: process.env.GOOGLE_PROJECT
 /**
  * Translate given text from one language to another.
  * @param text Text to be translated.
- * @param to Language to translate to.
- * @param from Optional argument. Original language of the text,
+ * @param to ISO-639-1 language code representing language to translate to.
+ * @param from Optional argument. ISO-639-1 language code representing the language of the text,
  *               can be detected from source text if undefined.
  * @returns Translated text.
  */
@@ -53,3 +53,12 @@ const getLanguages = async (targetLanguage?: string) => {
 };
 
 export { translateText, getLanguages };
+
+(async () => {
+  process.env.GOOGLE_APPLICATION_CREDENTIALS =
+    '/Users/crisanm/git-projects/bachelor_thesis/app/BE/stage_server/GOOGLE_APPLICATION_CREDENTIALS.json';
+  // const languages = await getLanguages();
+  // console.log('🚀  -> file: cloud-translation.ts  -> line 59  -> languages', JSON.stringify(languages));
+  const text = await translateText('mama are mere', 'en', 'ro');
+  console.log('🚀  -> file: cloud-translation.ts  -> line 63  -> text', text);
+})();

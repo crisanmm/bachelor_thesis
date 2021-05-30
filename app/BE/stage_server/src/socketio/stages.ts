@@ -15,7 +15,7 @@ const registerListeners = (io: Server) => {
   io.of('/stages').on('connection', async (socket) => {
     socket.on('attender-join', async () => {
       // socket.attender = attender;
-      console.log(`${socket.idTokenDecoded.email} has joined the stage`);
+      console.log(`${socket.attender.email} has joined the stage`);
 
       /**
        * Inform other attenders in this room that a new attender has joined.
@@ -33,9 +33,7 @@ const registerListeners = (io: Server) => {
 
     socket.on('attender-position-change', (attenderPositionChange: AttenderPositionChange) => {
       socket.attender!.position = attenderPositionChange.position;
-      socket
-        .in(socket.handshake.query.room!)
-        .emit('attender-position-change', attenderPositionChange);
+      socket.in(socket.handshake.query.room!).emit('attender-position-change', attenderPositionChange);
     });
 
     socket.on('attender-leave', (attender: AttenderType) => {
@@ -48,8 +46,7 @@ const registerListeners = (io: Server) => {
 
     socket.on('disconnect', (reason: string) => {
       console.log(`Client disconnected, reason: ${reason}`);
-      if (socket.attender)
-        socket.in(socket.handshake.query.room!).emit('attender-leave', socket.attender);
+      if (socket.attender) socket.in(socket.handshake.query.room!).emit('attender-leave', socket.attender);
     });
   });
 };

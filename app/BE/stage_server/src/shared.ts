@@ -60,6 +60,7 @@ interface AttenderType {
   customLinkedin?: string;
   customPhone?: string;
   customJob?: string;
+  customLanguage?: string;
 }
 
 type UserInformationType = {

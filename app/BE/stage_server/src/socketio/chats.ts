@@ -3,15 +3,21 @@ import { Server } from 'socket.io';
 import axios from 'axios';
 import { createHash } from 'crypto';
 import * as uuid from 'uuid';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  PutObjectCommandInput,
+  GetObjectCommandInput,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl as s3GetSignedUrl } from '@aws-sdk/s3-request-presigner';
 import * as mime from 'mime-types';
-import { getLanguages, translateText } from '../utils/cloud-translation';
 import type { AttenderType, MessageType } from '../shared';
 import { sendEmail } from '../utils/sesEmail';
 
 const s3 = new S3Client({});
 const API_URL = 'https://api.think-in.me/dev';
+const S3_BUCKET = 'think-in-content';
 
 const getAPIHeaders = (token: string) => ({
   'Content-Type': 'application/json',
@@ -46,7 +52,6 @@ interface ChatMessagesEventType {
 interface ComputeChatId {
   (...userIds: string[]): string;
 }
-console.log(__dirname);
 
 const registerListeners = (io: Server) => {
   let computeChatId: ComputeChatId;
@@ -58,7 +63,7 @@ const registerListeners = (io: Server) => {
     socket.join('global');
     socket.join(socket.handshake.auth.stageId!);
     userIdToSocketIdMap.set(socket.handshake.auth.stageId! as string, socket.handshake.auth.stageId! as string);
-    userIdToSocketIdMap.set(socket.idTokenDecoded.sub, socket.id);
+    userIdToSocketIdMap.set(socket.attender.id, socket.id);
     userIdToSocketIdMap.set(socket.handshake.auth.stageId as string, socket.handshake.auth.stageId as string);
 
     computeChatId = (...userIds) => {
@@ -73,9 +78,10 @@ const registerListeners = (io: Server) => {
   });
 
   io.of('/chats').on('connection', async (socket) => {
+    console.log(userIdToSocketIdMap);
     console.log('Has joined the chat:');
-    console.log(`      ${socket.idTokenDecoded.given_name} ${socket.idTokenDecoded.family_name}`);
-    console.log(`      ${socket.idTokenDecoded.sub}`);
+    console.log(`      ${socket.attender.givenName} ${socket.attender.familyName}`);
+    console.log(`      ${socket.attender.id}`);
     console.log(`      ${socket.id}`);
 
     socket.onAny((eventName) => {
@@ -83,6 +89,7 @@ const registerListeners = (io: Server) => {
     });
 
     socket.on('private-message', async ({ toUser, message }: PrivateMessageEventType) => {
+      console.log('🚀  -> file: chats.ts  -> line 93  -> message', message);
       const url = new URL(`${API_URL}/chats/${computeChatId(toUser.id, socket.attender.id)}`);
       try {
         await axios.post(url.toString(), message, { headers: getAPIHeaders(socket.idToken) });
@@ -105,10 +112,15 @@ const registerListeners = (io: Server) => {
           }
         } else {
           // toUser is offline, save notification to DB, notify user upon next log in
-          // TODO: Send email to user.
-          console.log('sending email');
-          await sendEmail({ destinationEmail: toUser.email, fromUser: socket.attender, message });
-          console.log('email sent');
+
+          // only send email for the first unread message
+          const response = await axios.get(`${API_URL}/notifications/${toUser.id}`, {
+            headers: getAPIHeaders(socket.idToken),
+          });
+          if (response.data.data.items.length === 0) {
+            await sendEmail({ destinationEmail: toUser.email, fromUser: socket.attender, message });
+            console.log(`Email sent to ${toUser.email}`);
+          }
           await axios.post(`${API_URL}/notifications/${toUser.id}`, socket.attender, {
             headers: getAPIHeaders(socket.idToken),
           });
@@ -134,6 +146,23 @@ const registerListeners = (io: Server) => {
         // the last messages are received sorted by time in descending order
         // sort them in ascending order
         data.data.items.sort((message1: MessageType, message2: MessageType) => message1.time - message2.time);
+
+        // generate a presigned url for media content hosted on S3
+        for (const message of data.data.items) {
+          if (message.type.startsWith('image')) {
+            // eslint-disable-next-line no-await-in-loop
+            const getSignedUrl = await s3GetSignedUrl(
+              s3,
+              new GetObjectCommand({
+                Bucket: S3_BUCKET,
+                Key: new URL(message.data.split('?')[0]).pathname.slice(1),
+                ResponseContentType: message.type,
+                ResponseExpires: new Date(Date.now() + 8.64e7), // expires one day from now
+              }),
+            );
+            message.data = getSignedUrl;
+          }
+        }
         socket.emit('chat-messages', { withUser, data: data.data });
       } catch (e) {
         console.log('🚀  -> file: chats.ts  -> line 119  -> e', e);
@@ -142,20 +171,26 @@ const registerListeners = (io: Server) => {
     });
 
     socket.on('put-file-signed-url', async ({ fromUser, toUser, file }: PutFileSignedUrlEventType) => {
-      const command = new PutObjectCommand({
-        Bucket: 'think-in-content',
+      const commandOptions: PutObjectCommandInput | GetObjectCommandInput = {
+        Bucket: S3_BUCKET,
         Key: `${computeChatId(fromUser.id, toUser.id)}/${uuid.v4()}.${mime.extension(file.type)}`,
         ACL: 'bucket-owner-full-control',
         ContentType: file.type,
-      });
-      const signedUrl = await getSignedUrl(s3, command);
-      console.log('🚀  -> file: chats.ts  -> line 164  -> signedUrl', signedUrl);
-      socket.emit('put-file-signed-url', { signedUrl });
+        ResponseExpires: new Date(Date.now() + 8.64e7), // expires one day from now
+      };
+
+      const putObjectCommand = new PutObjectCommand(commandOptions);
+      const putSignedUrl = await s3GetSignedUrl(s3, putObjectCommand);
+
+      const getObjectCommand = new GetObjectCommand(commandOptions);
+      const getSignedUrl = await s3GetSignedUrl(s3, getObjectCommand);
+
+      socket.emit('put-file-signed-url', { putSignedUrl, getSignedUrl });
     });
 
     socket.on('disconnect', () => {
-      io.of('/chats').except(socket.id).emit('user-state-change', { userId: socket.idTokenDecoded.sub, state: false });
-      userIdToSocketIdMap.delete(socket.idTokenDecoded.sub);
+      io.of('/chats').except(socket.id).emit('user-state-change', { userId: socket.attender.id, state: false });
+      userIdToSocketIdMap.delete(socket.attender.id);
     });
 
     try {
@@ -183,7 +218,7 @@ const registerListeners = (io: Server) => {
     /**
      * Notify all the other users of the user that has just connected.
      */
-    io.of('/chats').except(socket.id).emit('user-state-change', { userId: socket.idTokenDecoded.sub, state: true });
+    io.of('/chats').except(socket.id).emit('user-state-change', { userId: socket.attender.id, state: true });
   });
 };
 
