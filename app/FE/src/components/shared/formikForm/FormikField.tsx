@@ -11,13 +11,7 @@ interface FormikFieldProps {
   disabled?: boolean;
 }
 
-const FormikField: React.FC<FormikFieldProps> = ({
-  name,
-  type,
-  label,
-  required,
-  disabled = false,
-}) => {
+const FormikField: React.FC<FormikFieldProps> = ({ name, type, label, required, disabled = false }) => {
   const [field, meta] = useField(name);
   const [_type, setType] = useState<string>(type);
   const isPassword = type === 'password';
@@ -39,6 +33,7 @@ const FormikField: React.FC<FormikFieldProps> = ({
 
   return (
     <TextField
+      id={name}
       variant="outlined"
       disabled={disabled}
       error={hasError}
