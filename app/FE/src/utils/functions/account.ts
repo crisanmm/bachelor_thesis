@@ -12,6 +12,7 @@ interface UserAttributes {
   customLinkedin?: string;
   customPhone?: string;
   customJob?: string;
+  customLanguage?: string;
 }
 
 interface GetAttributesFromSession {
@@ -20,7 +21,7 @@ interface GetAttributesFromSession {
 
 /**
  *
- * @param userSession UserSession return from getSession()
+ * @param userSession UserSession returned from Cognito getSession()
  * @returns Various user attributes, see this function's return type defined in TypeScript
  */
 const getAttributesFromSession: GetAttributesFromSession = (userSession) => {
@@ -35,6 +36,7 @@ const getAttributesFromSession: GetAttributesFromSession = (userSession) => {
     'custom:custom_linkedin': customLinkedin,
     'custom:custom_phone': customPhone,
     'custom:custom_job': customJob,
+    'custom:custom_language': customLanguage,
   } = userSession.getIdToken().payload;
   return {
     picture,
@@ -47,6 +49,7 @@ const getAttributesFromSession: GetAttributesFromSession = (userSession) => {
     customLinkedin,
     customPhone,
     customJob,
+    customLanguage,
   };
 };
 
@@ -58,6 +61,21 @@ const computeAttenderDisplayName: ComputeAttenderDisplayName = ({ givenName, fam
   const _givenName = givenName.toUpperCase()[0] + givenName.toLowerCase().slice(1);
   const _familyName = familyName.toUpperCase()[0] + familyName.toLowerCase().slice(1);
   return `${_givenName} ${_familyName}`;
+};
+
+interface GetUserLanguage {
+  (user: UserAttributes): string;
+}
+
+/**
+ * Get user language based on user session/browser language/fallback
+ * @param user UserAttributes as returned from getAttributesFromSession()
+ * @returns ISO-639-1 language code
+ */
+const getUserLanguage: GetUserLanguage = (user) => {
+  if (user.customLanguage) return user.customLanguage;
+  if (window.navigator.language) return window.navigator.language.split('-')[0];
+  return 'en';
 };
 
 const globalHeaderChat = {
@@ -122,5 +140,11 @@ const setPersistedHeaderChats: SetPersistedHeaderChats = (headerChats) => {
   }
 };
 
-export { getAttributesFromSession, computeAttenderDisplayName, getPersistedHeaderChats, setPersistedHeaderChats };
+export {
+  getUserLanguage,
+  getAttributesFromSession,
+  computeAttenderDisplayName,
+  getPersistedHeaderChats,
+  setPersistedHeaderChats,
+};
 export type { UserAttributes, ComputeAttenderDisplayName };
