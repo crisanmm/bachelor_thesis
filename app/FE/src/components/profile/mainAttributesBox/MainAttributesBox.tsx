@@ -2,15 +2,16 @@ import * as Yup from 'yup';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useContext, useState, useEffect } from 'react';
-import { Formik, FormikProps } from 'formik';
-import { Box, Button, Typography } from '@material-ui/core';
-import { Alert as MuiAlert } from '@material-ui/lab';
+import { ErrorMessage, Formik, FormikProps, useField } from 'formik';
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@material-ui/core';
+import { Alert as MuiAlert, Autocomplete } from '@material-ui/lab';
 import { ArrowForward } from '@material-ui/icons';
 import { FormikForm, StyledAlert, ChooseAvatar } from '#components/shared';
 import { AccountContext, UpdateUserAttributesType } from '#contexts';
 import { useUser } from '#hooks';
 import { getAttributesFromSession } from '#utils';
 import { StyledButtonsWrapper, StyledCircularProgress } from './MainAttributesBox.style';
+import languages from './languages.json';
 
 /**
  * Used for giving initial values to {@link https://formik.org/ | formik}.
@@ -23,6 +24,7 @@ const initialValues = {
   customLinkedin: '',
   customPhone: '',
   customJob: '',
+  customLanguage: '',
 };
 
 /**
@@ -39,7 +41,55 @@ const validationSchema = Yup.object().shape({
     'Phone number not valid.',
   ),
   customJob: Yup.string(),
+  customLanguage: Yup.string().oneOf(languages.map((language) => language.name)),
 });
+
+interface GetLanguageCode {
+  (languageName: string): string | undefined;
+}
+
+/**
+ * Get the language code of corresponding language name.
+ * @param languageName Name of the language from languages.json
+ * @returns Code of the language from languages.json
+ */
+const getLanguageCode: GetLanguageCode = (languageName) => {
+  const languageObject = languages.find((language) => language.name === languageName);
+  return languageObject?.code;
+};
+
+interface GetLanguageName {
+  (languageCode: string | undefined): string | undefined;
+}
+/**
+ * Get the language name of corresponding language code.
+ * @param languageCode Code of the language from languages.json
+ * @returns Name of the language from languages.json
+ */
+const getLanguageName: GetLanguageName = (languageCode) => {
+  if (languageCode === undefined) return '';
+  const languageObject = languages.find((language) => language.code === languageCode);
+  return languageObject?.name;
+};
+
+const SelectLanguage = () => {
+  const [field, meta] = useField('customLanguage');
+
+  return (
+    <TextField
+      select
+      variant="outlined"
+      label="Language"
+      error={meta.touched && meta.error ? true : false}
+      helperText={<ErrorMessage name="customLanguage" />}
+      {...field}
+    >
+      {languages.map((language) => (
+        <MenuItem key={language.code} value={language.name}>{language.name}</MenuItem>
+      ))}
+    </TextField>
+  );
+};
 
 const MainAttributesBox = () => {
   const router = useRouter();
@@ -47,8 +97,9 @@ const MainAttributesBox = () => {
   const [avatarSrc, setAvatarSrc] = useState<string>();
   const [changesWereMade, setChangesWereMade] = useState(false);
   const { isSignedInWithAThirdParty } = useUser();
-  const { deleteUser, getSession, updateUserAttributes, adminUpdateUserAttributes, uploadAvatar } =
-    useContext(AccountContext.Context);
+  const { deleteUser, getSession, updateUserAttributes, adminUpdateUserAttributes, uploadAvatar } = useContext(
+    AccountContext.Context,
+  );
 
   const onSubmit = async ({
     firstName,
@@ -57,19 +108,21 @@ const MainAttributesBox = () => {
     customLinkedin,
     customPhone,
     customJob,
+    customLanguage,
   }: typeof initialValues) => {
     try {
       // if (changesWereMade) {
       // Upload new avatar only if picture was changed
-      if (getAttributesFromSession(await getSession()).picture !== avatarSrc)
-        await uploadAvatar(avatarSrc!);
+      if (getAttributesFromSession(await getSession()).picture !== avatarSrc) await uploadAvatar(avatarSrc!);
 
       const attributes: UpdateUserAttributesType = {
         'custom:custom_facebook': customFacebook ?? '',
         'custom:custom_linkedin': customLinkedin ?? '',
         'custom:custom_phone': customPhone ?? '',
         'custom:custom_job': customJob ?? '',
+        'custom:custom_language': getLanguageCode(customLanguage) ?? '',
       };
+      console.log('🚀  -> file: MainAttributesBox.tsx  -> line 105  -> attributes', attributes);
 
       if (!isSignedInWithAThirdParty) {
         attributes.given_name = firstName;
@@ -124,39 +177,28 @@ const MainAttributesBox = () => {
   // load data
   useEffect(() => {
     getSession().then((userSession) => {
-      const {
-        picture,
-        givenName,
-        familyName,
-        customFacebook,
-        customLinkedin,
-        customPhone,
-        customJob,
-      } = getAttributesFromSession(userSession);
+      const { picture, givenName, familyName, customFacebook, customLinkedin, customPhone, customJob, customLanguage } =
+        getAttributesFromSession(userSession);
       initialValues.firstName = givenName;
       initialValues.lastName = familyName;
-      initialValues.customFacebook = customFacebook as string;
-      initialValues.customLinkedin = customLinkedin as string;
-      initialValues.customPhone = customPhone as string;
-      initialValues.customJob = customJob as string;
+      initialValues.customFacebook = customFacebook ?? '';
+      initialValues.customLinkedin = customLinkedin ?? '';
+      initialValues.customPhone = customPhone ?? '';
+      initialValues.customJob = customJob ?? '';
+      initialValues.customLanguage = getLanguageName(customLanguage) ?? '';
       setAvatarSrc(picture);
     });
   }, []);
 
   // if data is not loaded yet
-  if (
-    isSignedInWithAThirdParty === undefined ||
-    avatarSrc === undefined ||
-    initialValues.firstName === ''
-  )
+  if (isSignedInWithAThirdParty === undefined || avatarSrc === undefined || initialValues.firstName === '')
     return <StyledCircularProgress />;
 
   return (
     <FormikForm.StyledFormWrapper>
       {isSignedInWithAThirdParty && (
-        <MuiAlert severity="warning">
-          You are logged in with a third party, you can&apos;t change some of your account
-          information.
+        <MuiAlert severity="info">
+          You are logged in with a third party, you can&apos;t change some of your account information.
         </MuiAlert>
       )}
 
@@ -167,87 +209,54 @@ const MainAttributesBox = () => {
       </Box>
 
       <Typography variant="body2" align="center" color="textSecondary">
-        In this page you can change your profile information, if you want to change your email or
-        password click the buttons at the bottom of this page.
+        In this page you can change your profile information, if you want to change your email or password click the
+        buttons at the bottom of this page.
       </Typography>
 
       <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-        {(props): { props: FormikProps<typeof initialValues> } => {
-          // useEffect(() => {
-          //   getSession().then((userSession) => {
-          //     const { picture, givenName, familyName } = getAttributesFromSession(userSession);
-          //     let { customFacebook, customLinkedin, customPhone, customJob } =
-          //       getAttributesFromSession(userSession);
+        {(props): { props: FormikProps<typeof initialValues> } => (
+          <>
+            <FormikForm.StyledForm>
+              <ChooseAvatar
+                disabled={isSignedInWithAThirdParty}
+                avatarSrc={avatarSrc}
+                setAvatarSrc={setAvatarSrc}
+                isCustomAvatarSet
+              />
+              <FormikForm.FormikField
+                disabled={isSignedInWithAThirdParty}
+                type="text"
+                name="firstName"
+                label="First name"
+                required
+              />
+              <FormikForm.FormikField
+                disabled={isSignedInWithAThirdParty}
+                type="text"
+                name="lastName"
+                label="Last name"
+                required
+              />
+              <FormikForm.FormikField type="text" name="customJob" label="Job" />
+              <FormikForm.FormikField type="text" name="customFacebook" label="Link to Facebook" />
+              <FormikForm.FormikField type="text" name="customLinkedin" label="Link to LinkedIn" />
+              <FormikForm.FormikField type="text" name="customPhone" label="Phone number" />
 
-          //     customFacebook = customFacebook ?? '';
-          //     customLinkedin = customLinkedin ?? '';
-          //     customPhone = customPhone ?? '';
-          //     customJob = customJob ?? '';
+              <SelectLanguage name="language" />
 
-          //     if (
-          //       picture === avatarSrc &&
-          //       props.values.firstName === givenName &&
-          //       props.values.lastName === familyName &&
-          //       props.values.customFacebook === customFacebook &&
-          //       props.values.customLinkedin === customLinkedin &&
-          //       props.values.customPhone === customPhone &&
-          //       props.values.customJob === customJob
-          //     )
-          //       setChangesWereMade(false);
-          //     else setChangesWereMade(true);
-          //   });
-          // }, [avatarSrc, props.values.firstName, props.values.lastName]);
-
-          return (
-            <>
-              <FormikForm.StyledForm>
-                <ChooseAvatar
-                  disabled={isSignedInWithAThirdParty}
-                  avatarSrc={avatarSrc}
-                  setAvatarSrc={setAvatarSrc}
-                  isCustomAvatarSet
-                />
-                <FormikForm.FormikField
-                  disabled={isSignedInWithAThirdParty}
-                  type="text"
-                  name="firstName"
-                  label="First name"
-                  required
-                />
-                <FormikForm.FormikField
-                  disabled={isSignedInWithAThirdParty}
-                  type="text"
-                  name="lastName"
-                  label="Last name"
-                  required
-                />
-                <FormikForm.FormikField type="text" name="customJob" label="Job" />
-                <FormikForm.FormikField
-                  type="text"
-                  name="customFacebook"
-                  label="Link to Facebook"
-                />
-                <FormikForm.FormikField
-                  type="text"
-                  name="customLinkedin"
-                  label="Link to LinkedIn"
-                />
-                <FormikForm.FormikField type="text" name="customPhone" label="Phone number" />
-
-                <Button
-                  endIcon={<ArrowForward />}
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  disabled={props.isSubmitting}
-                >
-                  save changes
-                </Button>
-              </FormikForm.StyledForm>
-              <Alert />
-            </>
-          );
-        }}
+              <Button
+                endIcon={<ArrowForward />}
+                variant="contained"
+                color="primary"
+                type="submit"
+                disabled={props.isSubmitting}
+              >
+                save changes
+              </Button>
+            </FormikForm.StyledForm>
+            <Alert />
+          </>
+        )}
       </Formik>
 
       <StyledButtonsWrapper>
