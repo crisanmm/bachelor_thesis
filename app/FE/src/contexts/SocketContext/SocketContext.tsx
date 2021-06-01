@@ -10,7 +10,8 @@ import { StageList } from '#components/index';
 import { getAttributesFromSession } from '#utils';
 
 // const WEBSOCKET_ADDRESS = 'ws://3.122.54.160:3000';
-const WEBSOCKET_ADDRESS = 'ws://192.168.0.103:4000';
+const WEBSOCKET_ADDRESS =
+  process.env.NODE_ENV === 'development' ? 'ws://192.168.0.103:4000' : 'ws://35.158.139.213:4000';
 
 const setupSocketEvents = (socket: Socket) => {
   socket.on('connect', () => {

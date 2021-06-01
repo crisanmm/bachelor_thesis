@@ -15,8 +15,8 @@ Amplify.configure({
     oauth: {
       domain: 'think-in.auth.eu-central-1.amazoncognito.com',
       scope: ['email', 'profile', 'openid'],
-      redirectSignIn: 'https://think-in.me/',
-      redirectSignOut: 'https://think-in.me/',
+      redirectSignIn: process.env.NODE_ENV === 'development' ? 'http://localhost:3000/' : 'https://think-in.me/',
+      redirectSignOut: process.env.NODE_ENV === 'development' ? 'http://localhost:3000/' : 'https://think-in.me/',
       responseType: 'token',
     },
   },
