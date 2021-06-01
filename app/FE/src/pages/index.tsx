@@ -1,10 +1,13 @@
 import Head from 'next/head';
-import { Stage, ChatManager } from '#components/index';
+import { StageList, Stage, ChatManager } from '#components/index';
 import { Header, StyledPageWrapper } from '#components/shared';
 import { SocketContext } from '#contexts';
+import { useStageId, useUser } from '#hooks';
 
 const Index = () => {
-  const stageId = 'dev-room';
+  const [stageId, setStageId] = useStageId();
+  const { isLoggedIn } = useUser();
+  console.log('🚀  -> file: index.tsx  -> line 10  -> isLoggedIn', isLoggedIn);
 
   return (
     <>
@@ -15,7 +18,8 @@ const Index = () => {
       <Header />
 
       <StyledPageWrapper>
-        <SocketContext.Provider stageId={stageId}>
+        {isLoggedIn && <StageList setStageId={setStageId} />}
+        <SocketContext.Provider stageId={stageId} setStageId={setStageId}>
           <Stage />
           <ChatManager />
         </SocketContext.Provider>

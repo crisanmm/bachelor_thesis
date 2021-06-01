@@ -207,9 +207,14 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
     };
 
     this.setState(({ messages, headerChats }) => {
+      const selectedHeaderChat = getSelectedHeaderChat(headerChats);
+      const isGlobalOrStageChat =
+        selectedHeaderChat.user.email.startsWith('global') || selectedHeaderChat.user.email.startsWith('stage');
+
       this.props.socket.emit('private-message', {
-        toUser: getSelectedHeaderChat(headerChats).user,
+        toUser: selectedHeaderChat.user,
         message,
+        isGlobalOrStageChat,
       });
       return { messages: [...messages, message as MessageType], shouldScrollMessages: true };
     });
@@ -269,7 +274,11 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
       this.state.inputFileEvent!.target!.value! = null;
 
       this.setState(({ messages, headerChats }) => {
-        this.props.socket.emit('private-message', { toUser: getSelectedHeaderChat(headerChats).user, message });
+        const selectedHeaderChat = getSelectedHeaderChat(headerChats);
+        const isGlobalOrStageChat =
+          selectedHeaderChat.user.email.startsWith('global') || selectedHeaderChat.user.email.startsWith('stage');
+
+        this.props.socket.emit('private-message', { toUser: selectedHeaderChat.user, message, isGlobalOrStageChat });
         return {
           messages: [...messages, message],
           shouldScrollMessages: true,

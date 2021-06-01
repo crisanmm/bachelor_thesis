@@ -1,17 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Typography, Tooltip, CircularProgress, Button } from '@material-ui/core';
+import { Typography, Tooltip, CircularProgress } from '@material-ui/core';
 import { Emitter } from 'mitt';
 import { StyledContainer } from '#components/shared';
-import {
-  clamp,
-  computeAttenderDisplayName,
-  getAvatarAltText,
-  getAvatarURI,
-  UserAttributes,
-  API_ENDPOINTS,
-  TranslatedMessageType,
-} from '#utils';
+import { clamp, computeAttenderDisplayName, UserAttributes, API_ENDPOINTS, TranslatedMessageType } from '#utils';
 import { useAvatar } from '#hooks';
 import { AttenderDialogPopUp } from '#components/index';
 import {
@@ -49,10 +41,17 @@ const ChatMessage: React.FunctionComponent<ChatMessageProps> = ({ emitter, messa
   const isMessageMine = myUser.id === message.userInformation.id;
   const [isAvatarClicked, setIsAvatarClicked] = useState(false);
   // const avatar = useAvatar(isMessageMine ? myUser.picture : message.userInformation.picture);
-  const [isTranslatedMessageShown, setIsTranslatedMessageShown] = useState<boolean>(
+  const [isTranslatedMessageShown, setIsTranslatedMessageShown] = useState<boolean>(() =>
     (message as TranslatedMessageType).translatedData ? true : false,
   );
   const userName = isMessageMine ? computeAttenderDisplayName(myUser) : message.userInformation.name;
+
+  console.log('🚀  -> file: ChatBody.tsx  -> line 41  -> message', { ...message });
+  console.log(
+    '🚀  -> file: ChatBody.tsx  -> line 54  -> (message as TranslatedMessageType).translatedData',
+    (message as TranslatedMessageType).translatedData,
+  );
+  console.log('🚀  -> file: ChatBody.tsx  -> line 45  -> isTranslatedMessageShown', isTranslatedMessageShown);
 
   const [additionalUserInformation, setAdditionalUserInformation] = useState<UserAttributes>();
   const onClickAvatar = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -103,7 +102,7 @@ const ChatMessage: React.FunctionComponent<ChatMessageProps> = ({ emitter, messa
         <Tooltip title={userName} arrow>
           <div>
             <StyledMessagesAvatar
-              alt={getAvatarAltText(userName)}
+              alt={`${userName}'s avatar`}
               src={message.userInformation.picture}
               onClick={onClickAvatar}
             />
@@ -189,7 +188,7 @@ const ChatBody: React.FunctionComponent<ChatBodyProps> = ({
       <StyledMessages>
         <StyledContainer>
           <StyledNoMessagesAvatar
-            alt={getAvatarAltText(computeAttenderDisplayName(headerChat.user))}
+            alt={`${computeAttenderDisplayName(headerChat.user)}'s avatar`}
             src={headerChat.user.picture}
           />
           <Typography>
@@ -205,6 +204,7 @@ const ChatBody: React.FunctionComponent<ChatBodyProps> = ({
     <StyledMessages ref={fetchNewMessagesRef}>
       {messages.map((message, index) => (
         <ChatMessage
+          key={message.userInformation.id + message.time}
           emitter={emitter}
           message={message}
           myUser={myUser}

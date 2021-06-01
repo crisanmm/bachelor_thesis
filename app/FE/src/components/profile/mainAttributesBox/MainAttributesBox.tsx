@@ -85,7 +85,9 @@ const SelectLanguage = () => {
       {...field}
     >
       {languages.map((language) => (
-        <MenuItem key={language.code} value={language.name}>{language.name}</MenuItem>
+        <MenuItem key={language.code} value={language.name}>
+          {language.name}
+        </MenuItem>
       ))}
     </TextField>
   );
@@ -242,7 +244,7 @@ const MainAttributesBox = () => {
               <FormikForm.FormikField type="text" name="customLinkedin" label="Link to LinkedIn" />
               <FormikForm.FormikField type="text" name="customPhone" label="Phone number" />
 
-              <SelectLanguage name="language" />
+              <SelectLanguage />
 
               <Button
                 endIcon={<ArrowForward />}
@@ -260,13 +262,13 @@ const MainAttributesBox = () => {
       </Formik>
 
       <StyledButtonsWrapper>
-        <Link href="/profile/change-email">
+        <Link href="/profile-change-email">
           <Button disabled={isSignedInWithAThirdParty} variant="outlined" fullWidth>
             Change email
           </Button>
         </Link>
 
-        <Link href="/profile/change-password">
+        <Link href="/profile-change-password">
           <Button disabled={isSignedInWithAThirdParty} variant="outlined" fullWidth>
             Change password
           </Button>

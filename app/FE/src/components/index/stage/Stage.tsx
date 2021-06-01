@@ -13,7 +13,7 @@ import AttenderManager from './attenderManager';
 const ForwardCanvas: React.FunctionComponent = ({ children }) => {
   const { stageSocket, emitter } = useContext(SocketContext.Context);
   const muiTheme = useMuiTheme();
-  console.log('🚀  -> file: Stage.tsx  -> line 17  -> muiTheme', muiTheme);
+  console.log('🚀  -> file: Stage.tsx  -> line 15  -> stageSocket', (stageSocket?.auth as any).stageId);
 
   // because of the way react/react-three-fiber works it is necessary
   // to provide the context again in the Canvas element

@@ -2,10 +2,11 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { io, Socket } from 'socket.io-client';
 import mitt, { Emitter } from 'mitt';
-import { ErrorOutline } from '@material-ui/icons';
-import { Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import { AccountContext } from '#contexts';
 import { StyledContainer } from '#components/shared';
+import { StageList } from '#components/index';
 import { getAttributesFromSession } from '#utils';
 
 // const WEBSOCKET_ADDRESS = 'ws://3.122.54.160:3000';
@@ -37,59 +38,86 @@ interface StageContext {
 const Context = createContext<StageContext>({} as StageContext);
 
 interface SocketContextProviderProps {
-  stageId: string;
+  stageId: string | null;
+  setStageId: (stageId: string) => void;
 }
 
-const Provider: React.FunctionComponent<SocketContextProviderProps> = ({ children, stageId }) => {
+const Provider: React.FunctionComponent<SocketContextProviderProps> = ({ children, stageId, setStageId }) => {
   const { getSession } = useContext(AccountContext.Context);
   const [stageSocket, setStageSocket] = useState<Socket | null>();
   const [chatSocket, setChatSocket] = useState<Socket | null>();
+  const [error, setError] = useState<string | null>('Connecting to websocket server...');
   const router = useRouter();
 
   useEffect(() => {
     getSession()
       .then((userSession) => {
-        const socketOptions = {
-          auth: { idToken: userSession.getIdToken().getJwtToken(), stageId },
-          query: {
-            attender: JSON.stringify({
-              position: [0, 0, 0],
-              ...getAttributesFromSession(userSession),
-            }),
-          },
-        };
+        if (stageId === null) {
+          setError('Currently not connected to any stage, connect to one from the above selections.');
+        } else {
+          const socketOptions = {
+            auth: { idToken: userSession.getIdToken().getJwtToken(), stageId },
+            query: {
+              attender: JSON.stringify({
+                position: [0, 0, 0],
+                ...getAttributesFromSession(userSession),
+              }),
+            },
+          };
 
-        const stageSocket = io(`${WEBSOCKET_ADDRESS}/stages`, socketOptions);
-        setupSocketEvents(stageSocket);
-        setStageSocket(stageSocket);
+          const stageSocket = io(`${WEBSOCKET_ADDRESS}/stages`, socketOptions);
+          setupSocketEvents(stageSocket);
+          setStageSocket(stageSocket);
 
-        const chatSocket = io(`${WEBSOCKET_ADDRESS}/chats`, socketOptions);
-        setupSocketEvents(chatSocket);
-        setChatSocket(chatSocket);
+          const chatSocket = io(`${WEBSOCKET_ADDRESS}/chats`, socketOptions);
+          setupSocketEvents(chatSocket);
+          setChatSocket(chatSocket);
 
-        // when user changes from index page, disconnect sockets
-        router.events.on('routeChangeStart', () => {
-          stageSocket.disconnect();
-          chatSocket.disconnect();
-        });
+          // when user changes from index page, disconnect sockets
+          router.events.on('routeChangeStart', () => {
+            stageSocket.disconnect();
+            chatSocket.disconnect();
+          });
+
+          setError(null);
+        }
       })
       .catch((e) => {
         console.log('🚀  -> file: StageContext.tsx  -> line 48  -> e', e);
+        setError('Error connecting to websocket server, are you authenticated?');
         setStageSocket(null);
         setChatSocket(null);
       });
   }, []);
 
-  if (stageSocket === undefined || chatSocket === undefined)
-    return <StyledContainer>Connecting to websocket server...</StyledContainer>;
-
-  if (stageSocket === null || chatSocket === null)
+  // <ErrorOutline style={{ fontSize: '2.5rem' }} />
+  if (error)
     return (
-      <StyledContainer>
-        <ErrorOutline style={{ fontSize: '2.5rem' }} />
-        <Typography>Error connecting to websocket server, are you authenticated?</Typography>
-      </StyledContainer>
+      <>
+        {/* {error === 'Currently not connected to any stage, connect to one from the above selections.' && (
+          <StageList setStageId={setStageId} />
+        )} */}
+        <Box maxWidth="350px" marginX="auto">
+          <Alert severity="info">{error}</Alert>
+        </Box>
+      </>
     );
+
+  // if (stageId === null)
+  //   return (
+  //     <StyledContainer>Currently not connected to any stage, connect to one from the above cards.</StyledContainer>
+  //   );
+
+  // if (stageSocket === undefined || chatSocket === undefined)
+  //   return <StyledContainer>Connecting to websocket server...</StyledContainer>;
+
+  // if (stageSocket === null || chatSocket === null)
+  //   return (
+  //     <StyledContainer>
+  //       <ErrorOutline style={{ fontSize: '2.5rem' }} />
+  //       <Typography>Error connecting to websocket server, are you authenticated?</Typography>
+  //     </StyledContainer>
+  //   );
 
   return <Context.Provider value={{ stageSocket, chatSocket, emitter }}>{children}</Context.Provider>;
 };

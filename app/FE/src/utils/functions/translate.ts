@@ -16,7 +16,7 @@ const translateMessage: TranslateMessage = async (message, toLanguage) => {
 
   // if toLanguage is undefined, don't translate message
   // (covers the case when user has no language set)
-  if (!toLanguage) return message as MessageType;
+  // if (!toLanguage) return message as MessageType;
 
   // if from language === to language, don't translate message
   if (toLanguage === (message as TextMessageType).language) return message as MessageType;

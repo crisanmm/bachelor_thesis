@@ -1,11 +1,6 @@
 import React, { createContext, useEffect } from 'react';
 import axios from 'axios';
-import {
-  CognitoUserSession,
-  ISignUpResult,
-  CodeDeliveryDetails,
-  CognitoUser,
-} from 'amazon-cognito-identity-js';
+import { CognitoUserSession, ISignUpResult, CodeDeliveryDetails, CognitoUser } from 'amazon-cognito-identity-js';
 import Amplify, { Auth } from 'aws-amplify';
 import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth';
 import { API_ENDPOINTS, getAttributesFromSession } from '#utils';
@@ -20,21 +15,15 @@ Amplify.configure({
     oauth: {
       domain: 'think-in.auth.eu-central-1.amazoncognito.com',
       scope: ['email', 'profile', 'openid'],
-      redirectSignIn: 'http://localhost:3000/',
-      redirectSignOut: 'http://localhost:3000/',
+      redirectSignIn: 'https://think-in.me/',
+      redirectSignOut: 'https://think-in.me/',
       responseType: 'token',
     },
   },
 });
 
 interface SignUp {
-  (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string,
-    picture: string,
-  ): Promise<ISignUpResult>;
+  (email: string, password: string, firstName: string, lastName: string, picture: string): Promise<ISignUpResult>;
 }
 
 const signUp: SignUp = async (email, password, firstName, lastName, picture) =>
@@ -71,8 +60,7 @@ interface VerifyEmailAttribute {
   ): Promise<string>;
 }
 
-const verifyEmailAttribute: VerifyEmailAttribute = (code) =>
-  Auth.verifyCurrentUserAttributeSubmit('email', code);
+const verifyEmailAttribute: VerifyEmailAttribute = (code) => Auth.verifyCurrentUserAttributeSubmit('email', code);
 
 interface SignIn {
   (email: string, password: string): Promise<CognitoUserSession>;
@@ -80,8 +68,7 @@ interface SignIn {
 
 const signIn: SignIn = async (email, password) => Auth.signIn({ username: email, password });
 
-const signInWithGoogle = () =>
-  Auth.federatedSignIn({ provider: CognitoHostedUIIdentityProvider.Google });
+const signInWithGoogle = () => Auth.federatedSignIn({ provider: CognitoHostedUIIdentityProvider.Google });
 
 interface SignOut {
   (): any;

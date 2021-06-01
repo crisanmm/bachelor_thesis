@@ -32,15 +32,11 @@ const useUser: useUserType = () => {
         setIsLoggingIn(false);
         setUserSession(userSession);
         setIsSignedInWithAThirdParty(
-          (userSession.getIdToken().payload['cognito:username'] as string)
-            .toLowerCase()
-            .startsWith('google'),
+          (userSession.getIdToken().payload['cognito:username'] as string).toLowerCase().startsWith('google'),
         );
       })
-      .catch((error) => {
-        setIsLoggingIn(false);
-        console.log('🚀  -> file: useUser.tsx  -> line 15  -> err', error);
-      });
+      .catch(() => setIsLoggedIn(false))
+      .finally(() => setIsLoggingIn(false));
   }, []);
 
   return { isLoggedIn, isLoggingIn, isSignedInWithAThirdParty, userSession };
