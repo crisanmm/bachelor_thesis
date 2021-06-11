@@ -149,40 +149,39 @@ const registerListeners = (io: Server) => {
     });
 
     socket.on('chat-messages', async ({ withUser, lastEvaluatedKey }: ChatMessagesEventType) => {
-      // const url = new URL(`${API_URL}/chats/${computeChatId(withUser.id, socket.attender.id)}`);
-      // console.log('🚀  -> file: chats.ts  -> line 110  -> lastEvaluatedKey', lastEvaluatedKey);
-      // if (lastEvaluatedKey) {
-      //   url.searchParams.append('lastEvaluatedPK', lastEvaluatedKey.lastEvaluatedPK);
-      //   url.searchParams.append('lastEvaluatedSK', lastEvaluatedKey.lastEvaluatedSK);
-      // }
-      // try {
-      //   const { data } = await axios.get(url.toString(), {
-      //     headers: getAPIHeaders(socket.idToken),
-      //   });
-      //   // the last messages are received sorted by time in descending order
-      //   // sort them in ascending order
-      //   data.data.items.sort((message1: MessageType, message2: MessageType) => message1.time - message2.time);
-      //   // generate a presigned url for media content hosted on S3
-      //   for (const message of data.data.items) {
-      //     if (message.type.startsWith('image')) {
-      //       // eslint-disable-next-line no-await-in-loop
-      //       const getSignedUrl = await s3GetSignedUrl(
-      //         s3,
-      //         new GetObjectCommand({
-      //           Bucket: S3_CHATS_BUCKET_NAME,
-      //           Key: new URL(message.data.split('?')[0]).pathname.slice(1),
-      //           ResponseContentType: message.type,
-      //           ResponseExpires: new Date(Date.now() + 8.64e7), // expires one day from now
-      //         }),
-      //       );
-      //       message.data = getSignedUrl;
-      //     }
-      //   }
-      //   socket.emit('chat-messages', { withUser, data: data.data });
-      // } catch (e) {
-      //   console.log('🚀  -> file: chats.ts  -> line 119  -> e', e);
-      //   console.log(e.response.data.error);
-      // }
+      const url = new URL(`${API_URL}/chats/${computeChatId(withUser.id, socket.attender.id)}`);
+      if (lastEvaluatedKey) {
+        url.searchParams.append('lastEvaluatedPK', lastEvaluatedKey.lastEvaluatedPK);
+        url.searchParams.append('lastEvaluatedSK', lastEvaluatedKey.lastEvaluatedSK);
+      }
+      try {
+        const { data } = await axios.get(url.toString(), {
+          headers: getAPIHeaders(socket.idToken),
+        });
+        // the last messages are received sorted by time in descending order
+        // sort them in ascending order
+        data.data.items.sort((message1: MessageType, message2: MessageType) => message1.time - message2.time);
+        // generate a presigned url for media content hosted on S3
+        for (const message of data.data.items) {
+          if (message.type.startsWith('image')) {
+            // eslint-disable-next-line no-await-in-loop
+            const getSignedUrl = await s3GetSignedUrl(
+              s3,
+              new GetObjectCommand({
+                Bucket: S3_CHATS_BUCKET_NAME,
+                Key: new URL(message.data.split('?')[0]).pathname.slice(1),
+                ResponseContentType: message.type,
+                ResponseExpires: new Date(Date.now() + 8.64e7), // expires one day from now
+              }),
+            );
+            message.data = getSignedUrl;
+          }
+        }
+        socket.emit('chat-messages', { withUser, data: data.data });
+      } catch (e) {
+        console.log('🚀  -> file: chats.ts  -> line 119  -> e', e);
+        console.log(e.response.data.error);
+      }
     });
 
     socket.on('put-file-signed-url', async ({ fromUser, toUser, file }: PutFileSignedUrlEventType) => {

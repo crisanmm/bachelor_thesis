@@ -100,7 +100,6 @@ const Screen: React.FunctionComponent<ScreenProps> = ({
     }
   }, [isVideoClicked]);
 
-  console.log('🚀  -> file: Screen.tsx  -> line 115  -> position', position);
   return (
     <>
       <mesh
