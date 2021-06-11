@@ -40,17 +40,19 @@ interface ChatMessageProps {
 const ChatMessage: React.FunctionComponent<ChatMessageProps> = ({ emitter, message, myUser, index, spacing }) => {
   const isMessageMine = myUser.id === message.userInformation.id;
   const [isAvatarClicked, setIsAvatarClicked] = useState(false);
-  // const avatar = useAvatar(isMessageMine ? myUser.picture : message.userInformation.picture);
+  const avatar = useAvatar(isMessageMine ? myUser.picture : message.userInformation.picture);
   const [isTranslatedMessageShown, setIsTranslatedMessageShown] = useState<boolean>(
     (message as TranslatedMessageType).translatedData ? true : false,
   );
   const userName = isMessageMine ? computeAttenderDisplayName(myUser) : message.userInformation.name;
 
-  const [additionalUserInformation, setAdditionalUserInformation] = useState<UserAttributes>();
+  const [additionalUserInformation, setAdditionalUserInformation] = useState<Omit<UserAttributes, 'token'>>();
   const onClickAvatar = async () => {
     if (!isAvatarClicked) {
       try {
-        const response = await axios.get(`${ENDPOINTS.USERS}/${message.userInformation.id}`);
+        const response = await axios.get(`${ENDPOINTS.USERS}/${message.userInformation.id}`, {
+          headers: { Authorization: `Bearer ${myUser.token}` },
+        });
 
         if (response.data.success) {
           const {
@@ -65,7 +67,7 @@ const ChatMessage: React.FunctionComponent<ChatMessageProps> = ({ emitter, messa
           } = response.data.data;
 
           setAdditionalUserInformation({
-            picture: message.userInformation.picture,
+            picture: avatar,
             id: message.userInformation.id,
             email,
             emailVerified,
@@ -94,11 +96,7 @@ const ChatMessage: React.FunctionComponent<ChatMessageProps> = ({ emitter, messa
       <StyledMessage key={index} mine={isMessageMine} _spacing={spacing}>
         <Tooltip title={userName} arrow>
           <div>
-            <StyledMessagesAvatar
-              alt={`${userName}'s avatar`}
-              src={message.userInformation.picture}
-              onClick={onClickAvatar}
-            />
+            <StyledMessagesAvatar alt={`${userName}'s avatar`} src={avatar} onClick={onClickAvatar} />
           </div>
         </Tooltip>
         <Tooltip title={`Sent at ${new Date(message.time).toLocaleString()}`} arrow>

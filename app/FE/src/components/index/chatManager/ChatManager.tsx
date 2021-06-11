@@ -292,7 +292,9 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
 
   onChatMessages = async ({ withUser, data }: ChatMessagesEventType) => {
     data.items = await Promise.all(
-      data.items.map((message) => translateMessage(message, getUserLanguage(this.state.myUser!))),
+      data.items.map((message) =>
+        translateMessage(this.state.myUser!.token, message, getUserLanguage(this.state.myUser!)),
+      ),
     );
 
     // if the selected header chat changed in the meantime, ignore this response
@@ -330,7 +332,7 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
   };
 
   onPrivateMessage = async ({ fromUser, message }: PrivateMessageEventType) => {
-    message = await translateMessage(message, getUserLanguage(this.state.myUser!));
+    message = await translateMessage(this.state.myUser!.token, message, getUserLanguage(this.state.myUser!));
     // console.log('🚀  -> file: ChatManager.tsx  -> line 337  -> message', message);
     this.setState(({ headerChats, messages, shouldScrollMessages }) => {
       let newMessages = messages;
