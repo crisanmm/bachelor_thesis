@@ -54,6 +54,6 @@
     "curly": "off",
     "nonblock-statement-body-position": "off",
     "function-paren-newline": "off",
-    "operator-linebreak": ["warn", "after"]
+    "operator-linebreak": "off"
   }
 }
