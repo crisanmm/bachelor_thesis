@@ -10,7 +10,7 @@ interface AttenderDialogPopUpProps {
   emitter: Emitter;
   isAvatarClicked: boolean;
   setIsAvatarClicked: React.Dispatch<React.SetStateAction<boolean>>;
-  userAttributes: UserAttributes;
+  userAttributes: Omit<UserAttributes, 'token'>;
   isMyAttender?: boolean;
 }
 
