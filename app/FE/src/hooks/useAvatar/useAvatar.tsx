@@ -15,8 +15,14 @@ const useAvatar: UseAvatar = (picture) => {
 
   useEffect(() => {
     axios
-      .head(picture)
-      .then(() => setAvatar(picture))
+      .get(picture, { responseType: 'blob' })
+      .then((response) => {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(response.data);
+        fileReader.onloadend = () => {
+          setAvatar(fileReader.result as string);
+        };
+      })
       .catch((e) => console.log('Failed loading texture picture', e));
   }, []);
 
