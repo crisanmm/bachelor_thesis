@@ -1,5 +1,5 @@
 import styled, { DefaultTheme } from 'styled-components';
-import { Container } from '@material-ui/core';
+import { Snackbar } from '@material-ui/core';
 import { Alert, AlertProps, AlertTitle } from '@material-ui/lab';
 
 type StyledAlertProps = AlertProps & { theme: DefaultTheme; title: string };
@@ -7,12 +7,12 @@ type StyledAlertProps = AlertProps & { theme: DefaultTheme; title: string };
 const StyledAlert = styled((props: StyledAlertProps) => {
   const { title, children, ...otherProps } = props;
   return (
-    <Container maxWidth="sm">
-      <Alert {...otherProps}>
+    <Snackbar anchorOrigin={{ horizontal: 'right', vertical: 'top' }} autoHideDuration={6000} open>
+      <Alert elevation={6} {...otherProps}>
         {title ? <AlertTitle>{title}</AlertTitle> : undefined}
         {children}
       </Alert>
-    </Container>
+    </Snackbar>
   );
 })`
   margin: 0 auto;

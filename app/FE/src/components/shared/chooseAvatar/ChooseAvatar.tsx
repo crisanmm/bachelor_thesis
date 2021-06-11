@@ -40,7 +40,7 @@ const ChooseAvatar: React.FunctionComponent<ChooseAvatarProps> = ({
         <Typography variant="body1" color="textPrimary" gutterBottom>
           Choose your avatar.
         </Typography>
-        <Tooltip title="Upload avatar">
+        <Tooltip title="Upload avatar" arrow>
           <label htmlFor="avatar-upload">
             <StyledChooseAvatar alt="your avatar" src={avatarSrc} />
           </label>
