@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
-import { CognitoUserSession } from 'amazon-cognito-identity-js';
 import { AccountContext } from '#contexts';
+import { getAttributesFromSession } from '#utils';
 
 type useUserReturnType = {
   // true if user is logged in, false otherwise
@@ -10,8 +10,9 @@ type useUserReturnType = {
   // true if user is logged with a third party (e.g. social providers like Facebook, Google),
   // false otherwise
   isSignedInWithAThirdParty: boolean | undefined;
-  // CognitoUserSession if the user is logged in, undefined otherwise
-  userSession: CognitoUserSession | undefined;
+  // true if user is in the admin group,
+  // false otherwise
+  isAdmin: boolean | undefined;
 };
 
 interface useUserType {
@@ -23,23 +24,22 @@ const useUser: useUserType = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(true);
   const [isSignedInWithAThirdParty, setIsSignedInWithAThirdParty] = useState<boolean>();
-  const [userSession, setUserSession] = useState<CognitoUserSession>();
+  const [isAdmin, setIsAdmin] = useState<boolean>();
 
   useEffect(() => {
     getSession()
       .then((userSession) => {
+        const attributes = getAttributesFromSession(userSession);
         setIsLoggedIn(true);
         setIsLoggingIn(false);
-        setUserSession(userSession);
-        setIsSignedInWithAThirdParty(
-          (userSession.getIdToken().payload['cognito:username'] as string).toLowerCase().startsWith('google'),
-        );
+        setIsSignedInWithAThirdParty(attributes.id.toLowerCase().startsWith('google'));
+        setIsAdmin(!!attributes.groups?.includes('admin'));
       })
       .catch(() => setIsLoggedIn(false))
       .finally(() => setIsLoggingIn(false));
   }, []);
 
-  return { isLoggedIn, isLoggingIn, isSignedInWithAThirdParty, userSession };
+  return { isLoggedIn, isLoggingIn, isSignedInWithAThirdParty, isAdmin };
 };
 
 export default useUser;
