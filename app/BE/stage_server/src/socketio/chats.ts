@@ -14,10 +14,10 @@ import { getSignedUrl as s3GetSignedUrl } from '@aws-sdk/s3-request-presigner';
 import * as mime from 'mime-types';
 import type { AttenderType, MessageType } from '../shared';
 import { sendEmail } from '../utils/sesEmail';
+import { ENDPOINTS, S3_CHATS_BUCKET_NAME, S3_BUCKET_REGION } from '../utils/constants';
 
-const s3 = new S3Client({});
-const API_URL = 'https://api.think-in.me/dev';
-const S3_BUCKET = 'think-in-content';
+const s3 = new S3Client({ region: S3_BUCKET_REGION });
+const API_URL = ENDPOINTS.API;
 
 const getAPIHeaders = (token: string) => ({
   'Content-Type': 'application/json',
@@ -149,48 +149,45 @@ const registerListeners = (io: Server) => {
     });
 
     socket.on('chat-messages', async ({ withUser, lastEvaluatedKey }: ChatMessagesEventType) => {
-      const url = new URL(`${API_URL}/chats/${computeChatId(withUser.id, socket.attender.id)}`);
-      console.log('🚀  -> file: chats.ts  -> line 110  -> lastEvaluatedKey', lastEvaluatedKey);
-      if (lastEvaluatedKey) {
-        url.searchParams.append('lastEvaluatedPK', lastEvaluatedKey.lastEvaluatedPK);
-        url.searchParams.append('lastEvaluatedSK', lastEvaluatedKey.lastEvaluatedSK);
-      }
-
-      try {
-        const { data } = await axios.get(url.toString(), {
-          headers: getAPIHeaders(socket.idToken),
-        });
-
-        // the last messages are received sorted by time in descending order
-        // sort them in ascending order
-        data.data.items.sort((message1: MessageType, message2: MessageType) => message1.time - message2.time);
-
-        // generate a presigned url for media content hosted on S3
-        for (const message of data.data.items) {
-          if (message.type.startsWith('image')) {
-            // eslint-disable-next-line no-await-in-loop
-            const getSignedUrl = await s3GetSignedUrl(
-              s3,
-              new GetObjectCommand({
-                Bucket: S3_BUCKET,
-                Key: new URL(message.data.split('?')[0]).pathname.slice(1),
-                ResponseContentType: message.type,
-                ResponseExpires: new Date(Date.now() + 8.64e7), // expires one day from now
-              }),
-            );
-            message.data = getSignedUrl;
-          }
-        }
-        socket.emit('chat-messages', { withUser, data: data.data });
-      } catch (e) {
-        console.log('🚀  -> file: chats.ts  -> line 119  -> e', e);
-        console.log(e.response.data.error);
-      }
+      // const url = new URL(`${API_URL}/chats/${computeChatId(withUser.id, socket.attender.id)}`);
+      // console.log('🚀  -> file: chats.ts  -> line 110  -> lastEvaluatedKey', lastEvaluatedKey);
+      // if (lastEvaluatedKey) {
+      //   url.searchParams.append('lastEvaluatedPK', lastEvaluatedKey.lastEvaluatedPK);
+      //   url.searchParams.append('lastEvaluatedSK', lastEvaluatedKey.lastEvaluatedSK);
+      // }
+      // try {
+      //   const { data } = await axios.get(url.toString(), {
+      //     headers: getAPIHeaders(socket.idToken),
+      //   });
+      //   // the last messages are received sorted by time in descending order
+      //   // sort them in ascending order
+      //   data.data.items.sort((message1: MessageType, message2: MessageType) => message1.time - message2.time);
+      //   // generate a presigned url for media content hosted on S3
+      //   for (const message of data.data.items) {
+      //     if (message.type.startsWith('image')) {
+      //       // eslint-disable-next-line no-await-in-loop
+      //       const getSignedUrl = await s3GetSignedUrl(
+      //         s3,
+      //         new GetObjectCommand({
+      //           Bucket: S3_CHATS_BUCKET_NAME,
+      //           Key: new URL(message.data.split('?')[0]).pathname.slice(1),
+      //           ResponseContentType: message.type,
+      //           ResponseExpires: new Date(Date.now() + 8.64e7), // expires one day from now
+      //         }),
+      //       );
+      //       message.data = getSignedUrl;
+      //     }
+      //   }
+      //   socket.emit('chat-messages', { withUser, data: data.data });
+      // } catch (e) {
+      //   console.log('🚀  -> file: chats.ts  -> line 119  -> e', e);
+      //   console.log(e.response.data.error);
+      // }
     });
 
     socket.on('put-file-signed-url', async ({ fromUser, toUser, file }: PutFileSignedUrlEventType) => {
       const commandOptions: PutObjectCommandInput | GetObjectCommandInput = {
-        Bucket: S3_BUCKET,
+        Bucket: S3_CHATS_BUCKET_NAME,
         Key: `${computeChatId(fromUser.id, toUser.id)}/${uuid.v4()}.${mime.extension(file.type)}`,
         ACL: 'bucket-owner-full-control',
         ContentType: file.type,
