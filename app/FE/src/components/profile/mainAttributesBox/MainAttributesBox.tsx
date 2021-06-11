@@ -3,14 +3,14 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useContext, useState, useEffect } from 'react';
 import { ErrorMessage, Formik, FormikProps, useField } from 'formik';
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@material-ui/core';
-import { Alert as MuiAlert, Autocomplete } from '@material-ui/lab';
+import { Box, Button, MenuItem, TextField, Typography } from '@material-ui/core';
+import { Alert as MuiAlert } from '@material-ui/lab';
 import { ArrowForward } from '@material-ui/icons';
-import { FormikForm, StyledAlert, ChooseAvatar } from '#components/shared';
+import { FormikForm, StyledAlert, ChooseAvatar, StyledCircularProgress } from '#components/shared';
 import { AccountContext, UpdateUserAttributesType } from '#contexts';
 import { useUser } from '#hooks';
 import { getAttributesFromSession } from '#utils';
-import { StyledButtonsWrapper, StyledCircularProgress } from './MainAttributesBox.style';
+import { StyledButtonsWrapper } from './MainAttributesBox.style';
 import languages from './languages.json';
 
 /**
@@ -97,8 +97,7 @@ const MainAttributesBox = () => {
   const router = useRouter();
   const [Alert, setAlert] = useState<React.ComponentType>(() => () => <></>);
   const [avatarSrc, setAvatarSrc] = useState<string>();
-  const [changesWereMade, setChangesWereMade] = useState(false);
-  const { isSignedInWithAThirdParty } = useUser();
+  const { isSignedInWithAThirdParty, isAdmin } = useUser();
   const { deleteUser, getSession, updateUserAttributes, adminUpdateUserAttributes, uploadAvatar } = useContext(
     AccountContext.Context,
   );
@@ -124,7 +123,6 @@ const MainAttributesBox = () => {
         'custom:custom_job': customJob ?? '',
         'custom:custom_language': getLanguageCode(customLanguage) ?? '',
       };
-      console.log('🚀  -> file: MainAttributesBox.tsx  -> line 105  -> attributes', attributes);
 
       if (!isSignedInWithAThirdParty) {
         attributes.given_name = firstName;
@@ -273,6 +271,14 @@ const MainAttributesBox = () => {
             Change password
           </Button>
         </Link>
+
+        {isAdmin && (
+          <Link href="/profile-change-stages">
+            <Button disabled={!isAdmin} variant="outlined" fullWidth>
+              Change stages
+            </Button>
+          </Link>
+        )}
 
         <Box mt={2}>
           <Button color="secondary" variant="contained" fullWidth onClick={onClickDeleteAccount}>

@@ -1,15 +1,4 @@
-import { CircularProgress } from '@material-ui/core';
 import styled from 'styled-components';
-
-const StyledCircularProgress = styled((props) => (
-  <div {...props}>
-    <CircularProgress variant="indeterminate" />
-  </div>
-))`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
 
 const StyledButtonsWrapper = styled.div`
   display: flex;
@@ -23,4 +12,4 @@ const StyledButtonsWrapper = styled.div`
   }
 `;
 
-export { StyledCircularProgress, StyledButtonsWrapper };
+export { StyledButtonsWrapper };
