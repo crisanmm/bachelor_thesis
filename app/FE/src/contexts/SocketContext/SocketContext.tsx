@@ -5,13 +5,12 @@ import mitt, { Emitter } from 'mitt';
 import { Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { AccountContext } from '#contexts';
-import { StyledContainer } from '#components/shared';
-import { StageList } from '#components/index';
 import { getAttributesFromSession } from '#utils';
 
-// const WEBSOCKET_ADDRESS = 'ws://3.122.54.160:3000';
 const WEBSOCKET_ADDRESS =
-  process.env.NODE_ENV === 'development' ? 'ws://192.168.0.103:4000' : 'ws://35.158.139.213:4000';
+  process.env.NODE_ENV === 'development'
+    ? process.env.NEXT_PUBLIC_WEBSOCKET_SERVER_LOCAL_URL
+    : process.env.NEXT_PUBLIC_WEBSOCKET_SERVER_PRODUCTION_URL;
 
 const setupSocketEvents = (socket: Socket) => {
   socket.on('connect', () => {
@@ -39,11 +38,10 @@ interface StageContext {
 const Context = createContext<StageContext>({} as StageContext);
 
 interface SocketContextProviderProps {
-  stageId: string | null;
-  setStageId: (stageId: string) => void;
+  stageId: string | undefined;
 }
 
-const Provider: React.FunctionComponent<SocketContextProviderProps> = ({ children, stageId, setStageId }) => {
+const Provider: React.FunctionComponent<SocketContextProviderProps> = ({ children, stageId }) => {
   const { getSession } = useContext(AccountContext.Context);
   const [stageSocket, setStageSocket] = useState<Socket | null>();
   const [chatSocket, setChatSocket] = useState<Socket | null>();
@@ -53,7 +51,7 @@ const Provider: React.FunctionComponent<SocketContextProviderProps> = ({ childre
   useEffect(() => {
     getSession()
       .then((userSession) => {
-        if (stageId === null) {
+        if (stageId === undefined) {
           setError('Currently not connected to any stage, connect to one from the above selections.');
         } else {
           const socketOptions = {
@@ -91,34 +89,12 @@ const Provider: React.FunctionComponent<SocketContextProviderProps> = ({ childre
       });
   }, []);
 
-  // <ErrorOutline style={{ fontSize: '2.5rem' }} />
   if (error)
     return (
-      <>
-        {/* {error === 'Currently not connected to any stage, connect to one from the above selections.' && (
-          <StageList setStageId={setStageId} />
-        )} */}
-        <Box maxWidth="350px" marginX="auto">
-          <Alert severity="info">{error}</Alert>
-        </Box>
-      </>
+      <Box maxWidth="350px" marginX="auto">
+        <Alert severity="info">{error}</Alert>
+      </Box>
     );
-
-  // if (stageId === null)
-  //   return (
-  //     <StyledContainer>Currently not connected to any stage, connect to one from the above cards.</StyledContainer>
-  //   );
-
-  // if (stageSocket === undefined || chatSocket === undefined)
-  //   return <StyledContainer>Connecting to websocket server...</StyledContainer>;
-
-  // if (stageSocket === null || chatSocket === null)
-  //   return (
-  //     <StyledContainer>
-  //       <ErrorOutline style={{ fontSize: '2.5rem' }} />
-  //       <Typography>Error connecting to websocket server, are you authenticated?</Typography>
-  //     </StyledContainer>
-  //   );
 
   return <Context.Provider value={{ stageSocket, chatSocket, emitter }}>{children}</Context.Provider>;
 };
