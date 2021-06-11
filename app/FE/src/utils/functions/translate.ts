@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { MessageType, TextMessageType } from '#components/index/chatManager/shared';
-import { API_ENDPOINTS } from '#utils';
+import { ENDPOINTS } from '#utils';
 
 type TranslatedMessageType = MessageType & { translatedData: string };
 
@@ -9,8 +9,6 @@ interface TranslateMessage {
 }
 
 const translateMessage: TranslateMessage = async (message, toLanguage) => {
-  console.log('🚀  -> file: translate.ts  -> line 12  -> toLanguage', toLanguage);
-  console.log('🚀  -> file: translate.ts  -> line 12  -> message', message);
   // if message is not a text message simply return
   if (message.type !== 'text/plain') return message as MessageType;
 
@@ -23,7 +21,7 @@ const translateMessage: TranslateMessage = async (message, toLanguage) => {
 
   // translate text and return augmented message with translatedData string property
   try {
-    const response = await axios.post(`${API_ENDPOINTS.TRANSLATION}/translate`, {
+    const response = await axios.post(`${ENDPOINTS.TRANSLATION}/translate`, {
       text: message.data,
       to: toLanguage,
       from: (message as TextMessageType).language,
