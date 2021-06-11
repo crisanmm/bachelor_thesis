@@ -26,7 +26,7 @@ interface MediaMessageType extends BaseMessage {
 type MessageType = TextMessageType | MediaMessageType;
 
 interface HeaderChatType {
-  user: UserAttributes;
+  user: Omit<UserAttributes, 'token'>;
   notifications: number;
   online: boolean;
   selected: boolean;
