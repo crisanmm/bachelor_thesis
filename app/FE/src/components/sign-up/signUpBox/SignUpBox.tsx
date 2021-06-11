@@ -39,12 +39,12 @@ const SignUpBox = () => {
   const router = useRouter();
   const [Alert, setAlert] = useState<React.ComponentType>(() => () => <></>);
   const [avatarSrc, setAvatarSrc] = useState<string>();
-  const { signUp, uploadAvatarOnSignUp } = useContext(AccountContext.Context);
+  const { signUp, uploadAvatarId } = useContext(AccountContext.Context);
 
   const onSubmit = async ({ email, password, firstName, lastName }: typeof initialValues) => {
     try {
       const { userSub: userId } = await signUp(email, password, firstName, lastName, '');
-      await uploadAvatarOnSignUp(userId, avatarSrc!);
+      await uploadAvatarId(userId, avatarSrc!);
 
       setAlert(() => () => (
         <StyledAlert severity="success" title="Success">

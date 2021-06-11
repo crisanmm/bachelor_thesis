@@ -98,7 +98,7 @@ const MainAttributesBox = () => {
   const [Alert, setAlert] = useState<React.ComponentType>(() => () => <></>);
   const [avatarSrc, setAvatarSrc] = useState<string>();
   const { isSignedInWithAThirdParty, isAdmin } = useUser();
-  const { deleteUser, getSession, updateUserAttributes, adminUpdateUserAttributes, uploadAvatar } = useContext(
+  const { deleteUser, getSession, updateUserAttributes, adminUpdateUserAttributes, uploadAvatarToken } = useContext(
     AccountContext.Context,
   );
 
@@ -114,7 +114,7 @@ const MainAttributesBox = () => {
     try {
       // if (changesWereMade) {
       // Upload new avatar only if picture was changed
-      if (getAttributesFromSession(await getSession()).picture !== avatarSrc) await uploadAvatar(avatarSrc!);
+      if (getAttributesFromSession(await getSession()).picture !== avatarSrc) await uploadAvatarToken(avatarSrc!);
 
       const attributes: UpdateUserAttributesType = {
         'custom:custom_facebook': customFacebook ?? '',
