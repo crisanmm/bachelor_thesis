@@ -1,18 +1,19 @@
 import React from 'react';
 import StageListItem from './StageListItem';
-import { StageListWrapper } from './StageList.style';
-import stages from './stage_mock.json';
+import { StyledStageListWrapper } from './StageList.style';
+import type { Stage as StageType } from '#types/stage';
 
 interface StageListProps {
-  setStageId: (stageId: string) => void;
+  stages: StageType[];
+  setStage: (stage: any) => void;
 }
 
-const StageList: React.FunctionComponent<StageListProps> = ({ setStageId }) => (
-  <StageListWrapper>
+const StageList: React.FunctionComponent<StageListProps> = ({ stages, setStage }) => (
+  <StyledStageListWrapper>
     {stages.map((stage) => (
-      <StageListItem key={stage.title} setStageId={setStageId} {...stage} />
+      <StageListItem key={stage.title} setStage={setStage} {...stage} />
     ))}
-  </StageListWrapper>
+  </StyledStageListWrapper>
 );
 
 export default StageList;

@@ -13,12 +13,14 @@ const StyledCard = styled(Card)`
 `;
 
 const StyledCardHeader = styled(CardHeader)`
+  overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
 `;
 
 const StyledCardMedia = styled(CardMedia)`
   height: 120px;
-  background-size: contain;
+  background-size: cover;
 `;
 
 const StyledCardContent = styled(CardContent)`
