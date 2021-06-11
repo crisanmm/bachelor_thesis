@@ -67,8 +67,8 @@ const StageBox = () => {
       if (!imageFile) throw new Error('Stage required an image.');
       if (!videoFile) throw new Error('Stage required a video.');
 
-      const imageFileKey = `${title.toLowerCase()}/image.${mime.extension(imageFile.type)}`;
-      const videoFileKey = `${title.toLowerCase()}/video.${mime.extension(videoFile.type)}`;
+      const imageFileKey = `${title.toLowerCase().replace(/ /g, '_')}/image.${mime.extension(imageFile.type)}`;
+      const videoFileKey = `${title.toLowerCase().replace(/ /g, '_')}/video.${mime.extension(videoFile.type)}`;
 
       // upload image file
       await s3Client!.send(
