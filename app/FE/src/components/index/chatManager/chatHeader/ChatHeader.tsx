@@ -26,7 +26,7 @@ interface HeaderChatProps {
 const HeaderChat: React.FunctionComponent<HeaderChatProps> = ({ emitter, headerChat, index, stageId }) => {
   const [isAvatarClicked, setIsAvatarClicked] = useState(false);
   const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
-  const avatar = useAvatar(headerChat.user.picture);
+  // const avatar = useAvatar(headerChat.user.picture);
 
   const onClickMoreVerticalButton = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorElement(e.currentTarget);
@@ -57,7 +57,10 @@ const HeaderChat: React.FunctionComponent<HeaderChatProps> = ({ emitter, headerC
               invisible={!headerChat.online}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             >
-              <StyledAvatar alt={`${computeAttenderDisplayName(headerChat.user)}'s avatar`} src={avatar} />
+              <StyledAvatar
+                alt={`${computeAttenderDisplayName(headerChat.user)}'s avatar`}
+                src={headerChat.user.picture}
+              />
             </StyledBadge>
           </Badge>
           <span>{computeAttenderDisplayName(headerChat.user)}</span>
@@ -110,7 +113,7 @@ interface ChatHeaderProps {
 const ChatHeader: React.FunctionComponent<ChatHeaderProps> = ({ emitter, headerChats, stageId }) => (
   <StyledHeaderChats>
     {headerChats.map((headerChat, index) => (
-      <HeaderChat emitter={emitter} headerChat={headerChat} index={index} stageId={stageId} />
+      <HeaderChat key={headerChat.user.id} emitter={emitter} headerChat={headerChat} index={index} stageId={stageId} />
     ))}
   </StyledHeaderChats>
 );

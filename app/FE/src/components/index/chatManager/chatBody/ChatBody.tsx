@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Typography, Tooltip, CircularProgress } from '@material-ui/core';
 import { Emitter } from 'mitt';
 import { StyledContainer } from '#components/shared';
-import { clamp, computeAttenderDisplayName, UserAttributes, API_ENDPOINTS, TranslatedMessageType } from '#utils';
+import { clamp, computeAttenderDisplayName, UserAttributes, ENDPOINTS, TranslatedMessageType } from '#utils';
 import { useAvatar } from '#hooks';
 import { AttenderDialogPopUp } from '#components/index';
 import {
@@ -41,23 +41,16 @@ const ChatMessage: React.FunctionComponent<ChatMessageProps> = ({ emitter, messa
   const isMessageMine = myUser.id === message.userInformation.id;
   const [isAvatarClicked, setIsAvatarClicked] = useState(false);
   // const avatar = useAvatar(isMessageMine ? myUser.picture : message.userInformation.picture);
-  const [isTranslatedMessageShown, setIsTranslatedMessageShown] = useState<boolean>(() =>
+  const [isTranslatedMessageShown, setIsTranslatedMessageShown] = useState<boolean>(
     (message as TranslatedMessageType).translatedData ? true : false,
   );
   const userName = isMessageMine ? computeAttenderDisplayName(myUser) : message.userInformation.name;
 
-  console.log('🚀  -> file: ChatBody.tsx  -> line 41  -> message', { ...message });
-  console.log(
-    '🚀  -> file: ChatBody.tsx  -> line 54  -> (message as TranslatedMessageType).translatedData',
-    (message as TranslatedMessageType).translatedData,
-  );
-  console.log('🚀  -> file: ChatBody.tsx  -> line 45  -> isTranslatedMessageShown', isTranslatedMessageShown);
-
   const [additionalUserInformation, setAdditionalUserInformation] = useState<UserAttributes>();
-  const onClickAvatar = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const onClickAvatar = async () => {
     if (!isAvatarClicked) {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.USERS}/${message.userInformation.id}`);
+        const response = await axios.get(`${ENDPOINTS.USERS}/${message.userInformation.id}`);
 
         if (response.data.success) {
           const {
@@ -87,7 +80,7 @@ const ChatMessage: React.FunctionComponent<ChatMessageProps> = ({ emitter, messa
           setIsAvatarClicked(true);
         }
       } catch (e) {
-        console.log('🚀  -> file: ChatBody.tsx  -> line 56  -> e', e);
+        console.error('🚀  -> file: ChatBody.tsx  -> line 56  -> e', e);
       }
     }
   };

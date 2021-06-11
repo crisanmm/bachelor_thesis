@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-bind */
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/destructuring-assignment */
 import React, { useContext } from 'react';
@@ -21,7 +22,7 @@ import type { MessageType, HeaderChatType, MediaMessageType } from './shared';
 import ChatHeader from './chatHeader';
 import ChatBody from './chatBody';
 import ChatFooter from './chatFooter';
-import { AttenderType } from '../stage/attenderManager/shared';
+import { AttenderType } from '../stage/shared';
 
 interface ChatsPrivateMessageEventType {
   emittedInputMessage: string; // the input message when the send button was pressed
@@ -64,18 +65,6 @@ interface PutFileSignedUrlEventType {
   putSignedUrl: string;
   getSignedUrl: string;
 }
-
-/**
- * Find the header chat in header chat array.
- * @param headerChats Header chat array.
- * @param id The id of the user
- * @returns The header chat if it is in the array, null otherwise.
- */
-const getHeaderChatWithUserId = (headerChats: HeaderChatType[], userId: string) => {
-  // eslint-disable-next-line no-restricted-syntax
-  for (const headerChat of headerChats) if (headerChat.user.id === userId) return headerChat;
-  return null;
-};
 
 /**
  * Find out if a header chat is in the header chat array
@@ -254,7 +243,7 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
 
   onPutFileSignedUrl = async ({ getSignedUrl, putSignedUrl }: PutFileSignedUrlEventType) => {
     try {
-      const response = await axios.put(putSignedUrl, this.state.inputFileEvent!.target!.files![0]!, {
+      await axios.put(putSignedUrl, this.state.inputFileEvent!.target!.files![0]!, {
         headers: { 'Content-Type': this.state.inputFileEvent!.target!.files![0]!.type },
       });
 
@@ -286,14 +275,11 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
         };
       });
     } catch (e) {
-      console.log('🚀  -> file: ChatManager.tsx  -> line 268  -> e', e);
+      console.error('🚀  -> file: ChatManager.tsx  -> line 268  -> e', e);
     }
   };
 
   onNotifications = ({ usersInformation }: NotificationsEventType) => {
-    // TODO: add userinformation to headerchat with
-    // notifications: 1, online: false, selected: false
-    console.log('🚀  -> file: ChatManager.tsx  -> line 283  -> usersInformation', usersInformation);
     const newHeaderChats: HeaderChatType[] = [];
     usersInformation.forEach((userInformation: UserAttributes) => {
       const newHeaderChat: HeaderChatType = { user: userInformation, notifications: 1, online: false, selected: false };
@@ -312,7 +298,6 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
     // if the selected header chat changed in the meantime, ignore this response
     // else process it
     if (getSelectedHeaderChat(this.state.headerChats).user.id === withUser.id) {
-      console.log('here2');
       const lastEvaluatedKey = {
         lastEvaluatedPK: data.lastEvaluatedPK,
         lastEvaluatedSK: data.lastEvaluatedSK,
@@ -346,7 +331,7 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
 
   onPrivateMessage = async ({ fromUser, message }: PrivateMessageEventType) => {
     message = await translateMessage(message, getUserLanguage(this.state.myUser!));
-    console.log('🚀  -> file: ChatManager.tsx  -> line 337  -> message', message);
+    // console.log('🚀  -> file: ChatManager.tsx  -> line 337  -> message', message);
     this.setState(({ headerChats, messages, shouldScrollMessages }) => {
       let newMessages = messages;
       let newShouldScrollMessages = shouldScrollMessages;
@@ -382,7 +367,7 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
   };
 
   onConnectedUsers = (connectedUserIds: string[]) => {
-    console.log('🚀  -> file: ChatManager.tsx  -> line 345  -> connectedUserIds', connectedUserIds);
+    // console.log('🚀  -> file: ChatManager.tsx  -> line 345  -> connectedUserIds', connectedUserIds);
     // @ts-ignore
     this.setState(({ headerChats }) => {
       const newHeaderChats = headerChats.map((headerChat) => {
@@ -421,16 +406,16 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
 
     this.props.getSession().then((userSession) => {
       const userAttributes = getAttributesFromSession(userSession);
-      this.setState({ myUser: userAttributes }, () => console.log(getUserLanguage(this.state.myUser!)));
+      this.setState({ myUser: userAttributes });
     });
 
     this.setState({ areMessagesInInitialLoad: true });
-    console.log('before emitting chat-messages');
-    console.log('🚀  -> file: ChatManager.tsx  -> line 417  -> this.state.headerChats', this.state.headerChats);
-    console.log(
-      '🚀  -> file: ChatManager.tsx  -> line 417  -> getSelectedHeaderChat(this.state.headerChats).user',
-      getSelectedHeaderChat(this.state.headerChats).user,
-    );
+    // console.log('before emitting chat-messages');
+    // console.log('🚀  -> file: ChatManager.tsx  -> line 417  -> this.state.headerChats', this.state.headerChats);
+    // console.log(
+    //   '🚀  -> file: ChatManager.tsx  -> line 417  -> getSelectedHeaderChat(this.state.headerChats).user',
+    //   getSelectedHeaderChat(this.state.headerChats).user,
+    // );
     this.props.socket.emit('chat-messages', { withUser: getSelectedHeaderChat(this.state.headerChats).user });
   }
 
@@ -438,7 +423,7 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
     if (
       getSelectedHeaderChat(prevState.headerChats).user.id !== getSelectedHeaderChat(this.state.headerChats).user.id
     ) {
-      console.log('here');
+      // console.log('here');
       this.setState({ areMessagesInInitialLoad: true });
       this.props.socket.emit('chat-messages', {
         withUser: getSelectedHeaderChat(this.state.headerChats).user,
@@ -468,7 +453,7 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
     if (this.state.myUser === undefined) return <></>;
 
     return (
-      <Container>
+      <Container maxWidth="md">
         <Paper elevation={1}>
           <ChatHeader emitter={this.props.emitter} headerChats={this.state.headerChats} stageId={this.stageId} />
           <ChatBody
