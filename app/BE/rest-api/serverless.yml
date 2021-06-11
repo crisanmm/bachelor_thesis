@@ -15,6 +15,7 @@ provider:
 
 functions:
   post-avatar:
+    timeout: 30
     handler: avatars/post-avatar.postAvatar
     events:
       - http:
@@ -99,7 +100,7 @@ functions:
           - dynamodb:PutItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}
 
-  delete-chats:
+  delete-chats-id:
     handler: chats/delete-chats-id.deleteChatsId
     events:
       - http:
@@ -223,6 +224,71 @@ functions:
           path: /translation/languages
           method: get
           cors: true
+
+  get-stages:
+    handler: stages/get-stages.getStages
+    events:
+      - http:
+          path: /stages
+          method: get
+          cors: true
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}
+
+  get-stages-id:
+    handler: stages/get-stages-id.getStagesId
+    events:
+      - http:
+          path: /stages/{stageId}
+          method: get
+          cors: true
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}
+
+  post-stages:
+    handler: stages/post-stages.postStages
+    events:
+      - http:
+          path: /stages
+          method: post
+          cors: true
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}
+
+  put-stages:
+    handler: stages/put-stages.putStages
+    events:
+      - http:
+          path: /stages/{stageId}
+          method: put
+          cors: true
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}
+
+  delete-stages:
+    handler: stages/delete-stages-id.deleteStagesId
+    events:
+      - http:
+          path: /stages/{stageId}
+          method: delete
+          cors: true
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action:
+          - dynamodb:DeleteItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}
 
 package:
   include:

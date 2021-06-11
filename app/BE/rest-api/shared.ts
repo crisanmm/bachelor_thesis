@@ -14,6 +14,21 @@ const loadEnvironmentVariables = () => {
   process.env.GOOGLE_APPLICATION_CREDENTIALS = GOOGLE_APPLICATION_CREDENTIALS_PATH;
 };
 
+const getLastEvaluatedKey = (event: any) => {
+  let lastEvaluatedPK, lastEvaluatedSK;
+  if (event.queryStringParameters?.lastEvaluatedPK || event.queryStringParameters?.lastEvaluatedSK) {
+    if (!event.queryStringParameters?.lastEvaluatedPK)
+      throw new Error('No lastEvalutedPK found as query parameter despite finding lastEvaluatedSK.');
+    lastEvaluatedPK = event.queryStringParameters.lastEvaluatedPK;
+
+    if (!event.queryStringParameters?.lastEvaluatedSK)
+      throw new Error('No lastEvalutedSK found as query parameter despite finding lastEvaluatedPK.');
+    lastEvaluatedSK = event.queryStringParameters.lastEvaluatedSK;
+  }
+
+  return [lastEvaluatedPK, lastEvaluatedSK];
+};
+
 interface MakeResponse {
   (statusCode: number, success: boolean, body: object): object;
 }
@@ -137,8 +152,42 @@ const validateTranslation: ValidateTranslation = (translation) => {
   return schema.validate(translation, { stripUnknown: true, abortEarly: true }) as Promise<Translation>;
 };
 
-export { makeResponse, validateMessage, validateNotification, validateTranslation, loadEnvironmentVariables };
-export type { Message, TextMessageType, MediaMessageType, UserAttributes };
+interface Stage {
+  title: string;
+  subheader: string;
+  externalLink: string;
+  imageLink: string;
+  videoLink: string;
+  body: string;
+}
+
+interface ValidateStage {
+  (stage: any): Promise<Stage>;
+}
+
+const validateStage: ValidateStage = (stage) => {
+  const schema = yup.object().shape({
+    title: yup.string().required('stage title required'),
+    subheader: yup.string().required('stage subheader required'),
+    externalLink: yup.string().url('stage external link must be a valid url').required('stage external link required'),
+    imageLink: yup.string().url('stage image link must be a valid url').required('stage image link required'),
+    videoLink: yup.string().url('stage video link must be a valid url').required('stage video link required'),
+    body: yup.string().required('stage body required'),
+  });
+
+  return schema.validate(stage, { stripUnknown: true, abortEarly: true }) as Promise<Stage>;
+};
+
+export {
+  getLastEvaluatedKey,
+  makeResponse,
+  validateMessage,
+  validateNotification,
+  validateTranslation,
+  validateStage,
+  loadEnvironmentVariables,
+};
+export type { Message, TextMessageType, MediaMessageType, Stage, UserAttributes };
 
 // (async () => {
 //   const notification = {"id":"global","blabla": true,"givenName":"Global","familyName":"Chat","email":"global@think-in.me","emailVerified":true,"picture":"https://think-in-content.s3.eu-central-1.amazonaws.com/avatars/global.jpg"}
