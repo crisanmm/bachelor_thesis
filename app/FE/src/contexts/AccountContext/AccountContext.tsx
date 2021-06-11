@@ -3,25 +3,28 @@ import axios from 'axios';
 import { CognitoUserSession, ISignUpResult, CodeDeliveryDetails, CognitoUser } from 'amazon-cognito-identity-js';
 import Amplify, { Auth } from 'aws-amplify';
 import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth';
-import { API_ENDPOINTS, getAttributesFromSession } from '#utils';
-
-const API_URI = 'https://api.think-in.me/dev';
+import { ENDPOINTS, getAttributesFromSession } from '#utils';
 
 Amplify.configure({
   Auth: {
-    region: 'eu-central-1',
-    userPoolId: 'eu-central-1_pu83KKkCb',
-    userPoolWebClientId: '7bvt3iiug8uajvnlmbkg2i3fls',
+    region: process.env.NEXT_PUBLIC_COGNITO_REGION,
+    userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID,
+    userPoolWebClientId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID,
     oauth: {
-      domain: 'think-in.auth.eu-central-1.amazoncognito.com',
+      domain: process.env.NEXT_PUBLIC_COGNITO_OAUTH_DOMAIN,
       scope: ['email', 'profile', 'openid'],
-      redirectSignIn: process.env.NODE_ENV === 'development' ? 'http://localhost:3000/' : 'https://think-in.me/',
-      redirectSignOut: process.env.NODE_ENV === 'development' ? 'http://localhost:3000/' : 'https://think-in.me/',
+      redirectSignIn:
+        process.env.NODE_ENV === 'development'
+          ? process.env.NEXT_PUBLIC_LOCAL_URL
+          : process.env.NEXT_PUBLIC_PRODUCTION_URL,
+      redirectSignOut:
+        process.env.NODE_ENV === 'development'
+          ? process.env.NEXT_PUBLIC_LOCAL_URL
+          : process.env.NEXT_PUBLIC_PRODUCTION_URL,
       responseType: 'token',
     },
   },
 });
-
 interface SignUp {
   (email: string, password: string, firstName: string, lastName: string, picture: string): Promise<ISignUpResult>;
 }
@@ -47,7 +50,7 @@ const adminUpdateUserAttributes: UpdateUserAttributes = async (attributes) => {
   const userSession = await Auth.currentSession();
   const idToken = userSession.getIdToken().getJwtToken();
   const { id } = getAttributesFromSession(userSession);
-  const response = await axios.put(`${API_ENDPOINTS.USERS}/${id}`, attributes, {
+  const response = await axios.put(`${ENDPOINTS.USERS}/${id}`, attributes, {
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
   });
   if (response.status === 200) return 'Successful user attributes update to third party user.';
@@ -111,7 +114,7 @@ interface UploadAvatarOnSignUp {
 
 const uploadAvatarOnSignUp: UploadAvatarOnSignUp = async (userId, avatarDataURI) => {
   const response = await axios.post(
-    `${API_URI}/avatars`,
+    ENDPOINTS.AVATARS,
     { userId, avatarDataURI },
     { headers: { 'Content-Type': 'application/json' } },
   );
@@ -127,7 +130,7 @@ const uploadAvatar: UploadAvatarType = async (avatarDataURI) => {
   const token = (await Auth.currentSession()).getIdToken().getJwtToken();
 
   const response = await axios.post(
-    `${API_URI}/avatars`,
+    ENDPOINTS.AVATARS,
     { avatarDataURI },
     { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } },
   );
