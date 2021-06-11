@@ -35,7 +35,7 @@ const Index = () => {
       <Header />
 
       <StyledPageWrapper>
-        {isLoggedIn && stages ? <StageList stages={stages} setStage={setStage} /> : <StyledCircularProgress />}
+        {isLoggedIn && (stages ? <StageList stages={stages} setStage={setStage} /> : <StyledCircularProgress />)}
         <SocketContext.Provider stageId={stage?.title}>
           <Stage stage={stage!} />
           <ChatManager />
