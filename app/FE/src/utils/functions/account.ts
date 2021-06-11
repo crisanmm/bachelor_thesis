@@ -1,5 +1,6 @@
 import { CognitoUserSession } from 'amazon-cognito-identity-js';
 import { HeaderChatType } from '#components/index/chatManager/shared';
+import { ENDPOINTS } from '../api';
 
 interface UserAttributes {
   picture: string;
@@ -8,6 +9,9 @@ interface UserAttributes {
   emailVerified: boolean;
   givenName: string;
   familyName: string;
+  groups?: string[];
+  roles?: string[];
+  preferredRole?: string;
   customFacebook?: string;
   customLinkedin?: string;
   customPhone?: string;
@@ -32,6 +36,9 @@ const getAttributesFromSession: GetAttributesFromSession = (userSession) => {
     'email_verified': emailVerified,
     'given_name': givenName,
     'family_name': familyName,
+    'cognito:groups': groups,
+    'cognito:roles': roles,
+    'cognito:preferred_role': preferredRole,
     'custom:custom_facebook': customFacebook,
     'custom:custom_linkedin': customLinkedin,
     'custom:custom_phone': customPhone,
@@ -45,6 +52,9 @@ const getAttributesFromSession: GetAttributesFromSession = (userSession) => {
     emailVerified,
     givenName,
     familyName,
+    groups,
+    roles,
+    preferredRole,
     customFacebook,
     customLinkedin,
     customPhone,
@@ -85,7 +95,7 @@ const globalHeaderChat = {
     familyName: 'Chat',
     email: 'global@think-in.me',
     emailVerified: true,
-    picture: 'https://think-in-content.s3.eu-central-1.amazonaws.com/avatars/global.jpg',
+    picture: `${ENDPOINTS.S3_CHATS_BUCKET}/avatars/global.jpg`,
   },
   notifications: 0,
   selected: true,
@@ -103,7 +113,7 @@ const computeStageHeaderChat: ComputeStageHeaderChat = (stageId) => ({
     familyName: 'chat',
     email: 'stage@think-in.me',
     emailVerified: true,
-    picture: 'https://think-in-content.s3.eu-central-1.amazonaws.com/avatars/stage.jpg',
+    picture: `${ENDPOINTS.S3_CHATS_BUCKET}/avatars/stage.jpg`,
   },
   notifications: 0,
   selected: false,
