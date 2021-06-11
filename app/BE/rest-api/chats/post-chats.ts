@@ -58,7 +58,6 @@ const postChats = async (event: any) => {
         error: 'Chat message identified by chatroom ID, timestamp and user ID already exists.',
       });
 
-    // TODO: return a string for "error" instead of an object
     return makeResponse(400, false, {
       error: e,
     });
