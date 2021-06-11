@@ -1,5 +1,5 @@
 import React, { Suspense, useState } from 'react';
-import { AttenderType } from '../shared';
+import { AttenderType } from '../../shared';
 import AttenderStick from './AttenderStick';
 import AttenderAvatar from './AttenderAvatar';
 import AttenderName from './AttenderName';

@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import { SocketContext } from '#contexts';
 import { AttenderDialogPopUp } from '#components/index';
-import type { AttenderType } from '../shared';
+import type { AttenderType } from '../../shared';
 
 interface AttenderDialogProps {
   isAvatarClicked: boolean;

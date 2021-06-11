@@ -1,12 +1,14 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { useTheme } from '@material-ui/core';
 import { SocketContext, AccountContext } from '#contexts';
 import { getAttributesFromSession } from '#utils';
 import Attender from './attender';
-import { AttenderType } from './shared';
+import { AttenderType } from '../shared';
 
 type AttendersType = Array<AttenderType>;
 
 const AttenderManager = () => {
+  const theme = useTheme();
   const { getSession } = useContext(AccountContext.Context);
   const socket = useContext(SocketContext.Context).stageSocket!;
   const { emitter } = useContext(SocketContext.Context);
@@ -62,10 +64,10 @@ const AttenderManager = () => {
   return (
     <>
       {Object.keys(myAttender).length === 0 ? undefined : (
-        <Attender key={myAttender.id} {...myAttender} size="lg" color="green" isMyAttender />
+        <Attender key={myAttender.id} {...myAttender} size="lg" color={theme.palette.success.main} isMyAttender />
       )}
       {attenders.map((attender) => (
-        <Attender key={attender.id} {...attender} size="md" color="white" />
+        <Attender key={attender.id} {...attender} size="md" color={theme.palette.grey[300]} />
       ))}
     </>
   );

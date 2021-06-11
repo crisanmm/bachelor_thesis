@@ -3,18 +3,14 @@ import React, { useState, useRef, useLayoutEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { Size } from './shared';
 import { computeAttenderSize } from './shared';
-import type { AttenderType } from '../shared';
+import type { AttenderType } from '../../shared';
 
 interface AttenderStickProps {
   size?: Size;
   color?: string | number;
 }
 
-const AttenderStick: React.FunctionComponent<AttenderStickProps & AttenderType> = ({
-  position,
-  size,
-  color,
-}) => {
+const AttenderStick: React.FunctionComponent<AttenderStickProps & AttenderType> = ({ position, size, color }) => {
   const stickMeshRef = useRef<THREE.Mesh>();
   const [stickWidth, stickHeight] = computeAttenderSize(size);
   const geometryRef = useRef<THREE.PlaneGeometry>();

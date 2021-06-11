@@ -5,7 +5,7 @@ import { useFrame } from '@react-three/fiber';
 import { computeAttenderDisplayName } from '#utils';
 import { computeAttenderSize } from './shared';
 import type { Size } from './shared';
-import type { Position, AttenderType } from '../shared';
+import type { Position, AttenderType } from '../../shared';
 
 interface AttenderNameProps {
   size?: Size;

@@ -5,7 +5,7 @@ import React, { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'r
 import { useAvatar } from '#hooks';
 import type { Size } from './shared';
 import { computeAttenderSize } from './shared';
-import type { AttenderType } from '../shared';
+import type { AttenderType } from '../../shared';
 
 interface AttenderAvatarProps {
   setIsAvatarClicked: React.Dispatch<React.SetStateAction<boolean>>;
