@@ -19,6 +19,7 @@
       "#components/*": ["src/components/*"],
       "#public/*": ["public/*"],
       "#utils": ["src/utils"],
+      "#types/*": ["src/types/*"],
       "#shared": ["src/shared"],
       "#contexts": ["src/contexts"],
       "#hooks": ["src/hooks"]
