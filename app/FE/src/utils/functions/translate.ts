@@ -5,10 +5,10 @@ import { ENDPOINTS } from '#utils';
 type TranslatedMessageType = MessageType & { translatedData: string };
 
 interface TranslateMessage {
-  (message: MessageType, toLanguage?: string): Promise<TranslatedMessageType | MessageType>;
+  (token: string, message: MessageType, toLanguage?: string): Promise<TranslatedMessageType | MessageType>;
 }
 
-const translateMessage: TranslateMessage = async (message, toLanguage) => {
+const translateMessage: TranslateMessage = async (token, message, toLanguage) => {
   // if message is not a text message simply return
   if (message.type !== 'text/plain') return message as MessageType;
 
@@ -21,11 +21,15 @@ const translateMessage: TranslateMessage = async (message, toLanguage) => {
 
   // translate text and return augmented message with translatedData string property
   try {
-    const response = await axios.post(`${ENDPOINTS.TRANSLATION}/translate`, {
-      text: message.data,
-      to: toLanguage,
-      from: (message as TextMessageType).language,
-    });
+    const response = await axios.post(
+      `${ENDPOINTS.TRANSLATION}/translate`,
+      {
+        text: message.data,
+        to: toLanguage,
+        from: (message as TextMessageType).language,
+      },
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
 
     if (response.data.success) (message as TranslatedMessageType).translatedData = response.data.data.translatedText;
     return message as TranslatedMessageType;

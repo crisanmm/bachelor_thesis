@@ -3,6 +3,7 @@ import { HeaderChatType } from '#components/index/chatManager/shared';
 import { ENDPOINTS } from '../api';
 
 interface UserAttributes {
+  token: string;
   picture: string;
   id: string;
   email: string;
@@ -46,6 +47,7 @@ const getAttributesFromSession: GetAttributesFromSession = (userSession) => {
     'custom:custom_language': customLanguage,
   } = userSession.getIdToken().payload;
   return {
+    token: userSession.getIdToken().getJwtToken(),
     picture,
     id,
     email,
