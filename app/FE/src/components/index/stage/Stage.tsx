@@ -1,19 +1,18 @@
-import React, { Suspense, useContext } from 'react';
+import React, { Suspense, useContext, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { ThemeProvider as StyledComponentsThemeProvider } from 'styled-components';
-import { Typography, MuiThemeProvider, useTheme as useMuiTheme } from '@material-ui/core';
-import { ErrorOutline } from '@material-ui/icons';
-import { CameraOptions, OrbitControls, RendererOptions } from '#components/index';
-import { StyledContainer } from '#components/shared';
+import { MuiThemeProvider, useTheme as useMuiTheme } from '@material-ui/core';
 import { SocketContext } from '#contexts';
-import { Plane, Platform, PlatformWall } from './stageComponents';
+import type { Stage as StageType } from '#types/stage';
+import CameraOptions from './cameraOptions';
+import RendererOptions from './rendererOptions';
 import StyledCanvasWrapper from './Stage.style';
-import AttenderManager from './attenderManager';
+import StageComponents from './stageComponents/StageComponents';
+import { Position } from './shared';
 
 const ForwardCanvas: React.FunctionComponent = ({ children }) => {
   const { stageSocket, emitter } = useContext(SocketContext.Context);
   const muiTheme = useMuiTheme();
-  console.log('🚀  -> file: Stage.tsx  -> line 15  -> stageSocket', (stageSocket?.auth as any).stageId);
 
   // because of the way react/react-three-fiber works it is necessary
   // to provide the context again in the Canvas element
@@ -28,26 +27,73 @@ const ForwardCanvas: React.FunctionComponent = ({ children }) => {
   );
 };
 
-const Stage: React.FunctionComponent = () => (
-  <StyledCanvasWrapper>
-    <ForwardCanvas>
-      <RendererOptions />
-      <CameraOptions />
-      {/* <OrbitControls /> */}
-      <axesHelper args={[50]} />
+const CAMERA_POSITION: Position = [0, 25, 75];
+const CAMERA_LOOKAT: Position = [0, 15, 0];
 
-      <ambientLight args={[0xc3c3c3, 0.5]} />
-      <directionalLight args={[0xffffff, 0.1]} />
-      <pointLight args={[0xffffff, 0.75, 30]} position={[0, 15, 0]} />
+interface StageProps {
+  stage: StageType;
+}
 
-      <Suspense fallback={null}>
-        <Plane />
-        <Platform />
-        <PlatformWall />
-        <AttenderManager />
-      </Suspense>
-    </ForwardCanvas>
-  </StyledCanvasWrapper>
-);
+const Stage: React.FunctionComponent<StageProps> = ({ stage }) => {
+  const timeoutId = useRef<number>();
+  const isCanvasClicked = useRef<boolean>(false);
+  const [orbitControls, setOrbitControls] = useState<any>();
+
+  const onControlsStart = () => {
+    // clear previous timeout before setting a new one
+    window.clearTimeout(timeoutId.current);
+    isCanvasClicked.current = true;
+  };
+
+  const onControlsEnd = () => {
+    timeoutId.current = window.setTimeout(() => {
+      isCanvasClicked.current = false;
+    }, 4000);
+  };
+
+  const removeOrbitControlsListeners = () => {
+    orbitControls.enabled = false;
+    orbitControls.removeEventListener('start', onControlsStart);
+    orbitControls.removeEventListener('end', onControlsEnd);
+  };
+
+  const addOrbitControlsListeners = () => {
+    orbitControls.enabled = true;
+    orbitControls.addEventListener('start', onControlsStart);
+    orbitControls.addEventListener('end', onControlsEnd);
+  };
+
+  return (
+    <StyledCanvasWrapper>
+      <ForwardCanvas>
+        {/* <axesHelper args={[50]} /> */}
+        <RendererOptions />
+        <CameraOptions
+          cameraPosition={CAMERA_POSITION}
+          cameraLookAt={CAMERA_LOOKAT}
+          orbitControls={orbitControls}
+          setOrbitControls={setOrbitControls}
+        />
+
+        <ambientLight args={[0xc3c3c3, 0.75]} />
+        <directionalLight args={[0xffffff, 0.25]} />
+        <pointLight args={[0xffffff, 1, 45]} position={[0, 15, 0]} />
+
+        {orbitControls && (
+          <Suspense fallback={null}>
+            <StageComponents
+              stage={stage}
+              cameraPosition={CAMERA_POSITION}
+              cameraLookAt={CAMERA_LOOKAT}
+              isCanvasClicked={isCanvasClicked}
+              removeOrbitControlsListeners={removeOrbitControlsListeners}
+              addOrbitControlsListeners={addOrbitControlsListeners}
+            />
+          </Suspense>
+        )}
+      </ForwardCanvas>
+    </StyledCanvasWrapper>
+  );
+};
 
 export default Stage;
