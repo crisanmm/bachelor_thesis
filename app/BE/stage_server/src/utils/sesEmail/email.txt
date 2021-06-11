@@ -2,4 +2,4 @@
 
 {{message}}
 
-Go to https://think-in.me/ to see and reply to the message.
+Go to https://think-in.me/ to view the translated message and reply to the message.

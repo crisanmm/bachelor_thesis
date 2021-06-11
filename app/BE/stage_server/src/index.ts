@@ -1,17 +1,14 @@
 import * as path from 'path';
 import os from 'os';
-import * as fs from 'fs';
 import { resolve4 } from 'dns';
-import { createServer } from 'https';
+import { createServer } from 'http';
 import chalk from 'chalk';
 import { config } from 'dotenv';
 import { createSocketIOServer } from './socketio/index';
 
 config({ path: `${path.resolve(__dirname, '..')}/.env` });
 
-const key = fs.readFileSync(path.resolve(__dirname, '../tls/self-signed-key.pem'));
-const cert = fs.readFileSync(path.resolve(__dirname, '../tls/self-signed-certificate.pem'));
-const httpServer = createServer({ key, cert });
+const httpServer = createServer();
 
 createSocketIOServer(httpServer);
 
