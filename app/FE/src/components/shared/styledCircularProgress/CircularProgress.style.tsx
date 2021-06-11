@@ -9,6 +9,7 @@ const StyledCircularProgress = styled((props) => (
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: ${({ theme }) => theme.spacing(2)}px;
 `;
 
 export default StyledCircularProgress;

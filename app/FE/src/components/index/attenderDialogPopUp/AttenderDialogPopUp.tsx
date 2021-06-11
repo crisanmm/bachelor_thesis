@@ -48,9 +48,7 @@ const AttenderDialogPopUp: React.FunctionComponent<AttenderDialogPopUpProps> = (
       PaperComponent={({ children }) => <>{children}</>}
     >
       <StyledAttenderMenuWrapper>
-        <Typography variant="h5">
-          {computeAttenderDisplayName({ givenName, familyName })}
-        </Typography>
+        <Typography variant="h5">{computeAttenderDisplayName({ givenName, familyName })}</Typography>
         {customJob && <Typography variant="body2">{customJob}</Typography>}
         <StyledAvatar src={avatar} />
         <List>
