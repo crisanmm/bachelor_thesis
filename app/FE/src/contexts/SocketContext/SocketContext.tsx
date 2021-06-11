@@ -55,6 +55,7 @@ const Provider: React.FunctionComponent<SocketContextProviderProps> = ({ childre
           setError('Currently not connected to any stage, connect to one from the above selections.');
         } else {
           const socketOptions = {
+            reconnectionAttempts: 5,
             auth: { idToken: userSession.getIdToken().getJwtToken(), stageId },
             query: {
               attender: JSON.stringify({
