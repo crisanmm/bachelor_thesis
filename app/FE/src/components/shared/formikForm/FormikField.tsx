@@ -8,10 +8,20 @@ interface FormikFieldProps {
   type: string;
   label: string;
   required?: boolean;
+  multiline?: boolean;
+  rowsMax?: number;
   disabled?: boolean;
 }
 
-const FormikField: React.FC<FormikFieldProps> = ({ name, type, label, required, disabled = false }) => {
+const FormikField: React.FC<FormikFieldProps> = ({
+  name,
+  type,
+  label,
+  required,
+  multiline = false,
+  rowsMax = 5,
+  disabled = false,
+}) => {
   const [field, meta] = useField(name);
   const [_type, setType] = useState<string>(type);
   const isPassword = type === 'password';
@@ -40,6 +50,8 @@ const FormikField: React.FC<FormikFieldProps> = ({ name, type, label, required, 
       helperText={<ErrorMessage name={name} />}
       label={label}
       type={_type}
+      multiline={multiline}
+      rowsMax={rowsMax}
       required={required}
       InputProps={isPassword ? InputProps : undefined}
       {...field}
