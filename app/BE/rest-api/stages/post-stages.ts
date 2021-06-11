@@ -23,7 +23,7 @@ const postStages = async (event: any) => {
   console.log('🚀  -> file: post-stages.ts  -> line 57  -> validatedStage', validatedStage);
 
   const PK = 'stages';
-  const SK = validatedStage.title.toLowerCase();
+  const SK = validatedStage.title.toLowerCase().replace(/ /g, '_');
 
   const item = { PK, SK, ...validatedStage };
 
