@@ -11,15 +11,18 @@ provider:
   memorySize: 128
   timeout: 5
   environment:
+    ACCOUNT_ID: 209123310044
     DYNAMODB_TABLE_NAME: think-in-database
+    COGNITO_USER_POOL_ID: ${self:provider.region}_pu83KKkCb
+    S3_CHATS_BUCKET: think-in-chats
 
 functions:
-  post-avatar:
+  post-avatar-id:
     timeout: 30
-    handler: avatars/post-avatar.postAvatar
+    handler: avatars/post-avatar-id.postAvatarId
     events:
       - http:
-          path: /avatars
+          path: /avatars/id
           method: post
           cors: true
     iamRoleStatements:
@@ -27,7 +30,45 @@ functions:
         Action:
           - 's3:*'
         Resource:
-          - 'arn:aws:s3:::think-in-content/*'
+          - arn:aws:s3:::${self:provider.environment.S3_CHATS_BUCKET}/avatars/*
+      - Effect: 'Allow'
+        Action:
+          - cognito-identity:Describe*
+          - cognito-identity:Get*
+          - cognito-identity:List*
+          - cognito-idp:Describe*
+          - cognito-idp:AdminGet*
+          - cognito-idp:AdminList*
+          - cognito-idp:AdminUpdate*
+          - cognito-idp:List*
+          - cognito-idp:Get*
+          - cognito-sync:Describe*
+          - cognito-sync:Get*
+          - cognito-sync:List*
+          - iam:ListOpenIdConnectProviders
+          - iam:ListRoles
+          - sns:ListPlatformApplications
+        Resource:
+          - '*'
+
+  post-avatar-token:
+    timeout: 30
+    handler: avatars/post-avatar-token.postAvatarToken
+    events:
+      - http:
+          path: /avatars/token
+          method: post
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action:
+          - 's3:*'
+        Resource:
+          - arn:aws:s3:::${self:provider.environment.S3_CHATS_BUCKET}/avatars/*
       - Effect: 'Allow'
         Action:
           - cognito-identity:Describe*
@@ -55,6 +96,10 @@ functions:
           path: /chats/{chatId}
           method: get
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
@@ -68,6 +113,10 @@ functions:
           path: /chats/{chatId}/{messageId}
           method: get
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
@@ -81,6 +130,10 @@ functions:
           path: /chats/{chatId}
           method: post
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
@@ -94,6 +147,10 @@ functions:
           path: /chats/{chatId}/{messageId}
           method: put
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
@@ -107,6 +164,10 @@ functions:
           path: /chats/{chatId}/{messageId}
           method: delete
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
@@ -120,6 +181,10 @@ functions:
           path: /users/{userId}
           method: get
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
@@ -148,6 +213,10 @@ functions:
           path: /users/{userId}
           method: put
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
@@ -176,6 +245,10 @@ functions:
           path: /notifications/{userId}
           method: get
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
@@ -189,6 +262,10 @@ functions:
           path: /notifications/{userId}
           method: post
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
@@ -202,6 +279,10 @@ functions:
           path: /notifications/{userId}
           method: delete
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
@@ -216,6 +297,10 @@ functions:
           path: /translation/translate
           method: post
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
 
   get-languages:
     handler: translation/get-languages.getLanguages
@@ -224,6 +309,10 @@ functions:
           path: /translation/languages
           method: get
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
 
   get-stages:
     handler: stages/get-stages.getStages
@@ -232,6 +321,10 @@ functions:
           path: /stages
           method: get
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
@@ -245,6 +338,10 @@ functions:
           path: /stages/{stageId}
           method: get
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
@@ -258,6 +355,10 @@ functions:
           path: /stages
           method: post
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
@@ -271,6 +372,10 @@ functions:
           path: /stages/{stageId}
           method: put
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
@@ -284,6 +389,10 @@ functions:
           path: /stages/{stageId}
           method: delete
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: thinkInApiGatewayAuthorizer
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
@@ -296,6 +405,17 @@ package:
 
 resources:
   Resources:
+    thinkInApiGatewayAuthorizer:
+      Type: 'AWS::ApiGateway::Authorizer'
+      Properties:
+        Name: COGNITO_AUTHORIZER
+        Type: COGNITO_USER_POOLS
+        IdentitySource: method.request.header.Authorization
+        RestApiId: 
+          Ref: ApiGatewayRestApi
+        ProviderARNs:
+          - arn:aws:cognito-idp:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:userpool/${self:provider.environment.COGNITO_USER_POOL_ID}
+
     thinkInChatsTable:
       Type: 'AWS::DynamoDB::Table'
       Properties:

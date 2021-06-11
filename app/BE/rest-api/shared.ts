@@ -1,10 +1,18 @@
 import * as yup from 'yup';
 import * as path from 'path';
+import sharp from 'sharp';
+import { CognitoIdentityServiceProvider, S3 } from 'aws-sdk';
+
+const s3 = new S3();
+const cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider();
 
 const loadEnvironmentVariables = () => {
   process.env.DYNAMODB_TABLE_NAME = 'think-in-database';
   process.env.USER_POOL_ID = 'eu-central-1_pu83KKkCb';
   process.env.GOOGLE_PROJECT_ID = 'think-in-312413';
+  process.env.S3_CHATS_BUCKET = 'think-in-chats';
+  process.env.S3_STAGES_BUCKET = 'think-in-stages';
+  process.env.COGNITO_USER_POOL_ID = 'eu-central-1_pu83KKkCb';
 
   const GOOGLE_APPLICATION_CREDENTIALS_PATH = path.resolve(
     __dirname,
@@ -178,13 +186,49 @@ const validateStage: ValidateStage = (stage) => {
   return schema.validate(stage, { stripUnknown: true, abortEarly: true }) as Promise<Stage>;
 };
 
+interface UploadAvatarToS3AndUpdateUserAttribute {
+  (userId: string, avatarBuffer: Buffer): Promise<string>;
+}
+
+/**
+ * Processes and uploads an avatar to S3.
+ * @param userId Cognito uuid v4 ID of the user
+ * @param avatarBuffer Buffer that contains the avatar image
+ * @returns URI to the avatar resource hosted on S3
+ */
+const uploadAvatarToS3AndUpdateUserAttribute: UploadAvatarToS3AndUpdateUserAttribute = async (userId, avatarBuffer) => {
+  const processedAvatar = await sharp(avatarBuffer).resize(256, 256).jpeg().toBuffer();
+
+  const { Location: avatarURI } = await s3
+    .upload({
+      Bucket: process.env.S3_CHATS_BUCKET!,
+      Key: `avatars/${userId}.jpg`,
+      Body: processedAvatar,
+      ContentType: 'image/jpeg',
+    })
+    .promise();
+
+  await cognitoIdentityServiceProvider
+    .adminUpdateUserAttributes({
+      UserPoolId: process.env.COGNITO_USER_POOL_ID!,
+      Username: userId,
+      UserAttributes: [{ Name: 'picture', Value: avatarURI }],
+    })
+    .promise();
+
+  return avatarURI;
+};
+
 export {
+  s3,
+  cognitoIdentityServiceProvider,
   getLastEvaluatedKey,
   makeResponse,
   validateMessage,
   validateNotification,
   validateTranslation,
   validateStage,
+  uploadAvatarToS3AndUpdateUserAttribute,
   loadEnvironmentVariables,
 };
 export type { Message, TextMessageType, MediaMessageType, Stage, UserAttributes };
