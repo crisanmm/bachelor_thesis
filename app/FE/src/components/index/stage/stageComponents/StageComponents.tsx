@@ -1,7 +1,9 @@
 /* eslint-disable no-else-return */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
+import { useTheme } from '@material-ui/core';
+import { useWindowWidth } from '@react-hook/window-size';
 import type { Stage as StageType } from '#types/stage';
 import type { Position } from '../shared';
 import StageFloor from './StageFloor';
@@ -31,7 +33,7 @@ const WALL_GEOMETRY_ARGS: ConstructorParameters<typeof THREE.BoxGeometry> = [
   DEPTH,
 ];
 
-const FINAL_CAMERA_POSITION: Position = [0, SCREEN_POSITION[1], HEIGHT * 0.5];
+const FINAL_CAMERA_POSITION: Position = [0, SCREEN_POSITION[1], 0];
 const LERP_ALPHA: number = 0.04;
 
 interface StageComponentsProps {
@@ -51,14 +53,29 @@ const StageComponents: React.FunctionComponent<StageComponentsProps> = ({
   removeOrbitControlsListeners,
   addOrbitControlsListeners,
 }) => {
+  const theme = useTheme();
+  const windowWidth = useWindowWidth();
   const [isVideoClicked, setIsVideoClicked] = useState<boolean>(false);
 
   // reuse these vectors in useFrame
   const [screenPosition] = useState(new THREE.Vector3(...SCREEN_POSITION));
   const [initialCameraPosition] = useState(new THREE.Vector3(...cameraPosition));
-  const [finalCameraPosition] = useState(new THREE.Vector3(...FINAL_CAMERA_POSITION));
+  const [finalCameraPosition, setFinalCameraPosition] = useState(new THREE.Vector3(...FINAL_CAMERA_POSITION));
   const [initialCameraLookAt] = useState(new THREE.Vector3(...cameraLookAt));
   const [cameraLookAtPosition] = useState(new THREE.Vector3(...cameraLookAt));
+
+  useEffect(() => {
+    console.log('🚀  -> file: StageComponents.tsx  -> line 69  -> windowWidth', windowWidth);
+    if (windowWidth < theme.breakpoints.values.sm) {
+      setFinalCameraPosition(new THREE.Vector3(FINAL_CAMERA_POSITION[0], FINAL_CAMERA_POSITION[1], 15));
+    } else if (windowWidth < theme.breakpoints.values.md) {
+      setFinalCameraPosition(new THREE.Vector3(FINAL_CAMERA_POSITION[0], FINAL_CAMERA_POSITION[1], 10));
+    } else if (windowWidth < theme.breakpoints.values.lg) {
+      setFinalCameraPosition(new THREE.Vector3(FINAL_CAMERA_POSITION[0], FINAL_CAMERA_POSITION[1], 7.5));
+    } else {
+      setFinalCameraPosition(new THREE.Vector3(FINAL_CAMERA_POSITION[0], FINAL_CAMERA_POSITION[1], 5));
+    }
+  }, [windowWidth]);
 
   useFrame(({ camera }) => {
     if (!isCanvasClicked.current)

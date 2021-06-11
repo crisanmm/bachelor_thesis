@@ -1,7 +1,6 @@
 import * as THREE from 'three';
-import axios from 'axios';
 import { ThreeEvent, useFrame, useLoader } from '@react-three/fiber';
-import React, { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { useAvatar } from '#hooks';
 import type { Size } from './shared';
 import { computeAttenderSize } from './shared';
@@ -64,13 +63,13 @@ const AttenderAvatar: React.FunctionComponent<AttenderAvatarProps & AttenderType
         onPointerOver={onPointerOver}
         onPointerLeave={onPointerLeave}
       >
-        <circleGeometry ref={avatarGeometryRef} args={[avatarRadius, 32]} />
+        <circleGeometry ref={avatarGeometryRef} args={[avatarRadius, 128]} />
         {/* <Suspense fallback={<meshBasic}> */}
         <meshBasicMaterial map={texture} />
         {/* </Suspense> */}
       </mesh>
       <mesh>
-        <circleGeometry ref={borderGeometryRef} args={[avatarRadius + avatarRadius / 10, 32]} />
+        <circleGeometry ref={borderGeometryRef} args={[avatarRadius + avatarRadius / 10, 128]} />
         <meshBasicMaterial color={color} />
       </mesh>
     </group>
