@@ -106,31 +106,31 @@ type UploadAvatarResponse = {
   avatarURI: string;
   error: string;
 };
-interface UploadAvatarOnSignUp {
+interface UploadAvatarId {
   // userId - uuid v4 user id
   // avatarDataURI - avatar data URI
   (userId: string, avatarDataURI: string): Promise<UploadAvatarResponse>;
 }
 
-const uploadAvatarOnSignUp: UploadAvatarOnSignUp = async (userId, avatarDataURI) => {
+const uploadAvatarId: UploadAvatarId = async (userId, avatarDataURI) => {
   const response = await axios.post(
-    ENDPOINTS.AVATARS,
+    `${ENDPOINTS.AVATARS}/id`,
     { userId, avatarDataURI },
     { headers: { 'Content-Type': 'application/json' } },
   );
   return response.data;
 };
 
-interface UploadAvatarType {
+interface UploadAvatarToken {
   // avatarDataURI - avatar data URI
   (avatarDataURI: string): Promise<UploadAvatarResponse>;
 }
 
-const uploadAvatar: UploadAvatarType = async (avatarDataURI) => {
+const uploadAvatarToken: UploadAvatarToken = async (avatarDataURI) => {
   const token = (await Auth.currentSession()).getIdToken().getJwtToken();
 
   const response = await axios.post(
-    ENDPOINTS.AVATARS,
+    `${ENDPOINTS.AVATARS}/token`,
     { avatarDataURI },
     { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } },
   );
@@ -165,8 +165,8 @@ const value = {
   changePassword,
   forgotPasswordSendCode,
   forgotPasswordReset,
-  uploadAvatarOnSignUp,
-  uploadAvatar,
+  uploadAvatarId,
+  uploadAvatarToken,
   deleteUser,
 };
 
