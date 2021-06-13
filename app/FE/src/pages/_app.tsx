@@ -1,55 +1,18 @@
 import type { AppProps, NextWebVitalsMetric } from 'next/app';
-import { useRouter } from 'next/router';
-import styled, {
-  ThemeProvider as StyledComponentsThemeProvider,
-  createGlobalStyle,
-} from 'styled-components';
-import React, { useState } from 'react';
+import { ThemeProvider as StyledComponentsThemeProvider } from 'styled-components';
+import React from 'react';
 import {
   createMuiTheme,
   MuiThemeProvider,
   StylesProvider as MuiStylesProvider,
   ThemeOptions,
 } from '@material-ui/core/styles';
-import {
-  FormControlLabel,
-  NoSsr as MuiNoSsr,
-  Switch,
-  Paper,
-  CssBaseline as MuiCssBaseline,
-  PaletteType,
-} from '@material-ui/core';
-import type { Palette } from '@material-ui/core/styles/createPalette';
+import { NoSsr as MuiNoSsr, CssBaseline as MuiCssBaseline } from '@material-ui/core';
 import { lightTheme, darkTheme } from '#utils';
 import { AccountContext, DarkThemeContext } from '#contexts';
 import { useDarkMode } from '#hooks';
 
-// const GlobalStyle = createGlobalStyle`
-//     @font-face {
-//         font-family: 'Mulish';
-//         src: url('/fonts/Mulish-VariableFont.woff');
-//     }
-
-//     @font-face {
-//         font-family: 'Poppins';
-//         src: url('/fonts/Poppins-Regular.woff');
-//     }
-
-//     * {
-//         box-sizing: border-box;
-//         font-family: Mulish;
-//     }
-
-//     body {
-//         margin: 0;
-//         padding: 0;
-//     }
-// `;
-
 function MyApp({ Component, pageProps }: AppProps) {
-  const router = useRouter();
-  // console.log('🚀  -> file: _app.tsx  -> line 50  -> router', router);
-
   const [isDarkTheme, toggleTheme] = useDarkMode();
   const muiTheme = createMuiTheme((isDarkTheme ? darkTheme : lightTheme) as ThemeOptions);
 

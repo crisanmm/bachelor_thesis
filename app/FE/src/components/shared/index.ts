@@ -8,3 +8,7 @@ export { default as Header } from './header';
 export { default as ChooseAvatar } from './chooseAvatar';
 export { default as ContactListItem } from './contactListItem';
 export { default as StyledCircularProgress } from './styledCircularProgress';
+export { default as RequireAuthentication } from './requireAuthentication';
+export { default as RequireAdmin } from './requireAdmin';
+export { default as StyledButtonsWrapper } from './styledButtonsWrapper';
+export { default as StyledDropzoneArea } from './styledDropzoneArea';
