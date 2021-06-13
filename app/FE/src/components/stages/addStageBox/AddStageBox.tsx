@@ -6,13 +6,13 @@ import axios from 'axios';
 import { Button, Typography } from '@material-ui/core';
 import { ArrowForward, Image, Movie } from '@material-ui/icons';
 import mime from 'mime-types';
+import slugify from 'slugify';
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
 import { fromCognitoIdentityPool } from '@aws-sdk/credential-provider-cognito-identity';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { FormikForm, StyledAlert } from '#components/shared';
+import { FormikForm, StyledAlert, StyledDropzoneArea } from '#components/shared';
 import { AccountContext } from '#contexts';
 import { ENDPOINTS, S3_STAGES_BUCKET_NAME } from '#utils';
-import { StyledDropzoneArea } from './StageBox.style';
 
 /**
  * Used for giving initial values to {@link https://formik.org/ | formik}.
@@ -35,7 +35,7 @@ const validationSchema = Yup.object().shape({
   externalLink: Yup.string().url('Stage external link must be a valid URL').required('Stage external link required.'),
 });
 
-const StageBox = () => {
+const AddStageBox = () => {
   const router = useRouter();
   const [Alert, setAlert] = useState<React.ComponentType>(() => () => <></>);
   const [imageFile, setImageFile] = useState<File>();
@@ -55,7 +55,7 @@ const StageBox = () => {
         });
         setS3Client(new S3Client({ region: process.env.NEXT_PUBLIC_COGNITO_REGION, credentials }));
       } catch (e) {
-        console.error('🚀  -> file: StageBox.tsx  -> line 58  -> e', e);
+        console.error('🚀  -> file: AddStageBox.tsx  -> line 58  -> e', e);
       }
     };
 
@@ -64,11 +64,12 @@ const StageBox = () => {
 
   const onSubmit = async ({ title, subheader, body, externalLink }: typeof initialValues) => {
     try {
-      if (!imageFile) throw new Error('Stage required an image.');
-      if (!videoFile) throw new Error('Stage required a video.');
+      if (!imageFile) throw new Error('Stage requires an image.');
+      if (!videoFile) throw new Error('Stage requires a video.');
 
-      const imageFileKey = `${title.toLowerCase().replace(/ /g, '_')}/image.${mime.extension(imageFile.type)}`;
-      const videoFileKey = `${title.toLowerCase().replace(/ /g, '_')}/video.${mime.extension(videoFile.type)}`;
+      const SK = slugify(title, { lower: true });
+      const imageFileKey = `${SK}/image.${mime.extension(imageFile.type)}`;
+      const videoFileKey = `${SK}/video.${mime.extension(videoFile.type)}`;
 
       // upload image file
       await s3Client!.send(
@@ -109,7 +110,7 @@ const StageBox = () => {
       ));
       setTimeout(() => router.reload(), 2000);
     } catch (e) {
-      console.log(e);
+      console.dir(e);
       // possible errors:
       // - UsernameExistsException
       // - CodeDeliveryFailureException
@@ -124,7 +125,7 @@ const StageBox = () => {
   return (
     <FormikForm.StyledFormWrapper>
       <Typography variant="h5" gutterBottom>
-        Create a new stage
+        Add a new stage
       </Typography>
       <Typography variant="body2" align="center" color="textSecondary">
         The new stage will be available on the main page, allowing users to interact with it.
@@ -174,4 +175,4 @@ const StageBox = () => {
   );
 };
 
-export default StageBox;
+export default AddStageBox;

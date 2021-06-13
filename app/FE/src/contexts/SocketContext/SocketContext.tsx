@@ -83,7 +83,7 @@ const Provider: React.FunctionComponent<SocketContextProviderProps> = ({ childre
         }
       })
       .catch((e) => {
-        console.log('🚀  -> file: StageContext.tsx  -> line 48  -> e', e);
+        console.dir('🚀  -> file: StageContext.tsx  -> line 48  -> e', e);
         setError('Error connecting to websocket server, are you authenticated?');
         setStageSocket(null);
         setChatSocket(null);

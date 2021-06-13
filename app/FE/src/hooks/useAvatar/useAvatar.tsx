@@ -23,7 +23,7 @@ const useAvatar: UseAvatar = (picture) => {
           setAvatar(fileReader.result as string);
         };
       })
-      .catch((e) => console.log('Failed loading texture picture', e));
+      .catch((e) => console.error('Failed loading texture picture', e));
   }, []);
 
   return avatar;

@@ -36,7 +36,6 @@ const SignInBox = () => {
       // possible errors
       // - UserNotConfirmedException
       // - NotAuthorizedException
-      console.log('🚀  -> file: SignInBox.tsx  -> line 48  -> e', e);
       setAlert(() => () => (
         <StyledAlert severity="error" title="Error">
           {e.message}

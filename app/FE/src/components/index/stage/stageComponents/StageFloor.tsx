@@ -30,7 +30,7 @@ const StageFloor: React.FunctionComponent<StageFloorProps> = ({ position, geomet
           setObjLoader(new module.OBJLoader());
         })
         .catch((e) => {
-          console.log('🚀  -> file: Screen.tsx  -> line 26  -> e', e);
+          console.dir('🚀  -> file: Screen.tsx  -> line 26  -> e', e);
         });
     } else {
       objLoader
@@ -41,7 +41,7 @@ const StageFloor: React.FunctionComponent<StageFloorProps> = ({ position, geomet
           setArrow(arrow as THREE.Mesh);
         })
         .catch((e) => {
-          console.log('🚀  -> file: Screen.tsx  -> line 37  -> e', e);
+          console.dir('🚀  -> file: Screen.tsx  -> line 37  -> e', e);
         });
     }
   }, [objLoader]);

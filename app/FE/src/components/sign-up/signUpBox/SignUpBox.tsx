@@ -53,7 +53,7 @@ const SignUpBox = () => {
       ));
       setTimeout(() => router.push('/sign-in'), 2000);
     } catch (e) {
-      console.log(e);
+      console.dir(e);
       // possible errors:
       // - UsernameExistsException
       // - CodeDeliveryFailureException

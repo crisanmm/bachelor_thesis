@@ -147,7 +147,6 @@ const setPersistedHeaderChats: SetPersistedHeaderChats = (headerChats) => {
       .filter((headerChat) => headerChat.user.email !== 'stage@think-in.me')
       .map((headerChat) => ({ ...headerChat, selected: false }));
     processedHeaderChats[0].selected = true;
-    console.log('🚀  -> file: account.ts  -> line 119  -> processedHeaderChats', processedHeaderChats);
     localStorage.setItem('headerChats', JSON.stringify(processedHeaderChats));
   }
 };

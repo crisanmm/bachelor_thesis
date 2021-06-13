@@ -333,7 +333,6 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
 
   onPrivateMessage = async ({ fromUser, message }: PrivateMessageEventType) => {
     message = await translateMessage(this.state.myUser!.token, message, getUserLanguage(this.state.myUser!));
-    // console.log('🚀  -> file: ChatManager.tsx  -> line 337  -> message', message);
     this.setState(({ headerChats, messages, shouldScrollMessages }) => {
       let newMessages = messages;
       let newShouldScrollMessages = shouldScrollMessages;
@@ -369,7 +368,6 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
   };
 
   onConnectedUsers = (connectedUserIds: string[]) => {
-    // console.log('🚀  -> file: ChatManager.tsx  -> line 345  -> connectedUserIds', connectedUserIds);
     // @ts-ignore
     this.setState(({ headerChats }) => {
       const newHeaderChats = headerChats.map((headerChat) => {
@@ -412,12 +410,6 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
     });
 
     this.setState({ areMessagesInInitialLoad: true });
-    // console.log('before emitting chat-messages');
-    // console.log('🚀  -> file: ChatManager.tsx  -> line 417  -> this.state.headerChats', this.state.headerChats);
-    // console.log(
-    //   '🚀  -> file: ChatManager.tsx  -> line 417  -> getSelectedHeaderChat(this.state.headerChats).user',
-    //   getSelectedHeaderChat(this.state.headerChats).user,
-    // );
     this.props.socket.emit('chat-messages', { withUser: getSelectedHeaderChat(this.state.headerChats).user });
   }
 
@@ -425,7 +417,6 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
     if (
       getSelectedHeaderChat(prevState.headerChats).user.id !== getSelectedHeaderChat(this.state.headerChats).user.id
     ) {
-      // console.log('here');
       this.setState({ areMessagesInInitialLoad: true });
       this.props.socket.emit('chat-messages', {
         withUser: getSelectedHeaderChat(this.state.headerChats).user,

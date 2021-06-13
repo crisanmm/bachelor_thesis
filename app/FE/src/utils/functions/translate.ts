@@ -34,7 +34,6 @@ const translateMessage: TranslateMessage = async (token, message, toLanguage) =>
     if (response.data.success) (message as TranslatedMessageType).translatedData = response.data.data.translatedText;
     return message as TranslatedMessageType;
   } catch (e) {
-    console.log('🚀  -> file: translate.ts  -> line 26  -> e', e);
     return message as MessageType;
   }
 };

@@ -175,7 +175,7 @@ const Context = createContext(value);
 const Provider: React.FunctionComponent = ({ children }) => {
   useEffect(() => {
     Auth.currentSession()
-      .then((s) => console.log(s))
+      .then((session) => console.log)
       .catch(() => {});
   }, []);
 

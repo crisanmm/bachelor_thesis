@@ -21,25 +21,30 @@ interface useUserType {
 
 const useUser: useUserType = () => {
   const { getSession } = useContext(AccountContext.Context);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [isLoggingIn, setIsLoggingIn] = useState<boolean>(true);
-  const [isSignedInWithAThirdParty, setIsSignedInWithAThirdParty] = useState<boolean>();
-  const [isAdmin, setIsAdmin] = useState<boolean>();
+  const [state, setState] = useState<useUserReturnType>({
+    isLoggedIn: false,
+    isLoggingIn: true,
+    isSignedInWithAThirdParty: undefined,
+    isAdmin: undefined,
+  });
 
   useEffect(() => {
     getSession()
       .then((userSession) => {
         const attributes = getAttributesFromSession(userSession);
-        setIsLoggedIn(true);
-        setIsLoggingIn(false);
-        setIsSignedInWithAThirdParty(attributes.id.toLowerCase().startsWith('google'));
-        setIsAdmin(!!attributes.groups?.includes('admin'));
+        setState((state) => ({
+          ...state,
+          isLoggedIn: true,
+          isLoggingIn: false,
+          isSignedInWithAThirdParty: attributes.id.toLowerCase().startsWith('google'),
+          isAdmin: !!attributes.groups?.includes('admin'),
+        }));
       })
-      .catch(() => setIsLoggedIn(false))
-      .finally(() => setIsLoggingIn(false));
+      .catch(() => setState((state) => ({ ...state, isLoggedIn: false })))
+      .finally(() => setState((state) => ({ ...state, isLoggingIn: false })));
   }, []);
 
-  return { isLoggedIn, isLoggingIn, isSignedInWithAThirdParty, isAdmin };
+  return state;
 };
 
 export default useUser;

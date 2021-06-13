@@ -6,11 +6,16 @@ import { ErrorMessage, Formik, FormikProps, useField } from 'formik';
 import { Box, Button, MenuItem, TextField, Typography } from '@material-ui/core';
 import { Alert as MuiAlert } from '@material-ui/lab';
 import { ArrowForward } from '@material-ui/icons';
-import { FormikForm, StyledAlert, ChooseAvatar, StyledCircularProgress } from '#components/shared';
+import {
+  FormikForm,
+  StyledAlert,
+  ChooseAvatar,
+  StyledCircularProgress,
+  StyledButtonsWrapper,
+} from '#components/shared';
 import { AccountContext, UpdateUserAttributesType } from '#contexts';
 import { useUser } from '#hooks';
 import { getAttributesFromSession } from '#utils';
-import { StyledButtonsWrapper } from './MainAttributesBox.style';
 import languages from './languages.json';
 
 /**
@@ -260,20 +265,20 @@ const MainAttributesBox = () => {
       </Formik>
 
       <StyledButtonsWrapper>
-        <Link href="/profile-change-email">
+        <Link href="/profile/change-email">
           <Button disabled={isSignedInWithAThirdParty} variant="outlined" fullWidth>
             Change email
           </Button>
         </Link>
 
-        <Link href="/profile-change-password">
+        <Link href="/profile/change-password">
           <Button disabled={isSignedInWithAThirdParty} variant="outlined" fullWidth>
             Change password
           </Button>
         </Link>
 
         {isAdmin && (
-          <Link href="/profile-change-stages">
+          <Link href="/stages">
             <Button disabled={!isAdmin} variant="outlined" fullWidth>
               Change stages
             </Button>

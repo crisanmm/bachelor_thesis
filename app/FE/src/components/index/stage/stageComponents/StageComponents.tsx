@@ -65,7 +65,6 @@ const StageComponents: React.FunctionComponent<StageComponentsProps> = ({
   const [cameraLookAtPosition] = useState(new THREE.Vector3(...cameraLookAt));
 
   useEffect(() => {
-    console.log('🚀  -> file: StageComponents.tsx  -> line 69  -> windowWidth', windowWidth);
     if (windowWidth < theme.breakpoints.values.sm) {
       setFinalCameraPosition(new THREE.Vector3(FINAL_CAMERA_POSITION[0], FINAL_CAMERA_POSITION[1], 15));
     } else if (windowWidth < theme.breakpoints.values.md) {
@@ -95,7 +94,7 @@ const StageComponents: React.FunctionComponent<StageComponentsProps> = ({
       <Screen
         position={SCREEN_POSITION}
         geometryArgs={SCREEN_GEOMETRY_ARGS}
-        fallbackImageSrc={stage.imageLink}
+        imageSrc={stage.imageLink}
         videoSrc={stage.videoLink}
         isVideoClicked={isVideoClicked}
         setIsVideoClicked={setIsVideoClicked}
