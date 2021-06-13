@@ -8,7 +8,11 @@ import { createSocketIOServer } from './socketio/index';
 
 config({ path: `${path.resolve(__dirname, '..')}/.env` });
 
-const httpServer = createServer();
+const httpServer = createServer((req, res) => {
+  // health check for AWS ALB
+  res.writeHead(200);
+  res.end();
+});
 
 createSocketIOServer(httpServer);
 
