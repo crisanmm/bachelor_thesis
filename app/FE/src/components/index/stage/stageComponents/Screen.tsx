@@ -1,7 +1,6 @@
 /* eslint-disable no-else-return */
 import * as THREE from 'three';
 import React, { SetStateAction, useEffect, useRef, useState } from 'react';
-import { useLoader } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import axios from 'axios';
 import type { Position } from '../shared';
@@ -9,7 +8,7 @@ import type { Position } from '../shared';
 interface ScreenProps {
   position: Position;
   geometryArgs: ConstructorParameters<typeof THREE.PlaneGeometry>;
-  fallbackImageSrc: string;
+  imageSrc: string;
   videoSrc: string;
   isCanvasClicked: React.MutableRefObject<boolean>;
   isVideoClicked: boolean;
@@ -21,7 +20,7 @@ interface ScreenProps {
 const Screen: React.FunctionComponent<ScreenProps> = ({
   position,
   geometryArgs,
-  fallbackImageSrc,
+  imageSrc,
   videoSrc,
   isVideoClicked,
   setIsVideoClicked,
@@ -32,13 +31,17 @@ const Screen: React.FunctionComponent<ScreenProps> = ({
   const intervalId = useRef<number>();
   const [videoElement, setVideoElement] = useState<HTMLVideoElement>();
   const [videoTexture, setVideoTexture] = useState<THREE.VideoTexture>();
-  const imageTexture = useLoader(THREE.TextureLoader, fallbackImageSrc);
+  const [imageTexture, setImageTexture] = useState<THREE.Texture>(
+    new THREE.TextureLoader().load('/images/fallback_stage_image.jpg'),
+  );
+  // const imageTexture = useLoader(THREE.TextureLoader, '/images/fallback_stage_image');
   useEffect(() => {
     const setupVideo = async () => {
       const _videoElement = document.getElementById('stage-video') as HTMLVideoElement;
       if (!videoElement && _videoElement) {
         window.clearInterval(intervalId.current);
         setVideoElement(_videoElement);
+
         try {
           // check if videoElement has valid src,
           // if not, videoTexture will not be set and fallback imageTexture will be loaded instead
@@ -47,6 +50,13 @@ const Screen: React.FunctionComponent<ScreenProps> = ({
           _videoElement.volume = 1;
           await _videoElement.play();
         } catch (e) {
+          // videoSrc invalid, load imageSrc as fallback instead
+          try {
+            await axios.head(imageSrc);
+            setImageTexture(new THREE.TextureLoader().load(imageSrc));
+          } catch (e) {
+            console.error('Stage video and image invalid, loaded fallback image instead.');
+          }
           console.error('🚀  -> file: Screen.tsx  -> line 39  -> e', e);
         }
         return true;
@@ -82,7 +92,6 @@ const Screen: React.FunctionComponent<ScreenProps> = ({
             .then((event) => {})
             .catch((e) => {
               console.dir(videoElement!);
-              console.log(e);
             });
           return true;
         }
