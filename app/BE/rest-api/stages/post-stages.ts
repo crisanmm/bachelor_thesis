@@ -1,11 +1,15 @@
 import { DynamoDB } from 'aws-sdk';
-import { makeResponse, validateStage, loadEnvironmentVariables } from '../shared';
+import slugify from 'slugify';
+import { makeResponse, validateStage, loadEnvironmentVariables, validateAdminGroup } from '../shared';
 
 loadEnvironmentVariables();
 const dynamoDB = new DynamoDB.DocumentClient();
 
 const postStages = async (event: any) => {
   console.log(event);
+
+  if (!validateAdminGroup(event.headers.Authorization.split(' ')[1]))
+    return makeResponse(401, false, { error: 'User is not an admin.' });
 
   let requestBody;
   try {
@@ -23,7 +27,7 @@ const postStages = async (event: any) => {
   console.log('🚀  -> file: post-stages.ts  -> line 57  -> validatedStage', validatedStage);
 
   const PK = 'stages';
-  const SK = validatedStage.title.toLowerCase().replace(/ /g, '_');
+  const SK = slugify(validatedStage.title, { lower: true });
 
   const item = { PK, SK, ...validatedStage };
 

@@ -1,5 +1,6 @@
 import * as yup from 'yup';
 import * as path from 'path';
+import JWT from 'jsonwebtoken';
 import sharp from 'sharp';
 import { CognitoIdentityServiceProvider, S3 } from 'aws-sdk';
 
@@ -219,6 +220,22 @@ const uploadAvatarToS3AndUpdateUserAttribute: UploadAvatarToS3AndUpdateUserAttri
   return avatarURI;
 };
 
+interface ValidateAdminGroup {
+  (token: string): boolean;
+}
+
+/**
+ * Validates whether a user belongs to the admin group or not.
+ * @param token JSON Web Token which contains claims about a user
+ * @returns True if the user belongs to the admin group, false otherwise.
+ */
+const validateAdminGroup: ValidateAdminGroup = (token) => {
+  // ID token already verified by API Gateway, just decode it
+  const { 'cognito:groups': cognitoGroups } = JWT.decode(token) as any;
+  if ((cognitoGroups as string[] | undefined)?.includes('admin')) return true;
+  return false;
+};
+
 export {
   s3,
   cognitoIdentityServiceProvider,
@@ -228,8 +245,9 @@ export {
   validateNotification,
   validateTranslation,
   validateStage,
-  uploadAvatarToS3AndUpdateUserAttribute,
   loadEnvironmentVariables,
+  uploadAvatarToS3AndUpdateUserAttribute,
+  validateAdminGroup
 };
 export type { Message, TextMessageType, MediaMessageType, Stage, UserAttributes };
 

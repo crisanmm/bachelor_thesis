@@ -24,7 +24,7 @@ const postAvatarToken = async (event: any) => {
   const parsedDataUrl = parseDataUrl(requestBody.avatarDataURI);
   if (!parsedDataUrl) return makeResponse(400, false, { error: 'Failed decoding avatarURI' });
 
-  // ID token already validated by API Gateway, just decode it
+  // ID token already verified by API Gateway, just decode it
   const { 'cognito:username': userId } = JWT.decode(event.headers.Authorization.split(' ')[1]) as any;
 
   try {

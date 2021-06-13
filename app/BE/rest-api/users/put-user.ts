@@ -9,7 +9,7 @@ const cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider();
 const putUser = async (event: any) => {
   console.log(event);
 
-  // ID token already validated by API Gateway, just decode it
+  // ID token already verified by API Gateway, just decode it
   const { 'cognito:username': userId } = JWT.decode(
     event.headers.Authorization.split(' ')[1]
   ) as any;
