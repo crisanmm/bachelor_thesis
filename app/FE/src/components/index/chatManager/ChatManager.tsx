@@ -242,6 +242,7 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
   };
 
   onPutFileSignedUrl = async ({ getSignedUrl, putSignedUrl }: PutFileSignedUrlEventType) => {
+    console.log('🚀  -> file: ChatManager.tsx  -> line 245  -> putSignedUrl', putSignedUrl);
     try {
       await axios.put(putSignedUrl, this.state.inputFileEvent!.target!.files![0]!, {
         headers: { 'Content-Type': this.state.inputFileEvent!.target!.files![0]!.type },
@@ -422,7 +423,7 @@ class ChatManagerComponent extends React.Component<ChatManagerComponentProps, Ch
         withUser: getSelectedHeaderChat(this.state.headerChats).user,
       });
     }
-    //   const selectedHeaderChat = getSelectedHeaderChat(headerChats);
+    setPersistedHeaderChats(this.state.headerChats);
   }
 
   componentWillUnmount() {
