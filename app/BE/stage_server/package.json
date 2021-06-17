@@ -1,5 +1,5 @@
 {
-  "name": "stage_server",
+  "name": "think-in-backend-stage-server",
   "version": "1.0.0",
   "description": "Serves stage oriented information",
   "main": "index.js",
@@ -9,7 +9,7 @@
     "test": "jest",
     "dev": "ts-node-dev src/index.ts",
     "start": "nohup node out/index.js > stdout.log 2> stderr.log < /dev/null &",
-    "build": "tsc"
+    "build": "tsc; cp src/utils/sesEmail/email.html out/utils/sesEmail/email.html; cp src/utils/sesEmail/email.txt out/utils/sesEmail/email.txt"
   },
   "repository": {
     "type": "git",
