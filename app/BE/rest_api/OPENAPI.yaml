@@ -4,7 +4,7 @@ info:
   title: Think-in API
   description: >
     This API documents the endpoints that the Think-in application uses.
-  version: 1.0.0
+  version: 1.0.1
 
 servers:
   - url: https://api.think-in.me/dev
