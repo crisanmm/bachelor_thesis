@@ -12,12 +12,12 @@ const deleteStagesId = async (event: any) => {
 
   if (!event.pathParameters.stageId) return makeResponse(400, false, { error: 'No stage ID found as path parameter.' });
 
-  const PK = `stages`;
+  const PK = 'stages';
   const SK = event.pathParameters.stageId;
 
   const params: DynamoDB.DeleteItemInput = {
     TableName: process.env.DYNAMODB_TABLE_NAME as string,
-    Key: { PK: PK, SK: SK } as DynamoDB.Key,
+    Key: { PK, SK } as DynamoDB.Key,
     ReturnValues: 'NONE',
   };
 

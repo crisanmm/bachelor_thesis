@@ -1,5 +1,5 @@
-import { makeResponse, validateTranslation, loadEnvironmentVariables } from '../shared';
 import { v2 } from '@google-cloud/translate';
+import { makeResponse, validateTranslation, loadEnvironmentVariables } from '../shared';
 
 loadEnvironmentVariables();
 
@@ -63,6 +63,7 @@ const postTranslate = async (event: any) => {
     return makeResponse(200, true, { data: { translatedText } });
   } catch (e) {
     console.log('🚀  -> file: post-translate.ts  -> line 63  -> e', e);
+    return makeResponse(400, false, { error: e });
   }
 };
 

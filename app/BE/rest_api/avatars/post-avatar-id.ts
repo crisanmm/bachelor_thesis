@@ -40,22 +40,21 @@ const postAvatarId = async (event: any) => {
   }
 
   console.log('🚀  -> file: post-avatar.ts  -> line 84  -> response', response);
-  if (response.data) {
-    const userConfirmed = response.data.UserStatus!;
+  const userConfirmed = response.data!.UserStatus!;
 
-    switch (userConfirmed) {
-      case 'UNCONFIRMED':
-        const avatarURI = await uploadAvatarToS3AndUpdateUserAttribute(
-          requestBody.userId as string,
-          parsedDataUrl.toBuffer(),
-        );
-        return makeResponse(201, true, { avatarURI });
-
-      default:
-        return makeResponse(403, false, {
-          error: 'Can upload avatar using only ID only when user is in UNCONFIRMED status.',
-        });
+  switch (userConfirmed) {
+    case 'UNCONFIRMED': {
+      const avatarURI = await uploadAvatarToS3AndUpdateUserAttribute(
+        requestBody.userId as string,
+        parsedDataUrl.toBuffer(),
+      );
+      return makeResponse(201, true, { avatarURI });
     }
+
+    default:
+      return makeResponse(403, false, {
+        error: 'Can upload avatar using only ID only when user is in UNCONFIRMED status.',
+      });
   }
 };
 

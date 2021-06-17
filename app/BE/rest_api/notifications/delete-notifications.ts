@@ -10,7 +10,7 @@ const deleteNotifications = async (event: any) => {
   if (!event.pathParameters.userId) return makeResponse(400, false, { error: 'No user ID found as path parameter.' });
 
   const PK = `user_${event.pathParameters.userId}`;
-  const SK_PREFIX = `notification_`;
+  const SK_PREFIX = 'notification_';
 
   const queryParams: DynamoDB.QueryInput = {
     TableName: process.env.DYNAMODB_TABLE_NAME as string,
@@ -39,7 +39,10 @@ const deleteNotifications = async (event: any) => {
         DeleteRequest: { Key: { PK: notification.PK, SK: notification.SK } },
       });
     console.log('🚀  -> file: delete-notifications.ts  -> line 37  -> queryResponse', queryResponse);
-    console.log('🚀  -> file: delete-notifications.ts  -> line 37  -> queryResponse', (queryResponse.data as any).Items);
+    console.log(
+      '🚀  -> file: delete-notifications.ts  -> line 37  -> queryResponse',
+      (queryResponse.data as any).Items,
+    );
 
     const { $response: deleteResponse } = await dynamoDB.batchWrite(deleteParams).promise();
     console.log('🚀  -> file: delete-chats-id.ts  -> line 28  -> response', deleteResponse);

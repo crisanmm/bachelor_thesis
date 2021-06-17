@@ -13,7 +13,8 @@ const getStages = async (event: any) => {
   /**
    * LastEvaluatedKey required if pagination is wanted
    */
-  let lastEvaluatedPK, lastEvaluatedSK;
+  let lastEvaluatedPK;
+  let lastEvaluatedSK;
   try {
     [lastEvaluatedPK, lastEvaluatedSK] = getLastEvaluatedKey(event);
   } catch (e) {

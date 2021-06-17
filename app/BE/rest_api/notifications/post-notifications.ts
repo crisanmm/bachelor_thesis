@@ -1,6 +1,6 @@
 import { DynamoDB } from 'aws-sdk';
-import { makeResponse, loadEnvironmentVariables, validateNotification } from '../shared';
 import nanoid from 'nanoid';
+import { makeResponse, loadEnvironmentVariables, validateNotification } from '../shared';
 
 loadEnvironmentVariables();
 const dynamoDB = new DynamoDB.DocumentClient();
@@ -8,8 +8,7 @@ const dynamoDB = new DynamoDB.DocumentClient();
 const postNotifications = async (event: any) => {
   console.log(event);
 
-  if (!event.pathParameters.userId)
-    return makeResponse(400, false, { error: 'No user ID found as path parameter.' });
+  if (!event.pathParameters.userId) return makeResponse(400, false, { error: 'No user ID found as path parameter.' });
 
   let requestBody;
   try {

@@ -1,6 +1,6 @@
 import { DynamoDB } from 'aws-sdk';
-import { makeResponse, validateMessage, loadEnvironmentVariables } from '../shared';
 import nanoid from 'nanoid';
+import { makeResponse, validateMessage, loadEnvironmentVariables } from '../shared';
 
 loadEnvironmentVariables();
 const dynamoDB = new DynamoDB.DocumentClient();
@@ -8,8 +8,7 @@ const dynamoDB = new DynamoDB.DocumentClient();
 const postChats = async (event: any) => {
   console.log(event);
 
-  if (!event.pathParameters.chatId)
-    return makeResponse(400, false, { error: 'No chat ID found as path parameter.' });
+  if (!event.pathParameters.chatId) return makeResponse(400, false, { error: 'No chat ID found as path parameter.' });
 
   let requestBody;
   try {
@@ -27,14 +26,14 @@ const postChats = async (event: any) => {
 
   const PK = `chat_${event.pathParameters.chatId}`;
   const SK = `message_${validatedMessage.time}_${nanoid()}`;
-  
+
   const item = { PK, SK, ...validatedMessage };
-  
+
   // TODO: handle case when resource already exists
   const params: DynamoDB.PutItemInput = {
     TableName: process.env.DYNAMODB_TABLE_NAME as string,
     Item: item as DynamoDB.PutItemInputAttributeMap,
-    ConditionExpression: `attribute_not_exists(#PK) AND (NOT begins_with(#SK, :message_timestamp))`,
+    ConditionExpression: 'attribute_not_exists(#PK) AND (NOT begins_with(#SK, :message_timestamp))',
     ExpressionAttributeNames: {
       '#PK': 'PK',
       '#SK': 'SK',
@@ -43,13 +42,13 @@ const postChats = async (event: any) => {
       ':message_timestamp': `message_${validatedMessage.time}`,
     } as DynamoDB.ExpressionAttributeValueMap,
   };
-  
+
   console.log('🚀  -> file: post-chats.ts  -> line 29  -> PK', PK);
   console.log(
-    '🚀  -> file: post-chats.ts  -> line 44  -> `message_${validatedMessage.time}`',
-    `message_${validatedMessage.time}`
+    '🚀  -> file: post-chats.ts  -> line 44  -> message_validatedMessage.time',
+    `message_${validatedMessage.time}`,
   );
-  
+
   try {
     await dynamoDB.put(params).promise();
   } catch (e) {

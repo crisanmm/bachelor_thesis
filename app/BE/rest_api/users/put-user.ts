@@ -10,9 +10,7 @@ const putUser = async (event: any) => {
   console.log(event);
 
   // ID token already verified by API Gateway, just decode it
-  const { 'cognito:username': userId } = JWT.decode(
-    event.headers.Authorization.split(' ')[1]
-  ) as any;
+  const { 'cognito:username': userId } = JWT.decode(event.headers.Authorization.split(' ')[1]) as any;
 
   if (userId !== event.pathParameters.userId)
     return makeResponse(401, false, { error: "You can only change your account's attributes." });

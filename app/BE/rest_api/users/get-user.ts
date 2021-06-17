@@ -9,7 +9,7 @@ const cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider();
 const getUser = async (event: any) => {
   console.log(event);
 
-  const userId = event.pathParameters.userId;
+  const { userId } = event.pathParameters;
 
   try {
     const { $response } = await cognitoIdentityServiceProvider

@@ -5,21 +5,15 @@ loadEnvironmentVariables();
 const dynamoDB = new DynamoDB.DocumentClient();
 
 const getLastEvaluatedKey = (event: any) => {
-  let lastEvaluatedPK, lastEvaluatedSK;
-  if (
-    event.queryStringParameters?.lastEvaluatedPK ||
-    event.queryStringParameters?.lastEvaluatedSK
-  ) {
+  let lastEvaluatedPK;
+  let lastEvaluatedSK;
+  if (event.queryStringParameters?.lastEvaluatedPK || event.queryStringParameters?.lastEvaluatedSK) {
     if (!event.queryStringParameters?.lastEvaluatedPK)
-      throw new Error(
-        'No lastEvalutedPK found as query parameter despite finding lastEvaluatedSK.'
-      );
+      throw new Error('No lastEvalutedPK found as query parameter despite finding lastEvaluatedSK.');
     lastEvaluatedPK = event.queryStringParameters.lastEvaluatedPK;
 
     if (!event.queryStringParameters?.lastEvaluatedSK)
-      throw new Error(
-        'No lastEvalutedSK found as query parameter despite finding lastEvaluatedPK.'
-      );
+      throw new Error('No lastEvalutedSK found as query parameter despite finding lastEvaluatedPK.');
     lastEvaluatedSK = event.queryStringParameters.lastEvaluatedSK;
   }
 
@@ -29,8 +23,7 @@ const getLastEvaluatedKey = (event: any) => {
 const getNotifications = async (event: any) => {
   console.log(event);
 
-  if (!event.pathParameters.userId)
-    return makeResponse(400, false, { error: 'No user ID found as path parameter.' });
+  if (!event.pathParameters.userId) return makeResponse(400, false, { error: 'No user ID found as path parameter.' });
 
   let limit = 20;
   if (event.queryStringParameters?.limit) limit = event.queryStringParameters.limit;
@@ -38,7 +31,8 @@ const getNotifications = async (event: any) => {
   /**
    * LastEvaluatedKey required if pagination is wanted
    */
-  let lastEvaluatedPK, lastEvaluatedSK;
+  let lastEvaluatedPK;
+  let lastEvaluatedSK;
   try {
     [lastEvaluatedPK, lastEvaluatedSK] = getLastEvaluatedKey(event);
   } catch (e) {
@@ -46,7 +40,7 @@ const getNotifications = async (event: any) => {
   }
 
   const PK = `user_${event.pathParameters.userId}`;
-  const SK_PREFIX = `notification_`
+  const SK_PREFIX = 'notification_';
 
   const params: DynamoDB.QueryInput = {
     TableName: process.env.DYNAMODB_TABLE_NAME as string,
@@ -68,8 +62,7 @@ const getNotifications = async (event: any) => {
    * Actual pagination done by settings ExclusiveStartKey to LastEvaluatedKey from previous query.
    * https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.Pagination.html
    */
-  if (lastEvaluatedPK && lastEvaluatedSK)
-    params.ExclusiveStartKey = { PK: lastEvaluatedPK, SK: lastEvaluatedSK };
+  if (lastEvaluatedPK && lastEvaluatedSK) params.ExclusiveStartKey = { PK: lastEvaluatedPK, SK: lastEvaluatedSK };
 
   try {
     const { $response } = await dynamoDB.query(params).promise();

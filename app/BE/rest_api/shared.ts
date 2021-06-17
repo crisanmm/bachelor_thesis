@@ -24,7 +24,8 @@ const loadEnvironmentVariables = () => {
 };
 
 const getLastEvaluatedKey = (event: any) => {
-  let lastEvaluatedPK, lastEvaluatedSK;
+  let lastEvaluatedPK;
+  let lastEvaluatedSK;
   if (event.queryStringParameters?.lastEvaluatedPK || event.queryStringParameters?.lastEvaluatedSK) {
     if (!event.queryStringParameters?.lastEvaluatedPK)
       throw new Error('No lastEvalutedPK found as query parameter despite finding lastEvaluatedSK.');
@@ -49,13 +50,11 @@ interface MakeResponse {
  * @param success Boolean value indicating response success
  * @returns AWS Lambda HTTP event response
  */
-const makeResponse: MakeResponse = (statusCode, success, body) => {
-  return {
-    statusCode: String(statusCode),
-    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-    body: JSON.stringify({ success, ...body }),
-  };
-};
+const makeResponse: MakeResponse = (statusCode, success, body) => ({
+  statusCode: String(statusCode),
+  headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+  body: JSON.stringify({ success, ...body }),
+});
 
 interface UserAttributes {
   picture: string;
@@ -247,12 +246,6 @@ export {
   validateStage,
   loadEnvironmentVariables,
   uploadAvatarToS3AndUpdateUserAttribute,
-  validateAdminGroup
+  validateAdminGroup,
 };
 export type { Message, TextMessageType, MediaMessageType, Stage, UserAttributes };
-
-// (async () => {
-//   const notification = {"id":"global","blabla": true,"givenName":"Global","familyName":"Chat","email":"global@think-in.me","emailVerified":true,"picture":"https://think-in-content.s3.eu-central-1.amazonaws.com/avatars/global.jpg"}
-//   const res = await validateNotification(notification);
-//   console.log(res);
-// })()

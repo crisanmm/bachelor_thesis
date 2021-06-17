@@ -7,8 +7,7 @@ const dynamoDB = new DynamoDB.DocumentClient();
 const deleteChatsId = async (event: any) => {
   console.log(event);
 
-  if (!event.pathParameters.chatId)
-    return makeResponse(400, false, { error: 'No chat ID found as path parameter.' });
+  if (!event.pathParameters.chatId) return makeResponse(400, false, { error: 'No chat ID found as path parameter.' });
   if (!event.pathParameters.messageId)
     return makeResponse(400, false, { error: 'No message ID found as path parameter.' });
 
@@ -19,7 +18,7 @@ const deleteChatsId = async (event: any) => {
 
   const params: DynamoDB.DeleteItemInput = {
     TableName: process.env.DYNAMODB_TABLE_NAME as string,
-    Key: { PK: PK, SK: SK } as DynamoDB.Key,
+    Key: { PK, SK } as DynamoDB.Key,
     ReturnValues: 'NONE',
   };
 

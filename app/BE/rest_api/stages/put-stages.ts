@@ -1,5 +1,4 @@
 import { DynamoDB } from 'aws-sdk';
-import slugify from 'slugify';
 import { makeResponse, validateStage, loadEnvironmentVariables, validateAdminGroup } from '../shared';
 
 loadEnvironmentVariables();
@@ -27,7 +26,7 @@ const putStages = async (event: any) => {
     return makeResponse(400, false, { error: e.errors[0] });
   }
 
-  const PK = `stages`;
+  const PK = 'stages';
   const SK = event.pathParameters.stageId;
 
   const item = { PK, SK, ...validatedStage };

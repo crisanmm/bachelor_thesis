@@ -1,10 +1,6 @@
 import * as JWT from 'jsonwebtoken';
 import parseDataUrl from 'parse-data-url';
-import {
-  makeResponse,
-  loadEnvironmentVariables,
-  uploadAvatarToS3AndUpdateUserAttribute,
-} from '../shared';
+import { makeResponse, loadEnvironmentVariables, uploadAvatarToS3AndUpdateUserAttribute } from '../shared';
 
 loadEnvironmentVariables();
 
@@ -33,6 +29,7 @@ const postAvatarToken = async (event: any) => {
   } catch (e) {
     console.log('🚀  -> file: post-avatar.ts  -> line 111  -> e', JSON.stringify(e, null, 2));
     console.log('🚀  -> file: post-avatar.ts  -> line 111  -> e', e);
+    return makeResponse(400, false, { error: e });
   }
 };
 
