@@ -1,4 +1,5 @@
 /* eslint-disable no-else-return */
+/* eslint-disable jsx-a11y/media-has-caption */
 import * as THREE from 'three';
 import React, { SetStateAction, useEffect, useRef, useState } from 'react';
 import { Html } from '@react-three/drei';
@@ -34,7 +35,7 @@ const Screen: React.FunctionComponent<ScreenProps> = ({
   const [imageTexture, setImageTexture] = useState<THREE.Texture>(
     new THREE.TextureLoader().load('/images/fallback_stage_image.jpg'),
   );
-  // const imageTexture = useLoader(THREE.TextureLoader, '/images/fallback_stage_image');
+
   useEffect(() => {
     const setupVideo = async () => {
       const _videoElement = document.getElementById('stage-video') as HTMLVideoElement;
@@ -121,7 +122,6 @@ const Screen: React.FunctionComponent<ScreenProps> = ({
         <meshBasicMaterial map={videoTexture || imageTexture} side={THREE.DoubleSide} />
       </mesh>
       <Html calculatePosition={() => [0, 5000, 0]}>
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video
           id="stage-video"
           style={{ display: 'none' }}

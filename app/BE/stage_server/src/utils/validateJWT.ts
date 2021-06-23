@@ -55,17 +55,4 @@ const validateJWT: ValidateJWT = async (token: string) =>
     });
   });
 
-// (async () => {
-//   const exampleToken =
-//     'eyJraWQiOiJcLzRUbTR1dUtlbnhyQ3I0N2YwdmRWaXpyM1wvaUpIQ0h5enBNT2NieE5Bemc9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJkMjc5ZTQwNC00NGIyLTQ5NTItYTZlNi0zZDMzZjM4Yzg1YWUiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LWNlbnRyYWwtMS5hbWF6b25hd3MuY29tXC9ldS1jZW50cmFsLTFfYnpsNTdTWDA0IiwiY29nbml0bzp1c2VybmFtZSI6ImQyNzllNDA0LTQ0YjItNDk1Mi1hNmU2LTNkMzNmMzhjODVhZSIsImdpdmVuX25hbWUiOiJjcmlzYW4iLCJhdWQiOiJzZHBmcnB1a2lmZXR1cGFndmhnaDZ2aDVkIiwiZXZlbnRfaWQiOiI3YTBiZjI0OS1iOWUxLTQ5MzEtOGEzMi1kY2ZmYjNjYmEwMDMiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYxNzgwMDMxMywiZXhwIjoxNjE4NDc1Nzk4LCJpYXQiOjE2MTg0NzIxOTgsImZhbWlseV9uYW1lIjoibWloYWkiLCJlbWFpbCI6ImNyaXNhbl9taWhhaTU1QGhvdG1haWwuY29tIn0.Xbb5QLXwIai4vi5MYnqzBitjWRuR7QU-1FDPs7O0gEXWLBhWtbs0X8FMmfgn6mic5ge71lRExOOGA2K8PFmLbWwRdrn0s7tC7Gp6-c5-oLyP1TBZP8LuOxbmJYYoPgbPsyup2l9Nt6fAartO8Q-fL0mt3waTzel2t4aHEX7aJGAL8DYO4qZaO8w3SSRt8SEihtbJi-XhR0K8KB7-A9dOji9JavRCx7587f3in5bIxlcYiPm5bTWwAx9-i9G20AnAdBeefpzymAPH2svUZ4vo-hKzWHtW0ApGSIjqNmODR04A9VmSN7qI-1E9-GfSpPYtLeaHVU34Q7yvenTMVSvLEA';
-//   try {
-//     console.log(
-//       '🚀  -> file: validateJWT.ts  -> line 59  -> await validateJWT(exampleToken)',
-//       await validateJWT(exampleToken),
-//     );
-//   } catch (e) {
-//     console.log('🚀  -> file: validateJWT.ts  -> line 63  -> e', e);
-//   }
-// })();
-
 export default validateJWT;

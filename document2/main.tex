@@ -1,0 +1,125 @@
+\documentclass[12pt]{report}
+
+% includes
+\usepackage{geometry}           % page size
+\usepackage[utf8]{inputenc}     % encoding
+\usepackage{palatino}           % font
+\usepackage[english]{babel}    % language
+\usepackage{graphicx}           % images
+\usepackage{indentfirst}        % indentation
+\usepackage[nottoc]{tocbibind}  % table of contents style
+\usepackage[unicode]{hyperref}  % references from the table of contents
+\usepackage{float}
+\usepackage{listings}
+\usepackage{enumitem}
+
+% includes options
+\geometry{  a4paper,            % scientific thesis standard
+            left=3cm,
+            right=2cm,
+            top=2cm,
+            bottom=2cm,
+ }
+\graphicspath{{images/}}        % path where the images are located
+\setlength{\parindent}{1cm}     % paragraph indentation
+
+% other options
+\linespread{1.5}                % space between lines
+\renewcommand*\contentsname{Contents}    % table of contents name
+
+\usepackage{color}
+\definecolor{jsComment}{RGB}{185, 185, 185}
+\definecolor{jsKeyword}{RGB}{151, 97, 155}
+\definecolor{jsString}{RGB}{136, 158, 26}
+
+\lstdefinelanguage{JavaScript}{
+  keywords={break, case, catch, continue, debugger, default, delete, do, else, false, finally, for, function, if, in, instanceof, new, null, return, switch, this, throw, true, try, typeof, var, void, while, with, await, async, from, const, let},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  keywordstyle=\color{jsKeyword}\bfseries,
+  ndkeywordstyle=\color{jsKeyword}\bfseries,
+  identifierstyle=\color{black},
+  commentstyle=\color{jsComment}\ttfamily,
+  stringstyle=\color{jsString}\ttfamily,
+  sensitive=true
+}
+
+\definecolor{YAMLcolonstyle}{RGB}{200, 200, 200}
+\definecolor{YAMLkeystyle}{RGB}{69, 126, 175}
+\definecolor{YAMLvaluestyle}{RGB}{136, 158, 26}
+
+\newcommand\YAMLcolonstyle{\color{black}\mdseries}
+\newcommand\YAMLkeystyle{\color{YAMLkeystyle}\bfseries}
+\newcommand\YAMLvaluestyle{\color{YAMLvaluestyle}\mdseries}
+
+\makeatletter
+
+% here is a macro expanding to the name of the language
+% (handy if you decide to change it further down the road)
+\newcommand\language@yaml{yaml}
+
+\expandafter\expandafter\expandafter\lstdefinelanguage
+\expandafter{\language@yaml}
+{
+  keywords={true,false,null,y,n},
+  keywordstyle=\color{darkgray}\bfseries,
+  basicstyle=\YAMLkeystyle,                                 % assuming a key comes first
+  sensitive=false,
+  comment=[l]{\#},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\YAMLvaluestyle\ttfamily,
+  moredelim=[l][\color{orange}]{\&},
+  moredelim=[l][\color{magenta}]{*},
+  moredelim=**[il][\YAMLcolonstyle{:}\YAMLvaluestyle]{:},   % switch to value style at :
+  morestring=[b]',
+  morestring=[b]",
+  literate =    {---}{{\ProcessThreeDashes}}3
+                {>}{{\textcolor{red}\textgreater}}1     
+                {|}{{\textcolor{red}\textbar}}1 
+                {\ -\ }{{\mdseries\ -\ }}3,
+}
+
+% switch to key style at EOL
+\lst@AddToHook{EveryLine}{\ifx\lst@language\language@yaml\YAMLkeystyle\fi}
+\makeatother
+
+\newcommand\ProcessThreeDashes{\llap{\color{cyan}\mdseries-{-}-}}
+
+% the document content
+\begin{document}
+    % macros (global)
+    \input{front/macros}
+    
+    % front-matter
+    \pagenumbering{gobble}
+    
+    \input{front/cover}
+    \input{front/titlepage}
+    \input{front/declaration1}
+    \input{front/declaration2}
+    
+    % table of contents
+    \tableofcontents
+    
+    % chapters
+    \setcounter{page}{1}
+    \pagenumbering{arabic}
+    
+    \input{chapters/motivation}
+    \input{chapters/introduction}
+    \input{chapters/contributions}
+    
+    \input{chapters/business_logic}
+    \input{chapters/adopted_methodology_and_techniques}
+    \input{chapters/application_infrastructure_and_architecture}
+    \input{chapters/frontend}
+    \input{chapters/backend}
+    \input{chapters/improvements_and_limitation}
+    
+    \input{chapters/conclusions}
+    \input{chapters/bibliography}
+\end{document}

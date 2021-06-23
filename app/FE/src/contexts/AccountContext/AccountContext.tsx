@@ -1,4 +1,4 @@
-import React, { createContext, useEffect } from 'react';
+import React, { createContext } from 'react';
 import axios from 'axios';
 import { CognitoUserSession, ISignUpResult, CodeDeliveryDetails, CognitoUser } from 'amazon-cognito-identity-js';
 import Amplify, { Auth } from 'aws-amplify';
@@ -172,15 +172,9 @@ const value = {
 
 const Context = createContext(value);
 
-const Provider: React.FunctionComponent = ({ children }) => {
-  useEffect(() => {
-    Auth.currentSession()
-      .then((session) => console.log)
-      .catch(() => {});
-  }, []);
-
-  return <Context.Provider value={value}>{children}</Context.Provider>;
-};
+const Provider: React.FunctionComponent = ({ children }) => (
+  <Context.Provider value={value}>{children}</Context.Provider>
+);
 
 export type { UpdateUserAttributesType };
 export default { Context, Provider };

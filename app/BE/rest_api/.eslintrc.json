@@ -18,6 +18,7 @@
     "curly": "off",
     "object-curly-newline": "off",
     "nonblock-statement-body-position": ["warn", "any"],
-    "max-len": ["warn", { "code": 120 }]
+    "max-len": ["warn", { "code": 120 }],
+    "@typescript-eslint/no-unused-vars": "warn"
   }
 }

@@ -1,4 +1,4 @@
-import { Socket, Server } from 'socket.io';
+import { Server } from 'socket.io';
 import type { Position, AttenderType } from '../shared';
 
 interface AttenderPositionChange {

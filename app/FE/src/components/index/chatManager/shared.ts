@@ -8,7 +8,7 @@ type UserInformationType = {
 
 interface BaseMessage {
   userInformation: UserInformationType;
-  type: 'text/plain' | 'image/jpeg'; // MIME type of messages
+  type: string; // MIME type of messages
   data: string;
   time: number;
 }

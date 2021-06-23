@@ -1,3 +1,4 @@
+/* eslint-disable no-lonely-if */
 import chalk from 'chalk';
 import { Server } from 'socket.io';
 import axios from 'axios';
@@ -69,7 +70,7 @@ const registerListeners = (io: Server) => {
 
     computeChatId = (...userIds) => {
       if (userIds.includes('global')) return 'global';
-      if (userIds.includes(socket.handshake.auth.stageId)) return socket.handshake.auth.stageId;
+      if (userIds.includes(socket.handshake.auth.stageId)) return socket.handshake.auth.stageId.toLowerCase();
 
       const hash = createHash('sha256');
       for (const id of userIds.sort()) hash.update(id);
@@ -91,60 +92,41 @@ const registerListeners = (io: Server) => {
 
     socket.on('private-message', async ({ toUser, message, isGlobalOrStageChat }: PrivateMessageEventType) => {
       console.log('🚀  -> file: chats.ts  -> line 93  -> message', message);
-      const url = new URL(`${API_URL}/chats/${computeChatId(toUser.id, socket.attender.id)}`);
       try {
-        // save message to DB
-        await axios.post(url.toString(), message, { headers: getAPIHeaders(socket.idToken) });
-
-        if (userIdToSocketIdMap.has(toUser.id)) {
-          // toUser is online, directly send message
-
-          // if the message was meant for the global/stage chat
-          if (isGlobalOrStageChat) {
-            io.of('/chats')
-              .in(socket.handshake.auth.stageId!)
-              .except(socket.id)
-              .emit('private-message', { message, fromUser: toUser });
-          } else if (userIdToSocketIdMap.has(toUser.id))
+        if (isGlobalOrStageChat) {
+          // message was meant for the global or stage chat
+          io.of('/chats').in(toUser.id).except(socket.id).emit('private-message', { message, fromUser: toUser });
+        } else {
+          // message was meant for a user, check if the user is online
+          if (userIdToSocketIdMap.has(toUser.id)) {
+            // toUser is online, directly send message
             socket
               .to(userIdToSocketIdMap.get(toUser.id) as string)
               .emit('private-message', { message, fromUser: socket.attender });
+          } else {
+            // toUser is offline, save notification to DB, notify user upon next log in and send email of notification
+            // only send email for the first unread message
+            // verify there are no other unread messages before sending email
+            const response = await axios.get(`${API_URL}/notifications/${toUser.id}`, {
+              headers: getAPIHeaders(socket.idToken),
+            });
+            if (response.data.data.items.length === 0) {
+              await sendEmail({ destinationEmail: toUser.email, fromUser: socket.attender, message });
+              console.log(`Email sent to ${toUser.email}`);
+            }
 
-          // let emitMessage;
-          // switch (toUser.id) {
-          //   case 'global':
-          //   case 'stage':
-          //     // toUser is global/stage chat in this case
-          //     emitMessage = { fromUser: toUser, message };
-          //     io.of('/chats').in(socket.handshake.auth.stageId!).except(socket.id).emit('private-message', emitMessage);
-          //     break;
-
-          //   default:
-          //     emitMessage = { fromUser: socket.attender, message };
-          //     if (userIdToSocketIdMap.has(toUser.id)) {
-          //       socket.to(userIdToSocketIdMap.get(toUser.id) as string).emit('private-message', emitMessage);
-          //     }
-          // }
-        } else {
-          // toUser is offline, save notification to DB, notify user upon next log in and send email of notification
-
-          // only send email for the first unread message
-          // verify there are no other unread messages before sending email
-          const response = await axios.get(`${API_URL}/notifications/${toUser.id}`, {
-            headers: getAPIHeaders(socket.idToken),
-          });
-          if (response.data.data.items.length === 0) {
-            await sendEmail({ destinationEmail: toUser.email, fromUser: socket.attender, message });
-            console.log(`Email sent to ${toUser.email}`);
+            // save notification to DB
+            await axios.post(`${API_URL}/notifications/${toUser.id}`, socket.attender, {
+              headers: getAPIHeaders(socket.idToken),
+            });
           }
-
-          // save notification to DB
-          await axios.post(`${API_URL}/notifications/${toUser.id}`, socket.attender, {
-            headers: getAPIHeaders(socket.idToken),
-          });
         }
+
+        // save message to DB
+        const url = new URL(`${API_URL}/chats/${computeChatId(toUser.id, socket.attender.id)}`);
+        await axios.post(url.toString(), message, { headers: getAPIHeaders(socket.idToken) });
       } catch (e) {
-        console.log('🚀  -> file: chats.ts  -> line 134  -> e', e);
+        console.error('🚀  -> file: chats.ts  -> line 134  -> e', e);
       }
     });
 

@@ -1,0 +1,7 @@
+\chapter{Limitations and further improvements.}
+
+Further development that can be done is towards scalability, for instance the application load balancer can be used together with Socket.IO Redis Adapter\footnote{\href{https://socket.io/docs/v4/redis-adapter/}{https://socket.io/docs/v4/redis-adapter/}} and multiple EC2 instances in order to accommodate for a larger amount of people using the application. More interactivity can be brought to the 3D stage, the fact that the attendee's can move their avatar around the stage serves a good basis for that.
+
+If group chats are desired then a refactoring of the way chats are stored has to be made, currently a chat ID is calculated by hashing the ID of the user participants, which unless the chat is the global/stage chat the number of participants is always two.
+
+An issue that can be more thoroughly analyzed is why sometimes requests to S3 from the frontend are unsuccessful. Several browsers claim it's a CORS\footnote{Cross-Origin Resource Sharing: \href{https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS}{https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS}} issue but I have configured the bucket such that CORS requests are allowed from any origin. What's weird is the inconsistency of the error, sometimes it works and sometimes it doesn't, on certain resources it works and on others it doesn't.

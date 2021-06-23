@@ -1,0 +1,149 @@
+\chapter{Adopted methodology and techniques}
+
+Every software application is developed using certain paradigms and methodologies, \textbf{Think-In} is no different. In this chapter the choice of the chosen methodology will be explained as well as other used techniques that aided in the development process.
+
+\section{Analyzing methodologies}
+Rationally, before making any choice, I analyzed popular software development methodologies and frameworks that have been proven to work in the industry in order to see how they fit to my particular use case:
+
+\begin{description}[style=unboxed, labelwidth=\linewidth]
+	\item[Waterfall]
+	By definition the waterfall model restricts going back to previous phases and this was very troublesome because for instance it was extremely hard to establish all the requirements beforehand. If for example a new idea appeared in the meantime it would have not been easy to introduce it as a result of how strongly structured this model is. Perhaps a modified waterfall could alleviate this issue but a better model can handle it more effectively.
+    \item[Scrum]
+	Although extremely popular and effective, the scrum methodology is more destined towards teams that consists of a couple or more members. Since the thesis is intended to be done by a single student this was not the best fit.
+	\item[Extreme Programming (XP)]
+	The requirements of the application would be changing frequently and extreme programming would accomodate for these changes. The practice of having numerous short releases sounded beneficial because new requirements could be observed once we have a working version of the product.
+\end{description}
+
+\section{Picking a methodology}
+
+\
+Considering my case and the above examination it became clear that Extreme Programming was the better option among them. Along the mentioned advantages of XP found above, XP is based on the Agile paradigm and the values of Agile were also found to be appealing. Standout practices of this framework that were used were the following:
+
+\begin{itemize}
+	\item Planning game - Informal explanations such as user stories were used to represent requirements. After writing and estimating the stories, they were sorted by their priority in the sense of the higher the business value they brought the higher the priority. After this operation, the ones with higher priority were chosen to be worked on first. Example of the user stories used:
+
+	\begin{itemize}
+		\item As an attendee I want to move my avatar in the stage by mouse click.
+		\item In order to get to use the application faster as a user, I can login with a third party instead of creating an account.
+		\item As a user I want to private message others.
+		\item In order for other attendees to recognize me, I want to change my avatar.
+		\item As an attendee I want to switch between stages, so that I can get to know more people and acquire knowledge from the other stages.
+		\item As a user I want to get more information about another attender.
+	\end{itemize}
+	
+	\item Design improvement - There was no hesitance in refactoring code or changing the architecture in favor of a more simple implementation.
+	\item Small releases - By using the released application it was easier to come up with new improvements and suggestions, therefore there were frequent releases.
+	\item Continuous integration - A Continuous Integration and Continuous Deployment pipeline was setup so that the application could be deployed faster and easier.
+	\item Coding standard - Code conventions were established and enforced by tools (i.e. ESLint\footnote{\href{https://eslint.org/}{https://eslint.org/}} in this case) in order to eliminate problematic patterns and to keep a consistent style across all the source code. To reduce code comments that are hard to be maintained, an effort was put into writing self-documenting\footnote{\href{https://en.wikipedia.org/wiki/Self-documenting\_code}{https://en.wikipedia.org/wiki/Self-documenting\_code}} code.
+	\item Simple design - Whenever there was a simpler way to achieve the same functionality the code or architecture was refactored.
+\end{itemize} 
+\
+As a short conclusion, simplicity was valued throughout the whole project. I think that the conventions I opted for throughout the whole project will make it easier to be maintained over time. Moreover, the conventions used will also make it easier for newcomers to the project to understand the codebase faster.
+\section{Elaborating on requirements}
+
+Where additional specifications of a requirement were needed, I have relied on using text based \textbf{use cases}. For example, in Table \ref{table:change-profile-picture-use-case} we can see the use case I have written before implementing the functionality of changing a user's profile picture.
+
+\begin{table}
+	\centering
+
+	\begin{tabular}{ | p{3.2cm} | p{11cm} | }
+	 	\hline 
+		\textbf{Name} & Change profile picture. \\
+		\hline
+		\textbf{Description} & The user can change its profile picture so its avatar (when browsing the stage) is more recognizable. \\
+		\hline
+		\textbf{Actors} & User and system. \\
+		\hline
+		\textbf{Trigger} & On the user profile page, the user presses the image indicating his current avatar. \\
+		\hline
+		\textbf{Preconditions} & The user is logged in. \\
+		\hline
+		\textbf{Postconditions} & The user will have a new profile picture. \\
+		\hline
+		\textbf{Basic flow} & \begin{enumerate}[topsep=1em,parsep=-.5em]
+			\item User goes to profile page.
+			\item User clicks on picture image.
+			\item User uploads image from file system.
+			\item User sees preview of his new profile picture before submitting changes.
+			\item User clicks \textit{Save Changes}.
+		\end{enumerate}} \\
+		\hline
+	\end{tabular}	
+
+	\caption{Change profile picture use case.}
+	\label{table:change-profile-picture-use-case}
+\end{table}
+
+I also wanted to clarify how an attendee can join a stage because that wasn't clear at first thought either, that use case is visible in Table \ref{table:join_stage_use_case}.
+
+\begin{table}
+	\centering
+
+	\begin{tabular}{ | p{3.2cm} | p{11cm} | }
+		\hline
+		\textbf{Name} & Join a stage. \\
+		\hline
+		\textbf{Description} & An attendee joins a stage. \\
+		\hline
+		\textbf{Actors} & User and stage. \\
+		\hline
+		\textbf{Trigger} & User clicks the \textit{Join Stage} button of the stage he wants to join.  \\
+		\hline
+		\textbf{Preconditions} & The user is logged in and at the index page. \\
+		\hline
+		\textbf{Postconditions} & The page will refresh, showing the contents of the selected stage. \\
+		\hline
+		\textbf{Basic flow} & \begin{enumerate}[topsep=1em,parsep=-.5em]
+			\item The user is logged in at the index page where there will be a list of stages to choose from.
+			\item User clicks on the \textit{Join Stage} button of the stage he wants to join.
+			\item The page will reload with the stage changed.
+		\end{enumerate}} \\
+		\hline
+	\end{tabular}	
+
+	\caption{Join a stage use case.}
+	\label{table:join_stage_use_case}
+\end{table}
+
+I wanted to enhance the possibility of getting more information about a user, therefore I made sure there is a way to access more data about an attendee from anywhere he is mentioned. There are three ways in total where a user pops up: from the stage, from an opened chat with that user, or from a message the user wrote. Writing a use case helped in deciding how all of it is going to work in more detail. This use case is shown in Table \ref{table:contact_user_use_case}.
+
+\begin{table}
+	\centering
+	\begin{tabular}{ | p{3.2cm} | p{11cm} | }
+		\hline
+		\textbf{Name} & Get more information about a user. \\
+		\hline
+		\textbf{Description} & While using the application the user sees somebody who he would like to get more information about. \\
+		\hline
+		\textbf{Actors} & Current user and target user (the user whose information wants to be seen)  \\
+		\hline
+		\textbf{Trigger} & The current user clicks on the target user avatar. \\
+		\hline
+		\textbf{Preconditions} & The user is logged in and at the index page. \\
+		\hline
+		\textbf{Postconditions} & A dialog box will pop up containing more information about the target user.\\
+		\hline
+		\textbf{Basic flow} & \begin{enumerate}[topsep=em,parsep=-.5em]
+			\item The current user is looking at the stage and a certain user (Target user in this case) attracts his attention.
+			\item The current user clicks on the target user's avatar.
+			\item A dialog box pops up with information regarding the target user.
+		\end{enumerate}} \\
+		\hline
+		\textbf{Alternate flow 1} & \begin{enumerate}[topsep=0em,parsep=-.5em]
+			\item The current user has been messaged by the target user and the current user wants to see more information about him.
+			\item The current user clicks on the three vertical dots button alongside the target user's chat.
+			\item The current user clicks on \textit{View Profile}
+			\item A dialog box pops up with information regarding the target user.
+		\end{enumerate} \\
+		\hline
+		\textbf{Alternate flow 2} & \begin{enumerate}[topsep=0em,parsep=-.5em]
+			\item The current user sees a message in the chat from the target user and wants to see more information about him.
+			\item The current user clicks on the avatar on the left side of the target user.
+			\item A dialog box pops up with information regarding the target user.
+		\end{enumerate} \\
+		\hline
+	\end{tabular}	
+	
+	\caption{Contact a user use case.}
+	\label{table:contact_user_use_case}
+\end{table}

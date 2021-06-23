@@ -1,4 +1,3 @@
-import socketio from 'socket.io';
 import type { JWT, AttenderType } from '../shared';
 
 type Position = [number, number, number];

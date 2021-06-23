@@ -65,11 +65,11 @@ const StageComponents: React.FunctionComponent<StageComponentsProps> = ({
   const [cameraLookAtPosition] = useState(new THREE.Vector3(...cameraLookAt));
 
   useEffect(() => {
-    if (windowWidth < theme.breakpoints.values.sm) {
+    if (windowWidth < theme.breakpoints.values.sm) { // equivalent to 600
       setFinalCameraPosition(new THREE.Vector3(FINAL_CAMERA_POSITION[0], FINAL_CAMERA_POSITION[1], 15));
-    } else if (windowWidth < theme.breakpoints.values.md) {
+    } else if (windowWidth < theme.breakpoints.values.md) { // equivalent to 960
       setFinalCameraPosition(new THREE.Vector3(FINAL_CAMERA_POSITION[0], FINAL_CAMERA_POSITION[1], 10));
-    } else if (windowWidth < theme.breakpoints.values.lg) {
+    } else if (windowWidth < theme.breakpoints.values.lg) { // equivalent to 1280
       setFinalCameraPosition(new THREE.Vector3(FINAL_CAMERA_POSITION[0], FINAL_CAMERA_POSITION[1], 7.5));
     } else {
       setFinalCameraPosition(new THREE.Vector3(FINAL_CAMERA_POSITION[0], FINAL_CAMERA_POSITION[1], 5));

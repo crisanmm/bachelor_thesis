@@ -3,7 +3,7 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { useContext } from 'react';
 import { CognitoUserSession } from 'amazon-cognito-identity-js';
-import { DefaultEventsMap } from 'socket.io-client/build/typed-events';
+import type { DefaultEventsMap } from 'socket.io-client/build/typed-events';
 import { Socket } from 'socket.io-client';
 import { Emitter } from 'mitt';
 import axios from 'axios';

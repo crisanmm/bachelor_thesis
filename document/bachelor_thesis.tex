@@ -1,0 +1,55 @@
+\documentclass{article}
+
+% <package imports>
+\usepackage{amsmath} % for math
+\usepackage{graphicx} % for includegraphics in \figure
+\usepackage{float} % for [H] option for \figure
+\usepackage{setspace}
+% </package imports>
+
+% <title declaration>
+\title{Bachelor Thesis}
+\date{\today}
+\author{Crisan Mihai}
+% </title declaration>
+
+\begin{document}
+
+% ------------------------ headers
+\pagenumbering{gobble} % no page number
+
+% <title page>
+\maketitle
+\newpage
+% </title page>
+
+% <table of contents page>
+\doublespacing
+\tableofcontents
+\singlespacing
+\newpage
+% </table of contents page>
+
+% ------------------------ body
+\pagenumbering{arabic}
+
+% <motivation section>
+\input{sections/Motivation}
+\newpage
+% </motivation section>
+
+\section{section}
+\subsection{subsection}
+	
+% <appendix section>
+\begin{appendix}
+	\doublespacing
+	\listoffigures
+	\newpage
+	\listoftables
+	\newpage
+	\singlespacing
+\end{appendix}
+% </appendix section>
+
+\end{document}
